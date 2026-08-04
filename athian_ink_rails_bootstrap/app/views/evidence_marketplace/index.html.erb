@@ -1,0 +1,27 @@
+<% content_for :title, "Evidence Marketplace · Athian Evidence Bazaar" %>
+
+<header class="page-header">
+  <div>
+    <div class="eyebrow">Strategic move #6 · Sell Evidence Acceptance</div>
+    <h1 class="display-6 mb-2">Evidence Marketplace</h1>
+    <p class="lead mb-0">Do not sell carbon here. Sell evidence acceptance: portable packets for buyers, registries, insurers, financing, due diligence, and disputes.</p>
+  </div>
+</header>
+
+<section class="row g-4">
+  <% @products.each do |key, product| %>
+    <div class="col-md-6 col-xxl-4">
+      <article class="bundle-card card h-100">
+        <div class="card-body d-flex flex-column">
+          <div class="bundle-key"><%= key %></div>
+          <h2 class="h5"><%= product.fetch(:name) %></h2>
+          <p class="text-body-secondary"><%= product.fetch(:problem) %></p>
+          <div class="mt-auto">
+            <div class="small mb-3"><strong>Included receipts:</strong> <%= product.fetch(:receipts).join(", ") %></div>
+            <%= link_to "Open product", evidence_marketplace_path(key), class: "btn btn-outline-primary w-100" %>
+          </div>
+        </div>
+      </article>
+    </div>
+  <% end %>
+</section>

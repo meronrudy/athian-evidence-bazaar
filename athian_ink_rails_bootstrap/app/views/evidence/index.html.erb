@@ -1,0 +1,68 @@
+<% content_for :title, "Evidence Explorer · Athian Evidence Bazaar" %>
+
+<header class="page-header">
+  <div>
+    <div class="eyebrow">Evidence Explorer</div>
+    <h1 class="display-6 mb-2">GitHub tree for evidence</h1>
+    <p class="lead mb-0">Feed invoices, lab reports, GPS data, model runs, satellite imagery, VVB determinations, registry records, and payment advice with receipt-level traceability.</p>
+  </div>
+  <div class="page-actions">
+    <% if @avsa %><%= link_to "Open AVSA chain", avsa_path(@avsa), class: "btn btn-outline-primary" %><% end %>
+  </div>
+</header>
+
+<section class="card">
+  <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+    <div>
+      <div class="eyebrow">Evidence</div>
+      <h2 class="h4 mb-0"><%= @evidence_items.size %> committed object(s)</h2>
+    </div>
+    <% if @avsa %><span class="badge text-bg-light"><%= @avsa.external_id %></span><% end %>
+  </div>
+
+  <div class="evidence-tree">
+    <% @evidence_tree.each do |type, items| %>
+      <div class="evidence-folder">
+        <div class="evidence-folder__header">
+          <span class="evidence-glyph"><%= evidence_icon(type) %></span>
+          <strong><%= type.humanize %></strong>
+          <span class="badge text-bg-light"><%= items.size %></span>
+        </div>
+        <div class="table-responsive">
+          <table class="table align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Evidence</th>
+                <th>Receipt</th>
+                <th>Hash</th>
+                <th>Signer</th>
+                <th>Parents</th>
+                <th>Lifecycle</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% items.each do |item| %>
+                <% receipt = item.receipt %>
+                <tr>
+                  <td><strong><%= item.name %></strong><div class="small text-body-secondary"><%= item.source_system %> · <%= item.disclosure_status.humanize %></div></td>
+                  <td><%= link_to receipt.title, receipt_path(receipt) %><div class="small text-body-secondary"><%= receipt.avsa.external_id %></div></td>
+                  <td><code><%= compact_digest(item.commitment, length: 18) %></code></td>
+                  <td><code><%= compact_digest(receipt.signer_key_id, length: 16) %></code></td>
+                  <td>
+                    <% receipt.parent_receipts.each do |parent| %>
+                      <%= link_to format("%02d", parent.sequence), receipt_path(parent), class: "parent-chip" %>
+                    <% end %>
+                    <%= "root" if receipt.parent_receipts.none? %>
+                  </td>
+                  <td><%= render "shared/lifecycle_badge", state: receipt.lifecycle_state %></td>
+                  <td class="text-end"><%= button_to "Verify", verify_receipt_path(receipt), method: :post, class: "btn btn-sm btn-outline-success" %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</section>

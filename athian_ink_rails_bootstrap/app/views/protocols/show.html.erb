@@ -1,0 +1,61 @@
+<% content_for :title, "#{@protocol.display_name} · Athian INK" %>
+
+<header class="page-header">
+  <div>
+    <div class="eyebrow">Protocol admission record</div>
+    <h1 class="display-6 mb-2"><%= @protocol.name %></h1>
+    <p class="lead mb-0"><code><%= @protocol.code %></code> · Method v<%= @protocol.version %> · Governance <%= @protocol.governance_version %></p>
+  </div>
+  <div class="page-actions">
+    <%= link_to "All protocols", protocols_path, class: "btn btn-outline-primary" %>
+  </div>
+</header>
+
+<div class="row g-4">
+  <div class="col-xl-4">
+    <div class="card">
+      <div class="card-header">
+        <div class="eyebrow">Version custody</div>
+        <h2 class="h4 mb-0">Protocol state</h2>
+      </div>
+      <div class="card-body">
+        <dl class="summary-list">
+          <div><dt>Status</dt><dd><span class="badge <%= @protocol.status == 'active' ? 'text-bg-success' : 'text-bg-secondary' %>"><%= @protocol.status.humanize %></span></dd></div>
+          <div><dt>Method version</dt><dd><%= @protocol.version %></dd></div>
+          <div><dt>Governance version</dt><dd><code><%= @protocol.governance_version %></code></dd></div>
+          <div><dt>Effective</dt><dd><%= @protocol.effective_on || "—" %></dd></div>
+          <div><dt>Retired</dt><dd><%= @protocol.retired_on || "—" %></dd></div>
+          <div><dt>Protocol digest</dt><dd><code><%= @protocol.protocol_digest %></code></dd></div>
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-8">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+          <div class="eyebrow">Governed assets</div>
+          <h2 class="h4 mb-0">AVSA chains</h2>
+        </div>
+        <span class="badge text-bg-light"><%= @protocol.avsas.size %></span>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead><tr><th>AVSA</th><th>Producer</th><th>Quantity</th><th>Receipt state</th><th></th></tr></thead>
+          <tbody>
+            <% @protocol.avsas.each do |avsa| %>
+              <tr>
+                <td><strong><%= avsa.external_id %></strong></td>
+                <td><%= avsa.producer_name %></td>
+                <td><%= number_with_precision(avsa.verified_quantity, precision: 2) %> <%= avsa.unit %></td>
+                <td><%= avsa.sealed_receipts_count %>/<%= avsa.receipt_count %> sealed</td>
+                <td class="text-end"><%= link_to "Review chain", avsa_path(avsa), class: "btn btn-sm btn-outline-primary" %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

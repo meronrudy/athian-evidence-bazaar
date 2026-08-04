@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+bundle check || bundle install
+npm install
+bin/rails db:prepare
+npm run build
+
+echo "Ready. Run bin/dev and open http://localhost:3000"

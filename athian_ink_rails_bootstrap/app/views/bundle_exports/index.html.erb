@@ -1,0 +1,86 @@
+<% content_for :title, "Bundle Builder · Athian Evidence Bazaar" %>
+
+<header class="page-header">
+  <div>
+    <div class="eyebrow">Strategic move #1 · Portable Proof Product</div>
+    <h1 class="display-6 mb-2">Bundle Builder</h1>
+    <p class="lead mb-0">Choose AVSA → Choose Bundle → Generate → Download ZIP. Rails asks <code>InkReceipts.bundle(...)</code>; the trust-boundary facade assembles the artifact.</p>
+  </div>
+</header>
+
+<section class="wizard-steps mb-4" aria-label="Bundle builder steps">
+  <% ["Choose AVSA", "Choose Bundle", "Generate", "Download ZIP"].each_with_index do |step, index| %>
+    <div class="wizard-step <%= 'is-active' if index < 2 %>">
+      <span><%= index + 1 %></span>
+      <strong><%= step %></strong>
+    </div>
+  <% end %>
+</section>
+
+<div class="row g-4 mb-4">
+  <% @bundle_types.each do |key, definition| %>
+    <div class="col-md-6 col-xxl-4">
+      <article class="bundle-card card h-100 <%= 'is-selected' if params[:bundle_type] == key %>">
+        <div class="card-body d-flex flex-column">
+          <div class="bundle-key"><%= key.tr('_', ' ') %></div>
+          <h2 class="h5"><%= definition[:name] %></h2>
+          <p class="small"><strong>Audience:</strong> <%= definition[:audience] %></p>
+          <p class="text-body-secondary"><%= definition[:problem] %></p>
+          <div class="mt-auto pt-2">
+            <span class="badge text-bg-light"><%= definition[:receipt_types].size %> receipt class(es)</span>
+          </div>
+        </div>
+      </article>
+    </div>
+  <% end %>
+</div>
+
+<div class="row g-4">
+  <div class="col-xl-7">
+    <section class="card">
+      <div class="card-header">
+        <div class="eyebrow">Generate</div>
+        <h2 class="h4 mb-0">Evidence bundle ZIP</h2>
+      </div>
+      <div class="card-body">
+        <%= form_with url: bundle_exports_path, method: :post, class: "row g-3" do |form| %>
+          <div class="col-md-6">
+            <%= form.label :avsa_id, "Choose AVSA", class: "form-label" %>
+            <%= form.select :avsa_id, @avsas.map { |avsa| ["#{avsa.external_id} · #{avsa.producer_name}", avsa.id] }, { selected: params[:avsa_id] || @avsas.first&.id }, class: "form-select", required: true %>
+          </div>
+          <div class="col-md-6">
+            <%= form.label :bundle_type, "Choose Bundle", class: "form-label" %>
+            <%= form.select :bundle_type, @bundle_types.map { |key, definition| [definition[:name], key] }, { selected: params[:bundle_type] || "buyer" }, class: "form-select", required: true %>
+          </div>
+          <div class="col-12">
+            <div class="alert alert-boundary small mb-0">
+              The generated ZIP includes manifest, selected receipt JSON projections, evidence index, trust policy, revocation snapshot, verification report, and local verifier command.
+            </div>
+          </div>
+          <div class="col-12 text-end"><%= form.submit "Generate ZIP bundle", class: "btn btn-primary" %></div>
+        <% end %>
+      </div>
+    </section>
+  </div>
+
+  <div class="col-xl-5">
+    <section class="card">
+      <div class="card-header">
+        <div class="eyebrow">Recent generated bundles</div>
+        <h2 class="h4 mb-0">Bundle ledger</h2>
+      </div>
+      <div class="list-group list-group-flush">
+        <% @recent_bundles.each do |bundle| %>
+          <div class="list-group-item py-3">
+            <div class="d-flex justify-content-between gap-2">
+              <strong><%= bundle.name %></strong>
+              <%= render "shared/verification_badge", status: bundle.verification_status %>
+            </div>
+            <div class="small text-body-secondary"><%= bundle.avsa.external_id %> · <%= bundle.artifact_filename %></div>
+          </div>
+        <% end %>
+        <% if @recent_bundles.none? %><div class="list-group-item text-body-secondary py-4">No bundles generated yet.</div><% end %>
+      </div>
+    </section>
+  </div>
+</div>

@@ -1,0 +1,25 @@
+<article class="receipt-node <%= 'receipt-node--terminal' if receipt.receipt_type == 'producer_payment_receipt' || receipt == receipt.avsa.receipts.last %>">
+  <div class="receipt-node__sequence"><%= format('%02d', receipt.sequence) %></div>
+  <div class="receipt-card card shadow-sm">
+    <div class="card-body">
+      <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
+        <div>
+          <div class="eyebrow"><%= receipt.receipt_type_label %></div>
+          <h3 class="h5 mb-1"><%= link_to receipt.title, receipt_path(receipt), class: "stretched-link text-decoration-none" %></h3>
+        </div>
+        <%= render "shared/lifecycle_badge", state: receipt.lifecycle_state %>
+      </div>
+      <div class="row g-2 small text-body-secondary">
+        <div class="col-sm-4"><strong class="d-block text-body">Issuer</strong><%= receipt.issuer_name.presence || "Unassigned" %></div>
+        <div class="col-sm-4"><strong class="d-block text-body">Evidence</strong><%= receipt.evidence_items.size %> item(s)</div>
+        <div class="col-sm-4"><strong class="d-block text-body">Hash</strong><code><%= compact_digest(receipt.body_digest) %></code></div>
+      </div>
+      <div class="receipt-actions">
+        <span class="badge <%= receipt.verified? ? 'text-bg-success' : 'text-bg-warning' %>"><%= receipt.verified? ? 'Verified' : 'Review' %></span>
+        <%= link_to "View Canonical", receipt_path(receipt), class: "btn btn-sm btn-outline-primary position-relative z-2" %>
+        <%= link_to "Download", download_receipt_path(receipt), class: "btn btn-sm btn-outline-secondary position-relative z-2" %>
+        <%= button_to "Verify Locally", verify_receipt_path(receipt), method: :post, class: "btn btn-sm btn-outline-success position-relative z-2" %>
+      </div>
+    </div>
+  </div>
+</article>

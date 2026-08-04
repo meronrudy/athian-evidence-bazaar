@@ -1,0 +1,159 @@
+<div data-controller="co-claim" data-co-claim-cap-value="<%= claim_group.aggregate_cap_percent %>" data-co-claim-verified-total-value="<%= claim_group.verified_total %>">
+  <% if claim_group.errors.any? %>
+    <div class="alert alert-danger">
+      <strong>Allocation not saved.</strong>
+      <ul class="mb-0 mt-2">
+        <% claim_group.errors.full_messages.each do |message| %><li><%= message %></li><% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="row g-4">
+    <div class="col-xl-9">
+      <div class="card mb-4">
+        <div class="card-header">
+          <div class="eyebrow">Claim Group</div>
+          <h2 class="h4 mb-0">100% allocation geometry</h2>
+        </div>
+        <div class="card-body">
+          <div class="claim-waterfall" aria-label="Co-claim allocation">
+            <div class="claim-waterfall__total">100%</div>
+            <% claim_group.claim_shares.each do |share| %>
+              <div class="claim-waterfall__bar">
+                <span style="width: <%= [share.share_percent.to_f, 100].min %>%"></span>
+                <strong><%= share.claimant_name %></strong>
+                <em><%= share.share_percent %>%</em>
+              </div>
+            <% end %>
+          </div>
+
+          <div class="validation-grid mt-3">
+            <% claim_group.validation_results.each do |result| %>
+              <div class="validation-pill <%= result[:valid] ? 'is-valid' : 'is-invalid' %>">
+                <span><%= result[:valid] ? "OK" : "!" %></span>
+                <%= result[:label] %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+          <div>
+            <div class="eyebrow">Claim group</div>
+            <h2 class="h4 mb-0">Allocation table</h2>
+          </div>
+          <span class="badge <%= claim_group.prior_claim_check_status == 'passed' ? 'text-bg-success' : 'text-bg-warning' %>">Prior-claim check: <%= claim_group.prior_claim_check_status %></span>
+        </div>
+
+        <%= form_with model: [avsa, claim_group], class: "mb-0" do |form| %>
+          <div class="table-responsive">
+            <table class="table align-middle co-claim-table mb-0">
+              <thead>
+                <tr>
+                  <th>Claimant</th>
+                  <th>Role</th>
+                  <th>Contribution</th>
+                  <th>Share %</th>
+                  <th>Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <%= form.fields_for :claim_shares do |share_form| %>
+                  <% share = share_form.object %>
+                  <tr>
+                    <td>
+                      <strong><%= share.claimant_name %></strong>
+                      <div class="small text-body-secondary"><%= share.inventory_category %></div>
+                    </td>
+                    <td><%= share.claimant_role %></td>
+                    <td><%= money(share.contribution_amount) %></td>
+                    <td style="min-width: 9rem">
+                      <div class="input-group input-group-sm">
+                        <%= share_form.number_field :share_percent, step: 0.01, min: 0, max: 100, class: "form-control text-end", data: { co_claim_target: "share", action: "input->co-claim#recalculate" } %>
+                        <span class="input-group-text">%</span>
+                      </div>
+                    </td>
+                    <td><span class="badge text-bg-light"><%= share.status %></span></td>
+                    <td class="text-end">
+                      <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#share-details-<%= share.id %>" aria-expanded="false" aria-controls="share-details-<%= share.id %>">Details</button>
+                    </td>
+                  </tr>
+                  <tr class="collapse claim-detail-row" id="share-details-<%= share.id %>">
+                    <td colspan="6">
+                      <div class="row g-3 py-2">
+                        <div class="col-md-4"><strong class="d-block small">Contract right digest</strong><code><%= compact_digest(share.contract_right_digest, length: 18) %></code></div>
+                        <div class="col-md-4"><strong class="d-block small">Inventory category</strong><%= share.inventory_category %></div>
+                        <div class="col-md-4"><strong class="d-block small">Attributed quantity</strong><%= number_with_precision(claim_group.verified_total.to_d * share.share_percent.to_d / 100, precision: 3) %> <%= claim_group.unit %></div>
+                      </div>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card-body border-top">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-2">
+              <div>
+                <strong data-co-claim-target="status">Aggregate claim: <%= claim_group.claimed_percent %>%</strong>
+                <div class="small text-body-secondary"><span data-co-claim-target="remaining"><%= claim_group.remaining_percent %>% remaining</span> against the verified total.</div>
+              </div>
+              <%= form.submit "Save allocation", class: "btn btn-primary", data: { co_claim_target: "saveButton" } %>
+            </div>
+            <% width = [claim_group.claimed_percent.to_f, 100].min %>
+            <div class="progress progress-tall" role="progressbar" aria-label="Aggregate claim cap" aria-valuenow="<%= claim_group.claimed_percent %>" aria-valuemin="0" aria-valuemax="100">
+              <div class="progress-bar <%= claim_group.over_cap? ? 'bg-danger' : 'bg-success' %>" style="width: <%= width %>%" data-co-claim-target="progress"><%= claim_group.claimed_percent %>%</div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="card mt-4">
+        <div class="card-header">
+          <div class="eyebrow">Receipt graph</div>
+          <h2 class="h4 mb-0">Contribution → Claim → Retirement</h2>
+        </div>
+        <div class="card-body">
+          <div class="mini-graph">
+            <% ["Contribution Receipt", "Claim Receipt", "Retirement Receipt"].each_with_index do |label, index| %>
+              <div class="mini-graph__node">
+                <span><%= index + 1 %></span>
+                <strong><%= label %></strong>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3">
+      <div class="card mb-3">
+        <div class="card-body">
+          <div class="metric-label">Verified total</div>
+          <div class="metric-value metric-value--compact"><%= number_with_precision(claim_group.verified_total, precision: 3) %></div>
+          <div class="metric-note"><%= claim_group.unit %></div>
+        </div>
+      </div>
+      <div class="card mb-3">
+        <div class="card-body">
+          <div class="metric-label">Claimed quantity</div>
+          <div class="metric-value metric-value--compact" data-co-claim-target="claimedQuantity"><%= number_with_precision(claim_group.claimed_quantity, precision: 3) %></div>
+          <div class="metric-note"><%= claim_group.unit %></div>
+        </div>
+      </div>
+      <div class="card mb-3">
+        <div class="card-body">
+          <div class="metric-label">Unallocated quantity</div>
+          <div class="metric-value metric-value--compact" data-co-claim-target="remainingQuantity"><%= number_with_precision(claim_group.remaining_quantity, precision: 3) %></div>
+          <div class="metric-note"><%= claim_group.unit %></div>
+        </div>
+      </div>
+      <div class="alert alert-boundary small mb-0">
+        The receipt proves declared claim geometry, rights commitments, and anti-duplication results. It does not decide whether the claim is legally or scientifically permissible.
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,205 @@
+<% content_for :title, "Athian Evidence Bazaar" %>
+
+<header class="evidence-hero">
+  <div>
+    <div class="eyebrow">Athian Evidence Bazaar</div>
+    <h1>Evidence first.<br>Carbon second.</h1>
+    <p>GitHub for agricultural-carbon evidence: receipt chains, verifier work, bundles, producer economics, co-claim geometry, and methodology changes in one review surface.</p>
+  </div>
+  <div class="hero-actions">
+    <% if canonical_avsa %>
+      <%= link_to "Review canonical chain", avsa_path(canonical_avsa), class: "btn btn-primary" %>
+      <%= link_to "Build evidence bundle", bundle_exports_path(avsa_id: canonical_avsa.id), class: "btn btn-outline-primary" %>
+    <% end %>
+  </div>
+</header>
+
+<section class="row g-3 mb-4" aria-label="Evidence operating queues">
+  <% [
+    ["Evidence awaiting verification", @metrics[:evidence_awaiting_verification], "Missing or unresolved evidence commitments"],
+    ["Receipts awaiting attestation", @metrics[:receipts_awaiting_attestation], "Observed, validated, or attested receipts not sealed"],
+    ["Producer payments awaiting linkage", @metrics[:producer_payments_awaiting_linkage], "Payments without a sealed payment receipt"],
+    ["Methodology migrations", @metrics[:methodology_migrations], "Append-only deltas under review"],
+    ["Bundles generated today", @metrics[:bundles_generated_today], "Portable proof products assembled"],
+    ["Trust score", "#{@metrics[:trust_score]}%", "Composite projection from verification, evidence, and payment traceability"]
+  ].each do |label, value, note| %>
+    <div class="col-6 col-xl-2">
+      <div class="metric-card card h-100">
+        <div class="card-body">
+          <div class="metric-label"><%= label %></div>
+          <div class="metric-value metric-value--compact"><%= value %></div>
+          <div class="metric-note"><%= note %></div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</section>
+
+<section class="card mb-4">
+  <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+    <div>
+      <div class="eyebrow">Feature map</div>
+      <h2 class="h4 mb-0">Strategic moves are visible in the product</h2>
+    </div>
+    <span class="badge text-bg-light">Evidence acceptance, not carbon marketplace</span>
+  </div>
+  <div class="table-responsive">
+    <table class="table align-middle mb-0">
+      <thead><tr><th>Move</th><th>Strategic move</th><th>Rails feature</th></tr></thead>
+      <tbody>
+        <% strategic_moves.each do |index, move, feature| %>
+          <tr>
+            <td><span class="nav-index"><%= index %></span></td>
+            <td><strong><%= move %></strong></td>
+            <td><%= feature %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="row g-4 mb-4">
+  <div class="col-xl-8">
+    <div class="card h-100">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+          <div class="eyebrow">Recent AVSAs</div>
+          <h2 class="h4 mb-0">Evidence programs in motion</h2>
+        </div>
+        <span class="badge text-bg-light"><%= @avsas.size %> AVSA(s)</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead><tr><th>AVSA</th><th>Methodology</th><th>Receipts</th><th>Failures</th><th>Trust</th><th></th></tr></thead>
+          <tbody>
+            <% @avsas.each do |avsa| %>
+              <tr>
+                <td><strong><%= avsa.external_id %></strong><div class="small text-body-secondary"><%= avsa.producer_name %></div></td>
+                <td><%= avsa.methodology_label %></td>
+                <td><%= avsa.sealed_receipts_count %>/<%= avsa.receipt_count %> sealed</td>
+                <td><span class="badge <%= avsa.open_exception_count.zero? ? 'text-bg-success' : 'text-bg-warning' %>"><%= avsa.open_exception_count %></span></td>
+                <td><%= render "shared/verification_badge", status: avsa.local_verification_status %></td>
+                <td class="text-end"><%= link_to "Open", avsa_path(avsa), class: "btn btn-sm btn-outline-primary" %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-4">
+    <div class="card h-100">
+      <div class="card-header">
+        <div class="eyebrow">Verification failures</div>
+        <h2 class="h4 mb-0">Do not convert uncertainty into success</h2>
+      </div>
+      <div class="list-group list-group-flush">
+        <% @verification_failures.each do |run| %>
+          <div class="list-group-item py-3">
+            <div class="d-flex justify-content-between gap-2">
+              <strong><%= run.receipt&.title || run.avsa.external_id %></strong>
+              <%= render "shared/verification_badge", status: run.status %>
+            </div>
+            <p class="small mb-0"><%= run.message %></p>
+          </div>
+        <% end %>
+        <% if @verification_failures.none? %><div class="list-group-item text-body-secondary py-4">No verification failures recorded.</div><% end %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="row g-4 mb-4">
+  <div class="col-xl-4">
+    <div class="card h-100">
+      <div class="card-header"><div class="eyebrow">Recent receipts</div><h2 class="h5 mb-0">Receipt activity</h2></div>
+      <div class="list-group list-group-flush">
+        <% @recent_receipts.each do |receipt| %>
+          <%= link_to receipt_path(receipt), class: "list-group-item list-group-item-action py-3" do %>
+            <strong><%= receipt.title %></strong>
+            <div class="small text-body-secondary"><%= receipt.avsa.external_id %> · <code><%= compact_digest(receipt.body_digest) %></code></div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-4">
+    <div class="card h-100">
+      <div class="card-header"><div class="eyebrow">Recent bundles</div><h2 class="h5 mb-0">Portable proof products</h2></div>
+      <div class="list-group list-group-flush">
+        <% @recent_bundles.each do |bundle| %>
+          <div class="list-group-item py-3">
+            <strong><%= bundle.name %></strong>
+            <div class="small text-body-secondary"><%= bundle.avsa.external_id %> · <%= bundle.generated_at.strftime("%Y-%m-%d %H:%M UTC") %></div>
+          </div>
+        <% end %>
+        <% if @recent_bundles.none? %><div class="list-group-item text-body-secondary py-4">No bundles generated yet.</div><% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-4">
+    <div class="card h-100">
+      <div class="card-header"><div class="eyebrow">Migration alerts</div><h2 class="h5 mb-0">Methodology changes</h2></div>
+      <div class="list-group list-group-flush">
+        <% @migration_alerts.each do |migration| %>
+          <%= link_to methodology_migration_path(migration), class: "list-group-item list-group-item-action py-3" do %>
+            <strong><%= migration.transition_label %></strong>
+            <div class="small text-body-secondary"><%= migration.avsa.external_id %> · <%= migration.status.humanize %></div>
+          <% end %>
+        <% end %>
+        <% if @migration_alerts.none? %><div class="list-group-item text-body-secondary py-4">No methodology migrations yet.</div><% end %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="row g-4">
+  <div class="col-xl-4">
+    <div class="card h-100">
+      <div class="card-header"><div class="eyebrow">Pending VVB attestations</div><h2 class="h5 mb-0">Verifier queue</h2></div>
+      <div class="list-group list-group-flush">
+        <% @pending_attestations.each do |receipt| %>
+          <%= link_to verifier_console_path(avsa_id: receipt.avsa.id, receipt_id: receipt.id), class: "list-group-item list-group-item-action py-3" do %>
+            <strong><%= receipt.title %></strong>
+            <div class="small text-body-secondary"><%= receipt.lifecycle_state.humanize %> · <%= receipt.avsa.vvb_name %></div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-4">
+    <div class="card h-100">
+      <div class="card-header"><div class="eyebrow">Producer payments</div><h2 class="h5 mb-0">Economic traceability</h2></div>
+      <div class="list-group list-group-flush">
+        <% @producer_payments.each do |payment| %>
+          <%= link_to producer_payment_path(payment), class: "list-group-item list-group-item-action py-3" do %>
+            <strong><%= payment.producer_name %></strong>
+            <div class="small text-body-secondary"><%= money(payment.net_amount, payment.currency) %> net · <%= payment.status %></div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-4">
+    <div class="card h-100">
+      <div class="card-header"><div class="eyebrow">Verification exceptions</div><h2 class="h5 mb-0">Open materiality work</h2></div>
+      <div class="list-group list-group-flush">
+        <% @open_exceptions.each do |exception| %>
+          <div class="list-group-item py-3">
+            <div class="d-flex justify-content-between gap-2 mb-1">
+              <strong><%= exception.code %></strong>
+              <span class="badge <%= severity_badge_class(exception.severity) %>"><%= exception.severity %></span>
+            </div>
+            <div class="small"><%= exception.description %></div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</section>

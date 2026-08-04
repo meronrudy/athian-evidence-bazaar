@@ -1,0 +1,158 @@
+<% content_for :title, "#{@avsa.external_id} · Receipt Chain" %>
+
+<header class="page-header">
+  <div>
+    <div class="eyebrow">Receipt chain hero</div>
+    <h1 class="display-6 mb-2"><%= @avsa.title %></h1>
+    <div class="d-flex flex-wrap gap-2 align-items-center">
+      <span class="protocol-chip"><%= @avsa.external_id %></span>
+      <span class="protocol-chip"><%= @avsa.methodology_label %></span>
+      <%= render "shared/verification_badge", status: @avsa.local_verification_status %>
+    </div>
+  </div>
+  <div class="page-actions">
+    <%= link_to "Evidence Explorer", evidence_index_path(avsa_id: @avsa.id), class: "btn btn-outline-primary" %>
+    <%= link_to "Verify chain", verifier_console_path(avsa_id: @avsa.id), class: "btn btn-primary" %>
+    <%= link_to "Bundle", bundle_exports_path(avsa_id: @avsa.id), class: "btn btn-outline-primary" %>
+  </div>
+</header>
+
+<section class="card mb-4">
+  <div class="card-header">
+    <div class="eyebrow">AVSA detail</div>
+    <h2 class="h4 mb-0">Evidence-backed asset projection</h2>
+  </div>
+  <div class="card-body">
+    <dl class="summary-list summary-list--six">
+      <div><dt>AVSA</dt><dd><%= @avsa.external_id %></dd></div>
+      <div><dt>Producer</dt><dd><%= @avsa.producer_name %></dd></div>
+      <div><dt>Protocol</dt><dd><%= @avsa.protocol.display_name %></dd></div>
+      <div><dt>Methodology</dt><dd><%= @avsa.methodology_label %></dd></div>
+      <div><dt>Verifier</dt><dd><%= @avsa.vvb_name %></dd></div>
+      <div><dt>Status</dt><dd><%= @avsa.status.humanize %></dd></div>
+    </dl>
+  </div>
+</section>
+
+<div class="row g-4">
+  <div class="col-xl-8">
+    <section class="mb-4">
+      <div class="section-strip">
+        <div>
+          <div class="eyebrow">Timeline</div>
+          <h2 class="h4 mb-0">Practice to producer payment</h2>
+        </div>
+        <span class="badge text-bg-light"><%= @receipts.size %> core receipts</span>
+      </div>
+      <div class="chain-rail">
+        <% @receipts.each do |receipt| %>
+          <%= render "shared/receipt_card", receipt: receipt %>
+        <% end %>
+      </div>
+    </section>
+
+    <section class="card mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <div><div class="eyebrow">Evidence</div><h2 class="h4 mb-0">Explorer preview</h2></div>
+        <%= link_to "Open evidence tree", evidence_index_path(avsa_id: @avsa.id), class: "btn btn-sm btn-outline-primary" %>
+      </div>
+      <div class="table-responsive">
+        <table class="table align-middle mb-0">
+          <thead><tr><th>Evidence</th><th>Receipt</th><th>Signer</th><th>Lifecycle</th><th></th></tr></thead>
+          <tbody>
+            <% @avsa.receipts.includes(:evidence_items).flat_map(&:evidence_items).first(8).each do |item| %>
+              <tr>
+                <td><span class="evidence-glyph"><%= evidence_icon(item.evidence_type) %></span> <strong><%= item.name %></strong></td>
+                <td><%= item.receipt.title %></td>
+                <td><code><%= compact_digest(item.receipt.signer_key_id, length: 16) %></code></td>
+                <td><%= render "shared/lifecycle_badge", state: item.receipt.lifecycle_state %></td>
+                <td class="text-end"><%= link_to "Receipt", receipt_path(item.receipt), class: "btn btn-sm btn-outline-primary" %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="row g-4">
+      <div class="col-lg-6">
+        <div class="card h-100">
+          <div class="card-header"><div class="eyebrow">Claims</div><h2 class="h5 mb-0">Co-claim geometry</h2></div>
+          <div class="card-body">
+            <% if @avsa.claim_group %>
+              <p class="mb-2"><strong><%= @avsa.claim_group.claimed_percent %>%</strong> allocated across <%= @avsa.claim_group.claim_shares.size %> claimant(s).</p>
+              <%= link_to "Open Co-Claim Workbench", avsa_co_claim_group_path(@avsa), class: "btn btn-outline-primary" %>
+            <% else %>
+              <p class="text-body-secondary mb-0">No claim group projected.</p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card h-100">
+          <div class="card-header"><div class="eyebrow">Payments</div><h2 class="h5 mb-0">Producer economics</h2></div>
+          <div class="card-body">
+            <% if @avsa.producer_payment %>
+              <p class="mb-2"><strong><%= money(@avsa.producer_payment.net_amount) %></strong> net remittance linked to the receipt chain.</p>
+              <%= link_to "Open Producer Ledger", producer_payment_path(@avsa.producer_payment), class: "btn btn-outline-primary" %>
+            <% else %>
+              <p class="text-body-secondary mb-0">No producer payment projected.</p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="col-xl-4">
+    <div class="sticky-xl-top chain-summary-stack">
+      <div class="card mb-3">
+        <div class="card-header">
+          <div class="eyebrow">Bundle</div>
+          <h2 class="h5 mb-0">Portable proof product</h2>
+        </div>
+        <div class="card-body">
+          <p class="small">Generate an institutional evidence packet assembled by <code>ink_receipts</code>, then verify it offline.</p>
+          <%= link_to "Build Buyer Bundle", bundle_exports_path(avsa_id: @avsa.id, bundle_type: "buyer"), class: "btn btn-primary w-100" %>
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h2 class="h5 mb-0">Open exceptions</h2>
+          <span class="badge <%= @open_exceptions.none? ? 'text-bg-success' : 'text-bg-warning' %>"><%= @open_exceptions.count %></span>
+        </div>
+        <div class="list-group list-group-flush">
+          <% @open_exceptions.each do |exception| %>
+            <div class="list-group-item">
+              <div class="d-flex justify-content-between gap-2 mb-1">
+                <strong><%= exception.code %></strong>
+                <span class="badge <%= severity_badge_class(exception.severity) %>"><%= exception.severity %></span>
+              </div>
+              <div class="small"><%= exception.description %></div>
+            </div>
+          <% end %>
+          <% if @open_exceptions.none? %><div class="list-group-item text-body-secondary">No open exceptions.</div><% end %>
+        </div>
+      </div>
+
+      <% if @appendix_receipts.any? %>
+        <div class="card mb-3">
+          <div class="card-header"><div class="eyebrow">Append-only receipts</div><h2 class="h5 mb-0">Migrations and attestations</h2></div>
+          <div class="list-group list-group-flush">
+            <% @appendix_receipts.each do |receipt| %>
+              <%= link_to receipt_path(receipt), class: "list-group-item list-group-item-action py-3" do %>
+                <strong><%= receipt.title %></strong>
+                <div class="small text-body-secondary"><%= receipt.receipt_type_label %> · sequence <%= receipt.sequence %></div>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <div class="alert alert-boundary small mb-0">
+        Rails shows projections and workflow. Canonical bytes, signing, verification, bundles, and migrations are emitted through <code>ink_receipts</code>.
+      </div>
+    </div>
+  </div>
+</div>

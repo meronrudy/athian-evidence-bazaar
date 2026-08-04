@@ -1,0 +1,58 @@
+<% content_for :title, "Methodology Migration · Athian Evidence Bazaar" %>
+
+<header class="page-header">
+  <div>
+    <div class="eyebrow">Strategic move #5 · Neutral Trust Waist</div>
+    <h1 class="display-6 mb-2">Methodology Migration</h1>
+    <p class="lead mb-0">Never overwrite. Append a Methodology Delta Receipt and show historical versus current compliance.</p>
+  </div>
+</header>
+
+<section class="migration-flow mb-4">
+  <div class="migration-method">VM0042 v2.2</div>
+  <div class="migration-arrow">down</div>
+  <div class="migration-method">VM0042 v3.0</div>
+</section>
+
+<div class="row g-4">
+  <div class="col-xl-7">
+    <section class="card">
+      <div class="card-header">
+        <div class="eyebrow">Append delta</div>
+        <h2 class="h4 mb-0">Generate migration receipt</h2>
+      </div>
+      <div class="card-body">
+        <%= form_with url: methodology_migrations_path, method: :post, class: "row g-3" do |form| %>
+          <div class="col-md-6">
+            <%= form.label :avsa_id, "Affected AVSA", class: "form-label" %>
+            <%= form.select :avsa_id, @avsas.map { |avsa| ["#{avsa.external_id} · #{avsa.producer_name}", avsa.id] }, { selected: @canonical_avsa&.id }, class: "form-select" %>
+          </div>
+          <div class="col-md-3"><%= form.label :old_version, "Old version", class: "form-label" %><%= form.text_field :old_version, value: "v2.2", class: "form-control" %></div>
+          <div class="col-md-3"><%= form.label :new_version, "New version", class: "form-label" %><%= form.text_field :new_version, value: "v3.0", class: "form-control" %></div>
+          <%= hidden_field_tag :old_methodology, "VM0042" %>
+          <%= hidden_field_tag :new_methodology, "VM0042" %>
+          <div class="col-md-4"><%= form.label :affected_credits, "Affected credits", class: "form-label" %><%= form.number_field :affected_credits, value: @canonical_avsa&.verified_quantity, step: 0.001, class: "form-control" %></div>
+          <div class="col-md-8"><%= form.label :impact_summary, "Impact", class: "form-label" %><%= form.text_field :impact_summary, value: "Recalculation lowers recognized reductions by 2.1% while preserving original issuance history.", class: "form-control" %></div>
+          <div class="col-12 text-end"><%= form.submit "Append Delta Receipt", class: "btn btn-primary" %></div>
+        <% end %>
+      </div>
+    </section>
+  </div>
+
+  <div class="col-xl-5">
+    <section class="card">
+      <div class="card-header">
+        <div class="eyebrow">Migration alerts</div>
+        <h2 class="h4 mb-0">Existing append-only deltas</h2>
+      </div>
+      <div class="list-group list-group-flush">
+        <% @migrations.each do |migration| %>
+          <%= link_to methodology_migration_path(migration), class: "list-group-item list-group-item-action py-3" do %>
+            <strong><%= migration.transition_label %></strong>
+            <div class="small text-body-secondary"><%= migration.avsa.external_id %> · <%= migration.affected_credits %> affected credits · <%= migration.status.humanize %></div>
+          <% end %>
+        <% end %>
+      </div>
+    </section>
+  </div>
+</div>

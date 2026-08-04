@@ -1,0 +1,30 @@
+<% content_for :title, "#{@migration.transition_label} · Migration" %>
+
+<header class="page-header">
+  <div>
+    <div class="eyebrow">Methodology Delta Receipt</div>
+    <h1 class="display-6 mb-2"><%= @migration.transition_label %></h1>
+    <p class="lead mb-0">Original chain remains intact; the delta is appended as a new receipt.</p>
+  </div>
+  <div class="page-actions">
+    <%= link_to "Open AVSA chain", avsa_path(@migration.avsa), class: "btn btn-outline-primary" %>
+    <% if @migration.delta_receipt %><%= link_to "Open Delta Receipt", receipt_path(@migration.delta_receipt), class: "btn btn-primary" %><% end %>
+  </div>
+</header>
+
+<section class="migration-steps card">
+  <div class="card-body">
+    <% [
+      ["Old methodology", "#{@migration.old_methodology} #{@migration.old_version}"],
+      ["Delta Receipt", @migration.delta_receipt ? @migration.delta_receipt.body_digest : "Pending"],
+      ["Recalculation", @migration.recalculation_payload["impact"] || @migration.impact_summary],
+      ["Impact", @migration.impact_summary],
+      ["Affected Credits", "#{@migration.affected_credits} #{@migration.avsa.unit}"]
+    ].each do |label, value| %>
+      <div class="migration-step">
+        <span><%= label %></span>
+        <strong><%= value %></strong>
+      </div>
+    <% end %>
+  </div>
+</section>

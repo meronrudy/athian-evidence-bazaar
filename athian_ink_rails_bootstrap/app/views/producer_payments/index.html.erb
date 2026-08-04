@@ -1,0 +1,70 @@
+<% content_for :title, "Producer Payment Ledger · Athian INK" %>
+
+<header class="page-header">
+  <div>
+    <div class="eyebrow">Producer payment ledger</div>
+    <h1 class="display-6 mb-2">Asset proceeds through remittance</h1>
+    <p class="lead mb-0">Linked assets → gross proceeds → deductions → net payment → remittance status.</p>
+  </div>
+  <div class="page-actions">
+    <%= link_to "Export payment bundle", bundle_exports_path(bundle_type: "producer"), class: "btn btn-primary" %>
+  </div>
+</header>
+
+<section class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="metric-card card h-100"><div class="card-body"><div class="metric-label">Producer value traceability</div><div class="metric-value"><%= @traceability_rate %>%</div><div class="metric-note">Payments linked to a payment receipt</div></div></div>
+  </div>
+  <div class="col-md-4">
+    <div class="metric-card card h-100"><div class="card-body"><div class="metric-label">Gross proceeds</div><div class="metric-value metric-value--compact"><%= money(@payments.sum(&:gross_amount)) %></div><div class="metric-note">Across displayed payment cycles</div></div></div>
+  </div>
+  <div class="col-md-4">
+    <div class="metric-card card h-100"><div class="card-body"><div class="metric-label">Net to producers</div><div class="metric-value metric-value--compact"><%= money(@payments.sum(&:net_amount)) %></div><div class="metric-note">After declared deductions</div></div></div>
+  </div>
+</section>
+
+<section class="card">
+  <div class="card-header">
+    <div class="eyebrow">Reconciliation</div>
+    <h2 class="h4 mb-0">Payment cycles</h2>
+  </div>
+  <div class="table-responsive">
+    <table class="table align-middle mb-0 payment-table">
+      <thead>
+        <tr><th>Producer / AVSA</th><th>Gross</th><th>Deductions</th><th>Net</th><th>Producer share</th><th>Status</th><th></th></tr>
+      </thead>
+      <tbody>
+        <% @payments.each do |payment| %>
+          <tr>
+            <td><strong><%= payment.producer_name %></strong><div class="small text-body-secondary"><%= payment.avsa.external_id %></div></td>
+            <td><%= money(payment.gross_amount, payment.currency) %></td>
+            <td><%= money(payment.total_deductions, payment.currency) %></td>
+            <td><strong><%= money(payment.net_amount, payment.currency) %></strong></td>
+            <td><%= payment.producer_share_percent %>%</td>
+            <td><span class="badge <%= payment.status == 'remitted' ? 'text-bg-success' : 'text-bg-warning' %>"><%= payment.status %></span></td>
+            <td class="text-end"><button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#payment-<%= payment.id %>">Details</button></td>
+          </tr>
+          <tr class="collapse claim-detail-row" id="payment-<%= payment.id %>">
+            <td colspan="7">
+              <div class="row g-3 py-2">
+                <div class="col-md-3"><strong class="d-block small">Verification deduction</strong><%= money(payment.verification_deduction) %></div>
+                <div class="col-md-3"><strong class="d-block small">Platform deduction</strong><%= money(payment.platform_deduction) %></div>
+                <div class="col-md-3"><strong class="d-block small">Other deductions</strong><%= money(payment.other_deductions) %></div>
+                <div class="col-md-3"><strong class="d-block small">Remittance reference</strong><code><%= payment.remittance_reference %></code></div>
+                <div class="col-12 d-flex gap-2">
+                  <%= link_to "Open AVSA chain", avsa_path(payment.avsa), class: "btn btn-sm btn-outline-primary" %>
+                  <% receipt = payment.avsa.receipts.find { |item| item.receipt_type == "producer_payment_receipt" } %>
+                  <%= link_to "Open payment receipt", receipt_path(receipt), class: "btn btn-sm btn-outline-primary" if receipt %>
+                </div>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="alert alert-boundary small mt-4 mb-0">
+  Linking proceeds, deductions, and status supports economic transparency. The receipt does not determine whether commercial terms are fair absent an explicit policy rule.
+</div>

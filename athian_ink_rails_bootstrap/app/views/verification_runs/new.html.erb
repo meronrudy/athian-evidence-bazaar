@@ -1,0 +1,199 @@
+<% content_for :title, "Verifier Console · Athian INK" %>
+
+<header class="page-header">
+  <div>
+    <div class="eyebrow">VVB-facing verifier console</div>
+    <h1 class="display-6 mb-2">Scope, exceptions, materiality, sign-off</h1>
+    <p class="lead mb-0">Run bounded verification without treating the hosted dashboard as the exclusive source of truth.</p>
+  </div>
+</header>
+
+<section class="wizard-steps mb-4" aria-label="VVB attestation steps">
+  <% ["Review Evidence", "Exceptions", "Materiality", "Attest"].each_with_index do |step, index| %>
+    <div class="wizard-step <%= 'is-active' if index < 3 %>">
+      <span><%= index + 1 %></span>
+      <strong><%= step %></strong>
+    </div>
+  <% end %>
+</section>
+
+<% if @result %>
+  <div class="toast-container position-fixed top-0 end-0 p-3" data-controller="verification-toast" data-verification-toast-status-value="<%= @result[:status] %>">
+    <div class="toast" role="status" aria-live="polite" aria-atomic="true" data-verification-toast-target="toast">
+      <div class="toast-header">
+        <strong class="me-auto">Verification result</strong>
+        <span class="badge <%= verification_badge_class(@result[:status]) %> me-2"><%= @result[:status] %></span>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body"><%= @result[:message] %></div>
+    </div>
+  </div>
+<% end %>
+
+<div class="row g-4">
+  <div class="col-xl-8">
+    <section class="card mb-4">
+      <div class="card-header">
+        <div class="eyebrow">Verification target</div>
+        <h2 class="h4 mb-0">Select AVSA and bounded receipt</h2>
+      </div>
+      <div class="card-body">
+        <%= form_with url: run_verification_path, method: :post, class: "row g-3" do |form| %>
+          <div class="col-md-6">
+            <%= form.label :avsa_id, "AVSA", class: "form-label" %>
+            <%= form.select :avsa_id, @avsas.map { |avsa| ["#{avsa.external_id} · #{avsa.producer_name}", avsa.id] }, { selected: @avsa&.id }, class: "form-select", onchange: "window.location='#{verifier_console_path}?avsa_id=' + this.value" %>
+          </div>
+          <div class="col-md-6">
+            <%= form.label :receipt_id, "Scope", class: "form-label" %>
+            <%= form.select :receipt_id, [["Entire AVSA receipt chain", ""]] + @receipts.map { |receipt| ["#{format('%02d', receipt.sequence)} · #{receipt.title}", receipt.id] }, { selected: params[:receipt_id] }, class: "form-select" %>
+          </div>
+          <div class="col-12">
+            <div class="alert alert-secondary small mb-0">
+              <strong>Three-state output:</strong> valid means declared cryptographic and policy conditions passed; invalid means a required condition failed; indeterminate means required evidence, keys, revocation state, or authority data was unavailable.
+            </div>
+          </div>
+          <div class="col-12 text-end">
+            <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#confirmVerification">Run verification</button>
+          </div>
+
+          <div class="modal fade" id="confirmVerification" tabindex="-1" aria-labelledby="confirmVerificationLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h3 class="modal-title fs-5" id="confirmVerificationLabel">Confirm verification run</h3>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <p class="mb-0">Rails sends the selected projection to <code>InkReceipts.verify(...)</code>. The verifier returns valid, invalid, or indeterminate.</p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                  <%= form.submit "Execute", class: "btn btn-primary" %>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </section>
+
+    <% if @result %>
+      <section class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div>
+            <div class="eyebrow">Latest result</div>
+            <h2 class="h4 mb-0"><%= @result[:status].humanize %></h2>
+          </div>
+          <%= render "shared/verification_badge", status: @result[:status] %>
+        </div>
+        <div class="card-body">
+          <p><%= @result[:message] %></p>
+          <div class="list-group">
+            <% @result[:checks].each do |check| %>
+              <% name = check[:name] || check["name"] %>
+              <% status = check[:status] || check["status"] %>
+              <% detail = check[:detail] || check["detail"] %>
+              <div class="list-group-item d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <div><strong><%= name.to_s.humanize %></strong><div class="small text-body-secondary"><%= detail %></div></div>
+                <%= render "shared/verification_badge", status: status %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </section>
+    <% end %>
+
+    <section class="card">
+      <div class="card-header">
+        <div class="eyebrow">Attest</div>
+        <h2 class="h4 mb-0">Append Verifier Determination Receipt</h2>
+      </div>
+      <div class="card-body">
+        <%= form_with url: run_verification_path, method: :post, class: "row g-3" do |form| %>
+          <%= hidden_field_tag :intent, "attest" %>
+          <%= hidden_field_tag :avsa_id, @avsa&.id %>
+          <div class="col-md-6">
+            <%= label_tag :scope, "Scope", class: "form-label" %>
+            <%= text_field_tag :scope, "Practice, measurement, model execution, issuance, claim, and payment evidence", class: "form-control" %>
+          </div>
+          <div class="col-md-6">
+            <%= label_tag :evidence_sample, "Evidence sample", class: "form-label" %>
+            <%= text_field_tag :evidence_sample, "Feed invoice, lab report, model run, registry record, payment advice", class: "form-control" %>
+          </div>
+          <div class="col-12">
+            <%= label_tag :materiality, "Materiality", class: "form-label" %>
+            <%= text_area_tag :materiality, "Exceptions reviewed; residual uncertainty is below the demo materiality threshold.", class: "form-control", rows: 3 %>
+          </div>
+          <div class="col-12 text-end"><%= form.submit "Attest and append receipt", class: "btn btn-primary" %></div>
+        <% end %>
+      </div>
+    </section>
+
+    <section class="card mt-4">
+      <div class="card-header">
+        <div class="eyebrow">Audit trail</div>
+        <h2 class="h4 mb-0">Recent verifier runs</h2>
+      </div>
+      <div class="table-responsive">
+        <table class="table align-middle mb-0">
+          <thead><tr><th>Time</th><th>Scope</th><th>Mode</th><th>Result</th><th>Message</th></tr></thead>
+          <tbody>
+            <% @recent_runs.each do |run| %>
+              <tr>
+                <td><%= run.completed_at.strftime("%Y-%m-%d %H:%M:%S UTC") %></td>
+                <td><%= run.receipt ? run.receipt.title : "Entire chain" %></td>
+                <td><span class="badge text-bg-light"><%= run.verifier_mode %></span></td>
+                <td><%= render "shared/verification_badge", status: run.status %></td>
+                <td class="small"><%= run.message %></td>
+              </tr>
+            <% end %>
+            <% if @recent_runs.none? %><tr><td colspan="5" class="text-body-secondary py-4">No recorded runs.</td></tr><% end %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <div class="col-xl-4">
+    <div class="sticky-xl-top chain-summary-stack">
+      <% if @avsa %>
+        <div class="card mb-3">
+          <div class="card-header"><h2 class="h5 mb-0">VVB scope</h2></div>
+          <div class="card-body">
+            <dl class="summary-list summary-list--compact">
+              <div><dt>VVB</dt><dd><%= @avsa.vvb_name %></dd></div>
+              <div><dt>Protocol</dt><dd><%= @avsa.protocol.display_name %></dd></div>
+              <div><dt>Reporting period</dt><dd><%= @avsa.reporting_period %></dd></div>
+              <div><dt>Quantity</dt><dd><%= @avsa.verified_quantity %> <%= @avsa.unit %></dd></div>
+              <div><dt>Root digest</dt><dd><code><%= compact_digest(@avsa.root_digest) %></code></dd></div>
+            </dl>
+          </div>
+        </div>
+
+        <div class="card mb-3">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h2 class="h5 mb-0">Exceptions and materiality</h2>
+            <span class="badge <%= @exceptions.none? ? 'text-bg-success' : 'text-bg-warning' %>"><%= @exceptions.size %></span>
+          </div>
+          <div class="list-group list-group-flush">
+            <% @exceptions.each do |exception| %>
+              <div class="list-group-item py-3">
+                <div class="d-flex justify-content-between gap-2 mb-1">
+                  <strong><%= exception.code %></strong>
+                  <span class="badge <%= severity_badge_class(exception.severity) %>"><%= exception.severity %></span>
+                </div>
+                <p class="small mb-2"><%= exception.description %></p>
+                <div class="small text-body-secondary">Materiality: <%= exception.materiality.presence || "Not assessed" %></div>
+              </div>
+            <% end %>
+            <% if @exceptions.none? %><div class="list-group-item text-body-secondary">No open exceptions.</div><% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <div class="alert alert-boundary small mb-0">
+        A signed determination makes VVB identity, role, scope, sampling choices, exceptions, materiality threshold, and conclusion explicit. It does not accredit or replace the VVB.
+      </div>
+    </div>
+  </div>
+</div>

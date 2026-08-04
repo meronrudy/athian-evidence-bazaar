@@ -1,0 +1,20 @@
+.DS_Store
+target/
+**/target/
+*.log
+*.tmp
+
+# Rails local state
+athian_ink_rails_bootstrap/.env
+athian_ink_rails_bootstrap/.bundle/
+athian_ink_rails_bootstrap/db/*.sqlite3
+athian_ink_rails_bootstrap/db/*.sqlite3-*
+athian_ink_rails_bootstrap/log/*
+!athian_ink_rails_bootstrap/log/.keep
+athian_ink_rails_bootstrap/tmp/*
+!athian_ink_rails_bootstrap/tmp/.keep
+athian_ink_rails_bootstrap/storage/*
+!athian_ink_rails_bootstrap/storage/.keep
+athian_ink_rails_bootstrap/node_modules/
+athian_ink_rails_bootstrap/app/assets/builds/*
+!athian_ink_rails_bootstrap/app/assets/builds/.keep

@@ -1,0 +1,17 @@
+<% content_for :title, "Co-Claim Workbench · #{@avsa.external_id}" %>
+
+<header class="page-header">
+  <div>
+    <div class="eyebrow">Co-claim workbench</div>
+    <h1 class="display-6 mb-2"><%= @claim_group.name %></h1>
+    <p class="lead mb-0">Contribution shares, claim rights, aggregate-cap control, and producer economics for <%= @avsa.external_id %>.</p>
+  </div>
+  <div class="page-actions">
+    <%= link_to "Open chain", avsa_path(@avsa), class: "btn btn-outline-primary" %>
+    <%= link_to "Export co-claim bundle", bundle_exports_path(avsa_id: @avsa.id, bundle_type: "scope_3"), class: "btn btn-primary" %>
+  </div>
+</header>
+
+<%= turbo_frame_tag "co_claim_workbench" do %>
+  <%= render "workbench", avsa: @avsa, claim_group: @claim_group %>
+<% end %>

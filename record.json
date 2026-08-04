@@ -1,0 +1,13 @@
+{
+  "schema_version": "v0.1",
+  "institution": "live-oak-example",
+  "workflow": "sba-loan-decision",
+  "decision_id": "dec_001",
+  "timestamp": "2026-06-27T01:00:00Z",
+  "subject_ref": "sub_123",
+  "inputs": ["input_1", "input_2"],
+  "model_ref": "model_v2",
+  "policy_ref": "policy_2026_04",
+  "controls": ["control_a"],
+  "outcome": "Approved"
+}

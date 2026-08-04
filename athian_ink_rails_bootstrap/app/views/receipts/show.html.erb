@@ -1,0 +1,177 @@
+<% content_for :title, "#{@receipt.title} · Receipt Detail" %>
+
+<header class="page-header">
+  <div>
+    <div class="eyebrow">Technical receipt viewer</div>
+    <h1 class="display-6 mb-2"><%= @receipt.title %></h1>
+    <div class="d-flex flex-wrap align-items-center gap-2">
+      <%= render "shared/lifecycle_badge", state: @receipt.lifecycle_state %>
+      <%= render "shared/verification_badge", status: @receipt.integrity_status %>
+      <span class="text-body-secondary"><%= @avsa.external_id %> · receipt <%= @receipt.id %></span>
+    </div>
+  </div>
+  <div class="page-actions">
+    <%= button_to "Verify", verify_receipt_path(@receipt), method: :post, class: "btn btn-primary" %>
+    <button class="btn btn-outline-primary" type="button" data-controller="clipboard" data-clipboard-text-value="<%= @verify_command %>" data-action="clipboard#copy" data-bs-toggle="modal" data-bs-target="#cliModal">Copy CLI</button>
+    <%= link_to "Download Receipt", download_receipt_path(@receipt), class: "btn btn-outline-primary" %>
+    <% if @parent_receipts.first %><%= link_to "View Parent", receipt_path(@parent_receipts.first), class: "btn btn-outline-secondary" %><% end %>
+  </div>
+</header>
+
+<div class="row g-4">
+  <div class="col-xl-8">
+    <section class="card mb-4">
+      <div class="card-header">
+        <div class="eyebrow">Canonical receipt fields</div>
+        <h2 class="h4 mb-0">Trust-boundary projection</h2>
+      </div>
+      <div class="table-responsive">
+        <table class="table receipt-fields mb-0">
+          <tbody>
+            <tr><th>Receipt ID</th><td><code><%= @receipt.id %></code></td></tr>
+            <tr><th>Schema</th><td><code><%= @receipt.schema_id %></code></td></tr>
+            <tr><th>Version</th><td><code><%= @receipt.schema_id.to_s.split(".").last || "v1" %></code></td></tr>
+            <tr><th>Lifecycle</th><td><%= render "shared/lifecycle_badge", state: @receipt.lifecycle_state %></td></tr>
+            <tr><th>Issuer</th><td><%= @receipt.issuer_name %></td></tr>
+            <tr><th>Signer</th><td><code><%= @receipt.signer_key_id %></code></td></tr>
+            <tr><th>Parent digests</th><td><% @receipt_export.fetch(:parent_digests).each do |digest| %><code class="d-block"><%= digest %></code><% end %><%= "Root receipt" if @receipt_export.fetch(:parent_digests).empty? %></td></tr>
+            <tr><th>Hash</th><td><code><%= @receipt.body_digest %></code></td></tr>
+            <tr><th>Public key</th><td><code><%= @receipt_export.fetch(:public_key) %></code></td></tr>
+            <tr><th>Trust policy</th><td><code><%= @receipt_export.fetch(:trust_policy) %></code></td></tr>
+            <tr><th>Evidence commitment</th><td><code><%= @receipt.evidence_commitment %></code></td></tr>
+            <tr><th>Policy commitment</th><td><code><%= @receipt.policy_commitment %></code></td></tr>
+            <tr><th>Trace commitment</th><td><code><%= @receipt.trace_commitment %></code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card mb-4">
+      <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <div>
+          <div class="eyebrow">Evidence index</div>
+          <h2 class="h4 mb-0"><%= @receipt.evidence_items.size %> committed item(s)</h2>
+        </div>
+        <%= link_to "Open Explorer", evidence_index_path(avsa_id: @avsa.id), class: "btn btn-sm btn-outline-primary" %>
+      </div>
+      <div class="table-responsive">
+        <table class="table align-middle mb-0">
+          <thead><tr><th>Evidence</th><th>Hash</th><th>Signer</th><th>Lifecycle</th><th>Status</th></tr></thead>
+          <tbody>
+            <% @receipt.evidence_items.each do |item| %>
+              <tr>
+                <td><span class="evidence-glyph"><%= evidence_icon(item.evidence_type) %></span> <strong><%= item.name %></strong><div class="small text-body-secondary"><%= item.source_system %></div></td>
+                <td><code><%= compact_digest(item.commitment, length: 18) %></code></td>
+                <td><code><%= compact_digest(@receipt.signer_key_id, length: 16) %></code></td>
+                <td><%= render "shared/lifecycle_badge", state: @receipt.lifecycle_state %></td>
+                <td><span class="badge <%= item.status == 'present' ? 'text-bg-success' : 'text-bg-warning' %>"><%= item.status %></span></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card mb-4">
+      <div class="card-header">
+        <div class="eyebrow">Evidence upload</div>
+        <h2 class="h4 mb-0">Send source material to ink_receipts</h2>
+      </div>
+      <div class="card-body" data-controller="evidence-upload">
+        <%= form_with url: receipt_evidence_items_path(@receipt), scope: :evidence_item, multipart: true, class: "row g-3" do |form| %>
+          <div class="col-md-6">
+            <%= form.label :file, "Source record", class: "form-label" %>
+            <%= form.file_field :file, class: "form-control", required: true, data: { evidence_upload_target: "file", action: "change->evidence-upload#summarize" } %>
+          </div>
+          <div class="col-md-6">
+            <%= form.label :name, "Evidence label", class: "form-label" %>
+            <%= form.text_field :name, class: "form-control", placeholder: "Feed delivery record" %>
+          </div>
+          <div class="col-md-4"><%= form.label :evidence_type, class: "form-label" %><%= form.text_field :evidence_type, class: "form-control", value: "uploaded_record" %></div>
+          <div class="col-md-4"><%= form.label :source_system, class: "form-label" %><%= form.text_field :source_system, class: "form-control", value: "manual_upload" %></div>
+          <div class="col-md-4"><%= form.label :disclosure_status, class: "form-label" %><%= form.select :disclosure_status, EvidenceItem::DISCLOSURE_STATUSES.map { |value| [value.humanize, value] }, {}, class: "form-select" %></div>
+          <div class="col-12">
+            <label class="form-label">Commitment handling</label>
+            <input class="form-control font-monospace" type="text" readonly value="ink_receipts generates the commitment on submit" data-evidence-upload-target="summary">
+            <div class="form-text">Rails stores only the returned commitment and metadata; source-file retention belongs in the governed evidence host.</div>
+          </div>
+          <div class="col-12 d-flex justify-content-between align-items-center">
+            <div class="form-check">
+              <%= form.check_box :required, checked: true, class: "form-check-input" %>
+              <%= form.label :required, "Required for verification", class: "form-check-label" %>
+            </div>
+            <%= form.submit "Commit evidence", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <div class="eyebrow">Canonical Encoding</div>
+        <h2 class="h4 mb-0">Returned bytes from ink_receipts</h2>
+      </div>
+      <div class="card-body">
+        <pre class="code-panel"><%= @receipt.canonical_encoding_hex %></pre>
+      </div>
+    </section>
+  </div>
+
+  <div class="col-xl-4">
+    <div class="sticky-xl-top chain-summary-stack">
+      <div class="card mb-3">
+        <div class="card-header"><h2 class="h5 mb-0">Parents</h2></div>
+        <div class="card-body">
+          <% if @parent_receipts.any? %>
+            <div class="d-flex flex-wrap gap-2">
+              <% @parent_receipts.each do |parent| %>
+                <%= link_to "#{format('%02d', parent.sequence)} · #{parent.receipt_type_label}", receipt_path(parent), class: "parent-chip" %>
+              <% end %>
+            </div>
+          <% else %>
+            <p class="text-body-secondary mb-0">Root receipt with no parents.</p>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-header"><h2 class="h5 mb-0">Local verifier command</h2></div>
+        <div class="card-body">
+          <pre class="code-panel code-panel--compact"><%= @verify_command %></pre>
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-header"><h2 class="h5 mb-0">Lifecycle</h2></div>
+        <div class="card-body">
+          <div class="lifecycle-track">
+            <% %w[draft observed validated attested sealed].each do |state| %>
+              <div class="lifecycle-step <%= 'is-complete' if lifecycle_reached?(@receipt.lifecycle_state, state) %>">
+                <span></span><%= state.humanize %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <%= link_to "Back to receipt chain", avsa_path(@avsa), class: "btn btn-outline-primary w-100" %>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="cliModal" tabindex="-1" aria-labelledby="cliModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title fs-5" id="cliModalLabel">Local verification command</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <pre class="code-panel code-panel--compact"><%= @verify_command %></pre>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,44 @@
+<% content_for :title, "Protocols · Athian INK" %>
+
+<header class="page-header">
+  <div>
+    <div class="eyebrow">Method and governance inventory</div>
+    <h1 class="display-6 mb-2">Protocols</h1>
+    <p class="lead mb-0">Version-bound protocol admission records, annual-review status, and the AVSA chains governed by each method.</p>
+  </div>
+</header>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Protocol</th>
+          <th>Governance</th>
+          <th>Status</th>
+          <th>Effective dates</th>
+          <th>AVSAs</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @protocols.each do |protocol| %>
+          <tr>
+            <td>
+              <strong><%= protocol.name %></strong>
+              <div class="small text-body-secondary"><code><%= protocol.code %></code> · v<%= protocol.version %></div>
+            </td>
+            <td><code><%= protocol.governance_version %></code></td>
+            <td><span class="badge <%= protocol.status == 'active' ? 'text-bg-success' : 'text-bg-secondary' %>"><%= protocol.status.humanize %></span></td>
+            <td>
+              <div><%= protocol.effective_on || "—" %></div>
+              <div class="small text-body-secondary">Retired: <%= protocol.retired_on || "—" %></div>
+            </td>
+            <td><%= protocol.avsas.size %></td>
+            <td class="text-end"><%= link_to "Open", protocol_path(protocol), class: "btn btn-sm btn-outline-primary" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

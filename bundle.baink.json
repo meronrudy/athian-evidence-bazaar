@@ -1,0 +1,36 @@
+{
+  "bundle_version": "baink.bundle.v0.1",
+  "record": {
+    "schema_version": "v0.1",
+    "institution": "live-oak-example",
+    "workflow": "sba-loan-decision",
+    "decision_id": "dec_001",
+    "timestamp": "2026-06-27T01:00:00Z",
+    "subject_ref": "sub_123",
+    "inputs": [
+      "input_1",
+      "input_2"
+    ],
+    "model_ref": "model_v2",
+    "policy_ref": "policy_2026_04",
+    "controls": [
+      "control_a"
+    ],
+    "outcome": "Approved"
+  },
+  "receipt": {
+    "receipt_version": "v0.1",
+    "record_hash": {
+      "algorithm": "sha256",
+      "value": "593577de872ad93ddf89113cb056a306dc5d10bfb0e1275075a2ea328c08bef3"
+    },
+    "bundle_hash": {
+      "algorithm": "sha256",
+      "value": "36c09ac3be2e0effe20df77ac84fd37a7b63691aa829fc03d88b35a2d9e40fcf"
+    },
+    "issued_at": "",
+    "issuer": "local",
+    "signature": null
+  },
+  "profile": "default"
+}

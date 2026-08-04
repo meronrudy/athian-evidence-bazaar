@@ -1,0 +1,78 @@
+<% content_for :title, "Producer Ledger · #{@payment.avsa.external_id}" %>
+
+<header class="page-header">
+  <div>
+    <div class="eyebrow">Strategic move #4 · Producer Economics</div>
+    <h1 class="display-6 mb-2"><%= @payment.producer_name %></h1>
+    <p class="lead mb-0">Producer can click backward from payment to field activity through the same receipt chain.</p>
+  </div>
+  <div class="page-actions">
+    <%= link_to "Open AVSA chain", avsa_path(@payment.avsa), class: "btn btn-outline-primary" %>
+    <%= link_to "Build Producer Bundle", bundle_exports_path(avsa_id: @payment.avsa.id, bundle_type: "producer"), class: "btn btn-primary" %>
+  </div>
+</header>
+
+<section class="ledger-flow mb-4">
+  <% payment_receipt = @payment.avsa.receipts.find { |receipt| receipt.receipt_type == "producer_payment_receipt" } %>
+  <% claim_receipt = @payment.avsa.receipts.find { |receipt| receipt.receipt_type == "claim_receipt" } %>
+  <% [
+    ["Receipt", payment_receipt ? receipt_path(payment_receipt) : avsa_path(@payment.avsa), payment_receipt&.title || "Producer Payment Receipt"],
+    ["Credit", avsa_path(@payment.avsa), "#{number_with_precision(@payment.avsa.verified_quantity, precision: 3)} #{@payment.avsa.unit}"],
+    ["Claim", claim_receipt ? receipt_path(claim_receipt) : avsa_path(@payment.avsa), @payment.avsa.claim_group&.name || "Claim group"],
+    ["Revenue", nil, money(@payment.gross_amount, @payment.currency)],
+    ["Fees", nil, money(@payment.total_deductions, @payment.currency)],
+    ["Net", nil, money(@payment.net_amount, @payment.currency)],
+    ["ACH", nil, @payment.remittance_reference]
+  ].each do |label, path, value| %>
+    <div class="ledger-flow__node">
+      <span><%= label %></span>
+      <% if path %>
+        <%= link_to value, path %>
+      <% else %>
+        <strong><%= value %></strong>
+      <% end %>
+    </div>
+  <% end %>
+</section>
+
+<div class="row g-4">
+  <div class="col-xl-7">
+    <section class="card">
+      <div class="card-header">
+        <div class="eyebrow">Reconciliation</div>
+        <h2 class="h4 mb-0">Gross proceeds to remittance</h2>
+      </div>
+      <div class="table-responsive">
+        <table class="table receipt-fields mb-0">
+          <tbody>
+            <tr><th>Gross</th><td><%= money(@payment.gross_amount, @payment.currency) %></td></tr>
+            <tr><th>Verification deduction</th><td><%= money(@payment.verification_deduction, @payment.currency) %></td></tr>
+            <tr><th>Platform deduction</th><td><%= money(@payment.platform_deduction, @payment.currency) %></td></tr>
+            <tr><th>Other deductions</th><td><%= money(@payment.other_deductions, @payment.currency) %></td></tr>
+            <tr><th>Net</th><td><strong><%= money(@payment.net_amount, @payment.currency) %></strong></td></tr>
+            <tr><th>Producer share</th><td><%= @payment.producer_share_percent %>%</td></tr>
+            <tr><th>Status</th><td><span class="badge <%= @payment.status == 'remitted' ? 'text-bg-success' : 'text-bg-warning' %>"><%= @payment.status %></span></td></tr>
+            <tr><th>ACH</th><td><code><%= @payment.remittance_reference %></code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <div class="col-xl-5">
+    <section class="card">
+      <div class="card-header">
+        <div class="eyebrow">Backward links</div>
+        <h2 class="h4 mb-0">Payment provenance</h2>
+      </div>
+      <div class="list-group list-group-flush">
+        <% @payment.avsa.receipts.core_chain.reverse_each do |receipt| %>
+          <%= link_to receipt_path(receipt), class: "list-group-item list-group-item-action py-3" do %>
+            <strong><%= receipt.title %></strong>
+            <div class="small text-body-secondary"><%= receipt.receipt_type_label %> · <code><%= compact_digest(receipt.body_digest) %></code></div>
+          <% end %>
+        <% end %>
+      </div>
+    </section>
+  </div>
+</div>

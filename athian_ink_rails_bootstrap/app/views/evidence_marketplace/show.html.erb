@@ -1,0 +1,40 @@
+<% content_for :title, "#{@product.fetch(:name)} · Evidence Marketplace" %>
+
+<header class="page-header">
+  <div>
+    <div class="eyebrow">Evidence product</div>
+    <h1 class="display-6 mb-2"><%= @product.fetch(:name) %></h1>
+    <p class="lead mb-0"><%= @product.fetch(:problem) %></p>
+  </div>
+  <div class="page-actions">
+    <% if @avsa %><%= link_to "Download", bundle_exports_path(avsa_id: @avsa.id, bundle_type: @product.fetch(:bundle_type)), class: "btn btn-primary" %><% end %>
+  </div>
+</header>
+
+<div class="row g-4">
+  <div class="col-xl-8">
+    <section class="market-product">
+      <% [
+        ["Problem", @product.fetch(:problem)],
+        ["Included Receipts", @product.fetch(:receipts).join(", ")],
+        ["Verification Command", "ink verify-bundle manifest.json --policy trust/trust-policy.json"],
+        ["Download", "Use the Bundle Builder to generate #{@bundle_type.fetch(:name)} for the selected AVSA."]
+      ].each do |label, value| %>
+        <div class="market-product__row">
+          <span><%= label %></span>
+          <strong><%= value %></strong>
+        </div>
+      <% end %>
+    </section>
+  </div>
+
+  <div class="col-xl-4">
+    <section class="card">
+      <div class="card-header"><div class="eyebrow">Bundle type</div><h2 class="h5 mb-0"><%= @bundle_type.fetch(:name) %></h2></div>
+      <div class="card-body">
+        <p><%= @bundle_type.fetch(:problem) %></p>
+        <p class="small text-body-secondary mb-0"><strong>Audience:</strong> <%= @bundle_type.fetch(:audience) %></p>
+      </div>
+    </section>
+  </div>
+</div>

@@ -1,0 +1,5 @@
+<%= turbo_stream.replace "co_claim_workbench" do %>
+  <%= turbo_frame_tag "co_claim_workbench" do %>
+    <%= render "workbench", avsa: @avsa, claim_group: @claim_group %>
+  <% end %>
+<% end %>
