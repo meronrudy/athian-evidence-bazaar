@@ -1,0 +1,8 @@
+<section class="content-section">
+  <h2>Limitations</h2>
+  <ul>
+    <% country_adapters.flat_map(&:limitations).uniq.each do |limitation| %>
+      <li><%= limitation %></li>
+    <% end %>
+  </ul>
+</section>

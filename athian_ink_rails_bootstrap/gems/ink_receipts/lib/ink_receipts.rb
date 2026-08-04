@@ -46,7 +46,7 @@ module InkReceipts
       name: "Auditor Bundle",
       audience: "VVB, financial auditor, due diligence reviewer",
       problem: "An auditor needs the complete parent-linked evidence chain and verification command.",
-      receipt_types: %w[practice_receipt measurement_receipt model_execution_receipt verifier_receipt issuance_receipt claim_receipt producer_payment_receipt methodology_delta_receipt]
+      receipt_types: %w[practice_receipt measurement_receipt model_execution_receipt verifier_receipt issuance_receipt claim_receipt producer_payment_receipt methodology_delta_receipt country_adapter_commitment_receipt country_compatibility_determination_receipt]
     },
     "financing" => {
       name: "Financing Bundle",
@@ -340,12 +340,17 @@ module InkReceipts
 
       {
         status: status,
+        cryptographic_status: status,
+        external_status: "indeterminate",
         mode: "ink_receipts",
         message: verification_message(status),
         checks: [
           { name: "bundle.receipts.present", status: receipts.any? ? "valid" : "indeterminate", detail: "#{receipts.size} receipt projection(s)" },
           { name: "bundle.required_evidence.present", status: missing.empty? ? "valid" : "indeterminate", detail: "#{missing.size} missing evidence item(s)" },
           { name: "bundle.trust_policy.present", status: "valid", detail: DEFAULT_POLICY }
+        ],
+        external_checks: [
+          { type: "registry_status", status: "indeterminate", reason: "Offline verifier does not require live registry access." }
         ],
         generated_at: Time.now.utc.iso8601
       }
@@ -552,5 +557,6 @@ require_relative "ink_receipts/model_execution"
 require_relative "ink_receipts/evidence_candidates"
 require_relative "ink_receipts/review_decisions"
 require_relative "ink_receipts/reliance_artifacts"
+require_relative "ink_receipts/country_policy"
 require_relative "ink_receipts/bundle_profiles"
 require_relative "ink_receipts/revenue_catalog"

@@ -12,6 +12,7 @@
     <%= form.collection_select :developer_account_id, @accounts, :id, :name, { prompt: "Developer account" }, class: "form-select" %>
     <%= form.collection_select :protocol_id, @protocols, :id, :display_name, { include_blank: "Protocol" }, class: "form-select" %>
     <%= form.collection_select :avsa_id, @avsas, :id, :external_id, { include_blank: "Linked AVSA" }, class: "form-select" %>
+    <%= form.collection_select :country_program_id, @country_programs, :id, :name, { include_blank: "Country program" }, class: "form-select" %>
     <%= form.text_field :name, class: "form-control", placeholder: "Project name" %>
     <%= form.select :project_type, Agevidence::DeveloperProject::PROJECT_TYPES, {}, class: "form-select" %>
     <%= form.text_field :commercialization_stage, class: "form-control", placeholder: "Commercialization stage" %>

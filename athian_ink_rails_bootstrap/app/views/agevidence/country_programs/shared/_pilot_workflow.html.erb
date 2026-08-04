@@ -1,0 +1,17 @@
+<% if projects.any? && country_adapters.any? %>
+  <%= form_with url: evaluate_agevidence_country_program_path(country_program), local: true, class: "row g-3 align-items-end" do |form| %>
+    <div class="col-md-5">
+      <%= label_tag :developer_project_id, "Developer project", class: "form-label" %>
+      <%= select_tag :developer_project_id, options_from_collection_for_select(projects, :id, :name), class: "form-select" %>
+    </div>
+    <div class="col-md-5">
+      <%= label_tag :country_adapter_id, "Country adapter", class: "form-label" %>
+      <%= select_tag :country_adapter_id, options_from_collection_for_select(country_adapters, :id, :display_name), class: "form-select" %>
+    </div>
+    <div class="col-md-2">
+      <%= form.submit "Evaluate", class: "btn btn-primary w-100" %>
+    </div>
+  <% end %>
+<% else %>
+  <p class="text-muted mb-0">Attach a developer project to this country program before running compatibility evaluation.</p>
+<% end %>

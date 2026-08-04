@@ -112,6 +112,8 @@ athian-evidence-bazaar/
 │   └── agevidence/
 │       ├── schemas/
 │       ├── bundle_profiles/
+│       ├── country_adapters/
+│       ├── vocabulary/
 │       ├── trust_policies/
 │       ├── examples/
 │       └── evaluations/
@@ -128,6 +130,7 @@ athian-evidence-bazaar/
 │   │   └── ATHIAN_AGEVIDENCE_CSUITE_PROPOSAL.md
 │   └── implementation/
 │       ├── AGEVIDENCE_DEVELOPER_GTM.md
+│       ├── GLOBAL_THIN_WAIST_ARCHITECTURE.md
 │       ├── MODEL_AUTHORITY_BOUNDARY.md
 │       └── PREMIUM_ARTIFACT_CATALOG.md
 │
@@ -205,6 +208,22 @@ The trust layer must:
 * produce `valid`, `invalid`, or `indeterminate` results.
 
 The existing Rust schema already supports a generic `ModelRef`; extend domain payload validation without turning the generic kernel into a Qwen-specific system.
+
+### Global country layer
+
+The global thin-waist extension adds versioned country adapter packs without changing the Rails workflow, Python model runtime, `ink_receipts` facade boundary, or generic Rust receipt kernel.
+
+Country adapters may declare method scope, required evidence, excluded contexts, claim policy, verification profile, data policy, artifact profiles, and limitations. They must remain declarative YAML under `specs/agevidence/country_adapters`.
+
+Country adapters must not introduce country-specific receipt envelopes, Rails controllers, ERB templates, Python prompts, JavaScript branches, or generic Rust dependencies.
+
+Always keep these states separate:
+
+```text
+cryptographic validity
+method compatibility
+institutional reliance
+```
 
 ---
 
@@ -957,6 +976,7 @@ Implementation handoff details live in:
 * `docs/implementation/MODEL_AUTHORITY_BOUNDARY.md`
 * `docs/implementation/PREMIUM_ARTIFACT_CATALOG.md`
 * `docs/implementation/AGEVIDENCE_SCAFFOLD_HANDOFF.md`
+* `docs/implementation/GLOBAL_THIN_WAIST_ARCHITECTURE.md`
 * `docs/strategy/ATHIAN_AGEVIDENCE_CSUITE_PROPOSAL.md`
 
 Use the handoff guide as the source of truth for fractional developer ownership, TODO marker policy, validation commands, and PR completion criteria.

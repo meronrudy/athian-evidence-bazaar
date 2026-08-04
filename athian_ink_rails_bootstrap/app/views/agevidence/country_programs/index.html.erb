@@ -1,0 +1,28 @@
+<% content_for :title, "AgEvidence Country Programs" %>
+
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Global thin waist</p>
+    <h1>Country Programs</h1>
+    <p class="lead">One evidence graph, many versioned compatibility determinations, many reliance artifacts.</p>
+  </div>
+</section>
+
+<div class="alert alert-boundary">
+  Cryptographic validity, method compatibility, and institutional reliance are separate states. Country adapters are data packs, not Rails branches.
+</div>
+
+<section class="content-section">
+  <div class="row g-3">
+    <% @country_programs.each do |program| %>
+      <div class="col-md-6 col-xl-4">
+        <%= link_to agevidence_country_program_path(program), class: "resource-card d-block h-100 text-decoration-none" do %>
+          <span class="badge text-bg-secondary"><%= program.country_code %></span>
+          <h2 class="h4 mt-3"><%= program.name %></h2>
+          <p><%= program.description %></p>
+          <small><%= program.country_adapters.count %> adapter version(s) · <%= program.status.humanize %></small>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</section>

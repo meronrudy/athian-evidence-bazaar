@@ -1,0 +1,22 @@
+<div class="table-responsive">
+  <table class="table align-middle">
+    <thead>
+      <tr>
+        <th>Adapter</th>
+        <th>Country</th>
+        <th>Status</th>
+        <th>Commitment receipt</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% country_adapters.each do |adapter| %>
+        <tr>
+          <td><code><%= adapter.adapter_id %></code> <span class="text-muted"><%= adapter.version %></span></td>
+          <td><%= adapter.country_code %></td>
+          <td><span class="badge text-bg-info"><%= adapter.status.humanize %></span></td>
+          <td><%= adapter.commitment_receipt ? compact_digest(adapter.commitment_receipt.body_digest) : "Pending" %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

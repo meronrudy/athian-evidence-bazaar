@@ -30,6 +30,16 @@ class DocumentRef(BaseModel):
     controlled_uri: str
 
 
+class CountryRef(BaseModel):
+    """Optional country adapter context."""
+
+    country_code: str
+    adapter_id: str
+    adapter_version: str
+    method_id: str
+    method_version: str
+
+
 class GenerationConfig(BaseModel):
     """Model generation configuration."""
 
@@ -45,6 +55,8 @@ class EvidenceRunRequest(BaseModel):
     project: ProjectRef
     protocol: ProtocolRef
     documents: list[DocumentRef] = Field(default_factory=list)
+    country: CountryRef | None = None
+    country_context: dict[str, Any] = Field(default_factory=dict)
     generation: GenerationConfig = Field(default_factory=GenerationConfig)
 
 

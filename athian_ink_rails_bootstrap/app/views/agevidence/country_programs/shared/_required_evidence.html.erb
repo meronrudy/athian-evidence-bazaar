@@ -1,0 +1,7 @@
+<div class="row g-2">
+  <% country_adapters.flat_map(&:required_evidence).uniq.each do |requirement| %>
+    <div class="col-md-4">
+      <span class="badge text-bg-light border"><%= requirement %></span>
+    </div>
+  <% end %>
+</div>

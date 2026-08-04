@@ -30,6 +30,16 @@ class AgevidenceFlowTest < ActionDispatch::IntegrationTest
       adapter_digest: "sha256:adapter",
       status: "reference"
     )
+    @country_adapter = Agevidence::CountryAdapterCatalog.sync!.detect { |adapter| adapter.adapter_id == "athian-country-ca-beef-v1" }
+    @project.update!(
+      country_program: @country_adapter.country_program,
+      primary_country_program: @country_adapter.country_program,
+      country_context: {
+        species: "species.beef_cattle",
+        production_system: "production.confined_feeding",
+        intervention_class: "intervention.ration_reformulation"
+      }
+    )
   end
 
   test "launchpad renders developer project" do
@@ -47,5 +57,32 @@ class AgevidenceFlowTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_select "h1", /qwen3.5/
     assert_select ".list-group-item", minimum: 7
+  end
+
+  test "country programs render shared thin-waist workflow" do
+    get agevidence_country_programs_path
+
+    assert_response :success
+    assert_select "h1", /Country Programs/
+    assert_select ".alert", /Cryptographic validity, method compatibility, and institutional reliance/
+
+    get agevidence_country_program_path(@country_adapter.country_program)
+
+    assert_response :success
+    assert_select "h1", /Government of Canada/
+    assert_select "h2", /Evaluate one global evidence graph/
+  end
+
+  test "compatibility evaluation appends a country determination" do
+    assert_difference "Agevidence::CountryDetermination.count", 1 do
+      post evaluate_agevidence_country_program_path(@country_adapter.country_program),
+        params: {
+          developer_project_id: @project.id,
+          country_adapter_id: @country_adapter.id
+        }
+    end
+
+    assert_redirected_to agevidence_country_program_path(@country_adapter.country_program)
+    assert_equal "country_compatibility_determination_receipt", Agevidence::CountryDetermination.last.receipt.receipt_type
   end
 end

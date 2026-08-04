@@ -1,0 +1,79 @@
+<% content_for :title, @country_program.name %>
+
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Country Program</p>
+    <h1><%= @country_program.name %></h1>
+    <p class="lead"><%= @country_program.country_code %> · <%= @country_program.authority_name %></p>
+  </div>
+  <%= link_to "All country programs", agevidence_country_programs_path, class: "btn btn-outline-primary" %>
+</section>
+
+<%= render "agevidence/country_programs/shared/eligibility_boundary", country_program: @country_program %>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Adapter versions</p>
+      <h2>Versioned country adapter data</h2>
+    </div>
+  </div>
+  <%= render "agevidence/country_programs/shared/adapter_status", country_adapters: @country_adapters %>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Method and policy</p>
+      <h2>Shared profile projections</h2>
+    </div>
+  </div>
+  <div class="row g-3">
+    <div class="col-lg-6"><%= render "agevidence/country_programs/shared/method_version", country_adapters: @country_adapters %></div>
+    <div class="col-lg-6"><%= render "agevidence/country_programs/shared/claim_policy", country_adapters: @country_adapters %></div>
+    <div class="col-lg-6"><%= render "agevidence/country_programs/shared/verification_profile", country_adapters: @country_adapters %></div>
+    <div class="col-lg-6"><%= render "agevidence/country_programs/shared/data_policy", country_adapters: @country_adapters %></div>
+  </div>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Required evidence</p>
+      <h2>Requirements supplied by adapter data</h2>
+    </div>
+  </div>
+  <%= render "agevidence/country_programs/shared/required_evidence", country_adapters: @country_adapters %>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Compatibility workbench</p>
+      <h2>Evaluate one global evidence graph</h2>
+    </div>
+  </div>
+  <%= render "agevidence/country_programs/shared/pilot_workflow", country_program: @country_program, country_adapters: @country_adapters, projects: @projects %>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Artifact catalog</p>
+      <h2>Profile-driven artifacts</h2>
+    </div>
+  </div>
+  <%= render "agevidence/country_programs/shared/artifact_catalog", artifact_profile: @artifact_profile %>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Determinations and reliance</p>
+      <h2>Append-only local interpretations</h2>
+    </div>
+  </div>
+  <%= render "agevidence/country_programs/shared/reliance_events", determinations: @determinations %>
+</section>
+
+<%= render "agevidence/country_programs/shared/limitations", country_adapters: @country_adapters %>

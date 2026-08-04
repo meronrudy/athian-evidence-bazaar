@@ -38,6 +38,8 @@ module Agevidence
           code: project.protocol&.code || "ATH-LI-CH4",
           version: project.protocol&.version || "v1"
         },
+        country: country_payload(project),
+        country_context: project.country_context,
         documents: documents.map do |document|
           {
             document_id: document_value(document, :document_id),
@@ -83,6 +85,20 @@ module Agevidence
 
     def document_value(document, key)
       document.fetch(key) { document.fetch(key.to_s) }
+    end
+
+    def country_payload(project)
+      country_adapter = project.country_program&.country_adapters&.order(:id)&.first ||
+                        project.primary_country_program&.country_adapters&.order(:id)&.first
+      return nil unless country_adapter
+
+      {
+        country_code: country_adapter.country_code,
+        adapter_id: country_adapter.adapter_id,
+        adapter_version: country_adapter.version,
+        method_id: country_adapter.country_method_version.method_id,
+        method_version: country_adapter.country_method_version.version
+      }
     end
   end
 end

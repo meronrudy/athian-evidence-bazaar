@@ -17,6 +17,8 @@ Rails presents workflow state, review queues, and human-readable projections. Ra
 ```text
 Rails demo
   dashboard
+  AgEvidence launchpad
+  country programs
   AVSA chain
   evidence explorer
   receipt viewer
@@ -33,6 +35,16 @@ ink_receipts facade
     v
 Rust BAINK kernel and CLI
 ```
+
+The global AgEvidence scaffold keeps the same architecture for international expansion:
+
+```text
+one global evidence graph
+  -> many versioned country compatibility determinations
+  -> many profile-driven reliance artifacts
+```
+
+Country rules live in declarative adapter packs under `../specs/agevidence/country_adapters`. Rails displays them as projections and never branches the workflow by country.
 
 ## Strategic Moves
 
@@ -99,6 +111,10 @@ Append-only receipts, such as contribution, retirement, VVB attestation, and met
 | `/producer_payments` | Producer Ledger | Trace Receipt to Credit to Claim to Revenue to Fees to Net to ACH |
 | `/methodology_migrations` | Methodology Migration | Append Methodology Delta Receipts for VM0042 v2.2 to v3.0 |
 | `/marketplace` | Evidence Marketplace | Sell evidence acceptance products, not carbon |
+| `/agevidence` | Developer Launchpad | Funded-startup projects, model runs, candidate review, artifacts, reliance events, and revenue projections |
+| `/agevidence/developer_projects/:id` | Project Evidence Map | Global source records to candidates, reviews, receipts, country determinations, artifacts, and reliance |
+| `/agevidence/country_programs` | Country Programs | Shared country adapter projections for method compatibility without country-specific Rails branches |
+| `/agevidence/revenue_model` | Revenue Model | Conservative, base, and upside projections labeled as management hypotheses |
 
 ## Evidence Products
 
@@ -114,6 +130,20 @@ The marketplace presents evidence products for institutional reliance:
 
 Each product page shows the problem, included receipts, verification command, and download path through the Bundle Builder.
 
+## AgEvidence Global Surfaces
+
+The AgEvidence extension demonstrates a funded-startup SDK and commercial artifact path:
+
+- Northstar Methane Systems, a synthetic Series A startup, is seeded as the developer account.
+- The Qwen3.5 reference adapter is represented as a registry entry, not as an approving authority.
+- Fixture model runs produce source-linked candidates and material gaps.
+- Human review decisions are append-only.
+- Country compatibility determinations are plural and append-only.
+- Canada and Australia adapter packs are starter examples; Japan, New Zealand, Ireland/EU, and Brazil are schema-valid placeholders.
+- Premium artifacts bind to country adapter, claim policy, verification profile, data policy, determination receipt, and artifact profile when available.
+
+The UI separates cryptographic validity, method compatibility, and institutional reliance. One state must never be displayed as a substitute for another.
+
 ## Trust Boundary
 
 The Rails app depends on the local `ink_receipts` gem:
@@ -127,6 +157,13 @@ InkReceipts.export(...)
 InkReceipts.migrate(...)
 InkReceipts.graph(...)
 InkReceipts.verify_bundle(...)
+InkReceipts.issue_model_execution(...)
+InkReceipts.issue_evidence_candidate(...)
+InkReceipts.issue_review_decision(...)
+InkReceipts.build_reliance_artifact(...)
+InkReceipts.issue_reliance_event(...)
+InkReceipts.issue_country_adapter_commitment(...)
+InkReceipts.issue_country_determination(...)
 ```
 
 The facade wraps the Rust `baink-cli` executable when configured:
@@ -193,6 +230,14 @@ rg -n "\\bDigest\\b|\\bOpenSSL\\b|crypto\\.subtle\\.digest|SHA256|SHA-256" app d
 
 That grep should return no matches. Direct cryptography belongs in `ink_receipts` and the Rust kernel, not Rails.
 
+Country-rule boundary check:
+
+```bash
+rg -n "CA-FED|J-Credit|canada_federal|j_credit|brazil_car|eu_crcf" app/controllers app/views
+```
+
+That grep should return no matches. National methodology details belong in adapter-pack YAML, not controllers or templates.
+
 ## Current Environment Note
 
 In the current workspace, Rust validation passes. Rails runtime validation requires Ruby 3.3.8 under rbenv and Node/npm on PATH.
@@ -200,6 +245,9 @@ In the current workspace, Rust validation passes. Rails runtime validation requi
 ## Production Gaps
 
 - Replace demo projection receipts with released production receipt schemas.
+- Replace lightweight `baink-agevidence` structural checks with JSON-schema-backed validation.
+- Implement country adapter schema validation beyond the current Rails manifest guard.
+- Implement model-service local and remote transports behind the fixture-first contract.
 - Bind `ink_receipts` to the released Rust verifier, trust registry, public keys, and revocation snapshots.
 - Add authentication, tenant isolation, and role-specific authorization.
 - Move source evidence into governed object storage with retention and selective disclosure.

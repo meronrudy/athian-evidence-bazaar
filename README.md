@@ -6,9 +6,10 @@ It is not a carbon marketplace. It shows Athian as an evidence company: carbon a
 
 ## What Is In This Repo
 
-This repository contains two connected parts:
+This repository contains three connected parts:
 
 - `athian_ink_rails_bootstrap/`: a Rails 7.1 clickable demo that feels like GitHub for evidence.
+- `services/agevidence-model/`: a fixture-first Python model-service scaffold for source-linked evidence candidates and gaps.
 - `crates/`: a Rust BAINK workspace with receipt, bundle, canonicalization, crypto, verifier, schema, and CLI crates used as the trust-boundary substrate.
 
 Rails presents workflow state and human review. The `ink_receipts` facade owns receipt-like operations and wraps the Rust CLI where available.
@@ -74,6 +75,9 @@ Key routes:
 - `/producer_payments`: producer ledger.
 - `/methodology_migrations`: methodology migration.
 - `/marketplace`: evidence marketplace.
+- `/agevidence`: funded-startup developer launchpad.
+- `/agevidence/country_programs`: country adapter and method-compatibility projections.
+- `/agevidence/revenue_model`: illustrative C-suite revenue scenario.
 
 ## Trust Boundary
 
@@ -104,6 +108,18 @@ The Rust CLI lives at:
 target/debug/baink-cli
 ```
 
+## Global AgEvidence
+
+The repository also scaffolds a global thin-waist architecture:
+
+```text
+one global evidence graph
+many versioned country determinations
+many institution-specific reliance artifacts
+```
+
+Country methodology rules live in YAML adapter packs under `specs/agevidence/country_adapters`, while stable global vocabulary and receipt contracts live under `specs/agevidence`. Rails displays country programs as projections over the same objects; it does not fork the workflow by country.
+
 ## Validation
 
 Rust:
@@ -111,6 +127,13 @@ Rust:
 ```bash
 cargo test --workspace
 cargo build -p baink-cli
+```
+
+Python model service:
+
+```bash
+cd services/agevidence-model
+python3 -m pytest
 ```
 
 Rails, after installing Ruby 3.3.8 and Node/npm:

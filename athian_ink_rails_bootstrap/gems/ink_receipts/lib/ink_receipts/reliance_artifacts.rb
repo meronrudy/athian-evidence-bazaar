@@ -1,12 +1,16 @@
 module InkReceipts
   class << self
-    def build_reliance_artifact(product_code:, project:, receipts:, output_dir:, scope: {})
+    def build_reliance_artifact(product_code:, project:, receipts:, output_dir:, scope: {}, profile: nil, evidence_graph_root: nil, determination_receipt: nil, relying_party: nil)
       Client.new.build_reliance_artifact(
         product_code: product_code,
         project: project,
         receipts: receipts,
         output_dir: output_dir,
-        scope: scope
+        scope: scope,
+        profile: profile,
+        evidence_graph_root: evidence_graph_root,
+        determination_receipt: determination_receipt,
+        relying_party: relying_party
       )
     end
 
@@ -23,12 +27,19 @@ module InkReceipts
   end
 
   class Client
-    def build_reliance_artifact(product_code:, project:, receipts:, output_dir:, scope: {})
+    def build_reliance_artifact(product_code:, project:, receipts:, output_dir:, scope: {}, profile: nil, evidence_graph_root: nil, determination_receipt: nil, relying_party: nil)
       generated_at = Time.now.utc.iso8601
+      profile ||= {}
+      determination_digest = determination_receipt && determination_receipt.fetch(:body_digest)
+      root_reference = evidence_graph_root || project.fetch(:avsa).fetch(:root_digest, project.fetch(:avsa).fetch(:external_id))
       artifact_digest = issue(
         payload: {
           product_code: product_code,
           project: project,
+          profile: profile,
+          evidence_graph_root: root_reference,
+          determination_receipt: determination_digest,
+          relying_party: relying_party,
           included_receipts: receipts.map { |receipt| receipt.fetch(:body_digest) },
           scope: scope,
           generated_at: generated_at
@@ -47,10 +58,16 @@ module InkReceipts
         generated_at: generated_at,
         bundle_type: product_code,
         bundle_name: scope.fetch(:product_name, product_code.to_s.tr("_", " ").split.map(&:capitalize).join(" ")),
-        audience: "Protocol, VVB, buyer, auditor, sponsor, or insurer",
+        audience: profile.dig("profile", "audience") || "Protocol, VVB, buyer, auditor, sponsor, or insurer",
         problem: "Portable AgEvidence artifact for external reliance.",
         avsa: project.fetch(:avsa),
         project: project.except(:avsa),
+        evidence_graph_root: root_reference,
+        determination_receipt: determination_digest,
+        relying_party: relying_party,
+        artifact_profile: profile,
+        required_receipts: Array(profile["required_receipts"]),
+        required_documents: Array(profile["required_documents"]),
         artifact_digest: artifact_digest,
         receipts: receipts,
         claim_group: nil,

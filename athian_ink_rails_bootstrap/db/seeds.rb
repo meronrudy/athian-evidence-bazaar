@@ -5,12 +5,23 @@ puts "Resetting Athian Evidence Bazaar demo data..."
   Agevidence::ReviewDecision,
   Agevidence::EvidenceGap,
   Agevidence::EvidenceCandidate,
+  Agevidence::CountryDetermination,
   Agevidence::ModelRun,
   Agevidence::ArtifactEngagement,
   Agevidence::DeveloperProject,
   Agevidence::DeveloperAccount,
   Agevidence::ModelAdapter,
   EvidenceBundle,
+  Agevidence::CountryAdapter,
+  Agevidence::CountryRegistry,
+  Agevidence::CountryPilot,
+  Agevidence::CountryInstitution,
+  Agevidence::CountryDataPolicy,
+  Agevidence::CountryVerificationProfile,
+  Agevidence::CountryClaimPolicy,
+  Agevidence::CountryMethodVersion,
+  Agevidence::CountryMethod,
+  Agevidence::CountryProgram,
   MethodologyMigration,
   VerificationException,
   VerificationRun,
@@ -355,11 +366,11 @@ canonical_avsa.evidence_bundles.create!(
 
 source_receipt = receipts[2]
 [
-  ["Northstar Trial Report", "trial_report", "trial-report-001"],
-  ["Northstar Product Invoice", "feed_invoice", "invoice-001"],
-  ["Northstar Ration Log", "ration_log", "ration-log-001"],
-  ["Northstar Measurement Export", "measurement_export", "measurement-export-001"]
-].each do |name, type, document_id|
+  ["Northstar Trial Report", "trial_report", "trial-report-001", "evidence.animal_cohort"],
+  ["Northstar Product Invoice", "feed_invoice", "invoice-001", "evidence.intervention_delivery"],
+  ["Northstar Ration Log", "ration_log", "ration-log-001", "evidence.feed_record"],
+  ["Northstar Measurement Export", "measurement_export", "measurement-export-001", "evidence.weight_record"]
+].each do |name, type, document_id, global_evidence_type|
   source_receipt.evidence_items.create!(
     name: name,
     evidence_type: type,
@@ -371,6 +382,7 @@ source_receipt = receipts[2]
     captured_at: now - 5.days,
     metadata: {
       document_id: document_id,
+      global_evidence_type: global_evidence_type,
       synthetic_demo: true,
       source_owner: "Northstar Methane Systems"
     }
@@ -387,15 +399,27 @@ developer_account = Agevidence::DeveloperAccount.create!(
   status: "synthetic_demo"
 )
 
+country_adapters = Agevidence::CountryAdapterCatalog.sync!
+canada_adapter = country_adapters.detect { |adapter| adapter.adapter_id == "athian-country-ca-beef-v1" }
+australia_adapter = country_adapters.detect { |adapter| adapter.adapter_id == "athian-country-au-livestock-v1" }
+canada_program = canada_adapter.country_program
+
 developer_project = developer_account.developer_projects.create!(
   protocol: feed_protocol,
   avsa: canonical_avsa,
+  country_program: canada_program,
+  primary_country_program: canada_program,
   name: "Enterprise Dairy Methane Pilot",
   project_type: "intervention",
   commercialization_stage: "Enterprise dairy pilot",
   target_claim: "The intervention reduces enteric methane for enterprise dairy operations.",
   protocol_status: "review_required",
-  integration_status: "source_registered"
+  integration_status: "source_registered",
+  country_context: {
+    species: "species.beef_cattle",
+    production_system: "production.confined_feeding",
+    intervention_class: "intervention.ration_reformulation"
+  }
 )
 
 model_adapter = Agevidence::ModelAdapter.create!(
@@ -452,12 +476,16 @@ source_receipt.evidence_items.create!(
   captured_at: now - 1.day,
   metadata: {
     document_id: "dosage-telemetry-001",
+    global_evidence_type: "evidence.baseline_ration",
     synthetic_demo: true,
     source_owner: "Northstar Methane Systems"
   }
 )
 
 model_run.evidence_gaps.find_by(gap_type: "missing_independent_support")&.update!(resolution_status: "resolved")
+
+Agevidence::CountryDeterminationAppender.new(project: developer_project, country_adapter: australia_adapter).call if australia_adapter
+Agevidence::CountryDeterminationAppender.new(project: developer_project, country_adapter: canada_adapter).call
 
 sprint_product = Agevidence::ProductCatalog.fetch("evidence_architecture_sprint")
 sprint_engagement = developer_project.artifact_engagements.create!(

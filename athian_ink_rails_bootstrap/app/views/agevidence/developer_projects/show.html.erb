@@ -17,6 +17,41 @@
 <section class="content-section">
   <div class="section-heading">
     <div>
+      <p class="eyebrow">Global-to-local map</p>
+      <h2>Reusable evidence, replaceable interpretation</h2>
+    </div>
+  </div>
+  <div class="row g-3">
+    <div class="col-lg-6">
+      <article class="resource-card h-100">
+        <h3>Global evidence</h3>
+        <ol class="mb-0">
+          <li>Source records</li>
+          <li>Evidence candidates</li>
+          <li>Human decisions</li>
+          <li>Canonical receipts</li>
+          <li>Evidence graph root: <code><%= compact_digest(@project.evidence_graph_root) %></code></li>
+        </ol>
+      </article>
+    </div>
+    <div class="col-lg-6">
+      <article class="resource-card h-100">
+        <h3>Local interpretation</h3>
+        <ol class="mb-0">
+          <li>Country adapter</li>
+          <li>Method compatibility</li>
+          <li>Missing local evidence</li>
+          <li>Claim and verification policy</li>
+          <li>Premium artifact and reliance event</li>
+        </ol>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
       <p class="eyebrow">Source records</p>
       <h2>Controlled source-document commitments</h2>
     </div>
@@ -40,6 +75,30 @@
         <% end %>
       </tbody>
     </table>
+  </div>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Country determinations</p>
+      <h2>Append-only method compatibility</h2>
+    </div>
+  </div>
+  <div class="row g-3">
+    <% @country_determinations.each do |determination| %>
+      <div class="col-md-6">
+        <article class="resource-card h-100">
+          <span class="badge text-bg-warning"><%= determination.status.humanize %></span>
+          <h3 class="mt-3"><%= determination.country_program.country_code %> · <%= determination.country_adapter.adapter_id %></h3>
+          <p>Missing evidence: <%= determination.missing_evidence.size %></p>
+          <p class="mb-0">Receipt: <%= determination.receipt ? compact_digest(determination.receipt.body_digest) : "Pending" %></p>
+        </article>
+      </div>
+    <% end %>
+    <% if @country_determinations.empty? %>
+      <p class="text-muted">No local method compatibility determinations have been appended yet.</p>
+    <% end %>
   </div>
 </section>
 

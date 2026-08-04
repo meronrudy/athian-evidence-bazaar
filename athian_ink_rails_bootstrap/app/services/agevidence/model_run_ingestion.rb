@@ -1,8 +1,9 @@
 module Agevidence
   class ModelRunIngestion
-    def initialize(project:, model_adapter:, client: ModelServiceClient.new)
+    def initialize(project:, model_adapter:, country_adapter: nil, client: ModelServiceClient.new)
       @project = project
       @model_adapter = model_adapter
+      @country_adapter = country_adapter || project.country_program&.country_adapters&.order(:id)&.first
       @client = client
     end
 
@@ -13,6 +14,7 @@ module Agevidence
       ActiveRecord::Base.transaction do
         run = project.model_runs.create!(
           model_adapter: model_adapter,
+          country_adapter: country_adapter,
           task: "protocol_evidence_extraction",
           status: "completed",
           prompt_digest: metadata["prompt_digest"],
@@ -53,6 +55,6 @@ module Agevidence
 
     private
 
-    attr_reader :project, :model_adapter, :client
+    attr_reader :project, :model_adapter, :country_adapter, :client
   end
 end

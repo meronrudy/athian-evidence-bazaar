@@ -1,0 +1,8 @@
+<article class="resource-card h-100">
+  <h3>Data policy</h3>
+  <% country_adapters.each do |adapter| %>
+    <% policy = adapter.country_data_policy %>
+    <p class="mb-1"><strong><%= policy&.policy_id || "Unassigned" %></strong></p>
+    <p class="text-muted mb-0">External checks unavailable offline remain indeterminate.</p>
+  <% end %>
+</article>

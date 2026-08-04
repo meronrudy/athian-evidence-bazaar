@@ -1,0 +1,15 @@
+<div class="list-group">
+  <% determinations.each do |determination| %>
+    <div class="list-group-item">
+      <div class="d-flex justify-content-between">
+        <strong><%= determination.developer_project.name %></strong>
+        <span class="badge text-bg-warning"><%= determination.status.humanize %></span>
+      </div>
+      <small>
+        <%= determination.country_adapter.adapter_id %> ·
+        missing <%= determination.missing_evidence.size %> evidence item(s) ·
+        receipt <%= determination.receipt ? compact_digest(determination.receipt.body_digest) : "pending" %>
+      </small>
+    </div>
+  <% end %>
+</div>

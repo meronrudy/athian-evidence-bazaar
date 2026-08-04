@@ -1,0 +1,16 @@
+<article class="resource-card">
+  <h3><%= artifact_profile.dig("profile", "id") || "No artifact profile" %></h3>
+  <p>Audience: <%= artifact_profile.dig("profile", "audience") || "Unassigned" %></p>
+  <h4 class="h6">Required receipts</h4>
+  <ul>
+    <% Array(artifact_profile["required_receipts"]).each do |receipt_type| %>
+      <li><%= receipt_type %></li>
+    <% end %>
+  </ul>
+  <h4 class="h6">Required documents</h4>
+  <ul>
+    <% Array(artifact_profile["required_documents"]).each do |document_type| %>
+      <li><%= document_type %></li>
+    <% end %>
+  </ul>
+</article>

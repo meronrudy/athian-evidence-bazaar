@@ -34,3 +34,20 @@ Do not price according to tokens, API calls, signatures, receipt count, or bytes
 ## Commercial proof
 
 A generated bundle is not proof of commercial value. A recorded reliance event by a protocol, VVB, buyer, auditor, sponsor, or insurer is the north-star commercial signal.
+
+## Country-aware artifacts
+
+Premium artifacts are profile-driven. When a country determination exists, the generated bundle manifest should declare:
+
+- country adapter ID and version;
+- method ID and method version;
+- claim policy;
+- verification profile;
+- data policy;
+- artifact profile;
+- determination receipt;
+- evidence graph root;
+- limitations;
+- local verifier command.
+
+The artifact builder should consume YAML profiles from `specs/agevidence/country_adapters/<country>/artifact_profiles`. It should not contain country-specific conditionals.

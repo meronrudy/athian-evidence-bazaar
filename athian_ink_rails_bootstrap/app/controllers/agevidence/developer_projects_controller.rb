@@ -11,6 +11,8 @@ module Agevidence
       @candidates = EvidenceCandidate.joins(:model_run).where(agevidence_model_runs: { developer_project_id: @project.id }).order(:id)
       @gaps = EvidenceGap.joins(:model_run).where(agevidence_model_runs: { developer_project_id: @project.id }).order(:id)
       @engagements = @project.artifact_engagements.includes(:evidence_bundle).order(created_at: :desc)
+      @country_programs = CountryProgram.includes(:country_adapters).order(:country_code, :name)
+      @country_determinations = @project.country_determinations.includes(:country_program, :country_adapter, :receipt).order(evaluated_at: :desc)
       @product_notice = product_notice
     end
 
@@ -58,15 +60,18 @@ module Agevidence
     end
 
     def load_form_options
+      CountryAdapterCatalog.sync! if CountryProgram.none?
       @accounts = DeveloperAccount.order(:name)
       @protocols = Protocol.order(:code)
       @avsas = Avsa.order(:external_id)
+      @country_programs = CountryProgram.order(:country_code, :name)
     end
 
     def project_params
       params.require(:developer_project).permit(
-        :developer_account_id, :protocol_id, :avsa_id, :name, :project_type,
-        :commercialization_stage, :target_claim, :protocol_status, :integration_status
+        :developer_account_id, :protocol_id, :avsa_id, :country_program_id, :primary_country_program_id,
+        :name, :project_type, :commercialization_stage, :target_claim, :protocol_status,
+        :integration_status, country_context: {}
       )
     end
   end

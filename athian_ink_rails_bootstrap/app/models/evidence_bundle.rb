@@ -5,6 +5,16 @@ class EvidenceBundle < ApplicationRecord
 
   belongs_to :avsa
   belongs_to :acceptance_receipt, class_name: "Receipt", optional: true
+  belongs_to :agevidence_country_adapter, class_name: "Agevidence::CountryAdapter", foreign_key: :country_adapter_id, optional: true
+  belongs_to :agevidence_country_claim_policy, class_name: "Agevidence::CountryClaimPolicy", foreign_key: :country_claim_policy_id, optional: true
+  belongs_to :agevidence_country_verification_profile, class_name: "Agevidence::CountryVerificationProfile", foreign_key: :country_verification_profile_id, optional: true
+  belongs_to :agevidence_country_data_policy, class_name: "Agevidence::CountryDataPolicy", foreign_key: :country_data_policy_id, optional: true
+  belongs_to :agevidence_country_determination, class_name: "Agevidence::CountryDetermination", foreign_key: :country_determination_id, optional: true
+  belongs_to :country_adapter, class_name: "Agevidence::CountryAdapter", optional: true
+  belongs_to :country_claim_policy, class_name: "Agevidence::CountryClaimPolicy", optional: true
+  belongs_to :country_verification_profile, class_name: "Agevidence::CountryVerificationProfile", optional: true
+  belongs_to :country_data_policy, class_name: "Agevidence::CountryDataPolicy", optional: true
+  belongs_to :country_determination, class_name: "Agevidence::CountryDetermination", optional: true
   has_many :agevidence_reliance_events, class_name: "Agevidence::RelianceEvent", dependent: :restrict_with_error
 
   validates :bundle_type, :name, :generated_at, :artifact_filename, presence: true

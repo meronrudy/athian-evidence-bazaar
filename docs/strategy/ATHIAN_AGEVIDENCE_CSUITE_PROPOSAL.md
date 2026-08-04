@@ -6,6 +6,8 @@ Athian AgEvidence positions Athian as an evidence company first and a carbon-mar
 
 Funded agriculture startups need a credible way to turn source records into reviewable, portable evidence artifacts. AgEvidence gives them an open, model-neutral SDK surface while Athian commercializes premium evidence acceptance products.
 
+The global thin-waist architecture lets Athian capture agricultural evidence once, commit to it once, and evaluate it through many country and institutional policies without rebuilding Rails, the model service, or the cryptographic verifier.
+
 ## Demonstration sequence
 
 1. A funded startup registers a project.
@@ -16,6 +18,20 @@ Funded agriculture startups need a credible way to turn source records into revi
 6. INK receipts preserve the evidence graph.
 7. A premium artifact is assembled.
 8. A relying institution records an external reliance event.
+
+## Global expansion model
+
+Expansion is handled with versioned country adapter packs:
+
+```text
+Global evidence graph
+  -> country adapter commitment
+  -> country compatibility determination
+  -> profile-driven artifact
+  -> institutional reliance event
+```
+
+Cryptographic validity, method compatibility, and institutional reliance remain separate states. This is the product distinction: Athian can support many local workflows while keeping one portable evidence rail.
 
 ## Commercial signal
 

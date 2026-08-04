@@ -20,4 +20,13 @@ uvicorn athian_agevidence.api:app --reload
 - `AGEVIDENCE_MODE=local`: call an OpenAI-compatible local endpoint via `AGEVIDENCE_LOCAL_BASE_URL`.
 - `AGEVIDENCE_MODE=remote`: disabled unless `AGEVIDENCE_REMOTE_DATA_HANDLING=explicit`.
 
-The service extracts candidate evidence and gaps only. It never signs receipts, certifies reductions, approves protocols, or writes to the Rails database.
+Requests may include optional country adapter context so the model can normalize terminology and identify missing local evidence. The service extracts candidate evidence and gaps only. It never signs receipts, certifies reductions, approves protocols, declares government eligibility, assigns claim ownership, or writes to the Rails database.
+
+## Test
+
+```bash
+cd services/agevidence-model
+python3 -m pytest
+```
+
+The fixture tests assert source-reference preservation, material gap extraction, optional country context, and rejection of model output that declares final authority states.

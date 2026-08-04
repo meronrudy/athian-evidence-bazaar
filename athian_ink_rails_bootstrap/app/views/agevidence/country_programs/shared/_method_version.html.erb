@@ -1,0 +1,7 @@
+<article class="resource-card h-100">
+  <h3>Method version</h3>
+  <% country_adapters.each do |adapter| %>
+    <p class="mb-1"><strong><%= adapter.country_method_version.method_id %></strong></p>
+    <p class="text-muted mb-0"><%= adapter.country_method_version.version %> · <%= adapter.country_method_version.status.humanize %></p>
+  <% end %>
+</article>

@@ -20,4 +20,23 @@ class InkReceiptsFacadeTest < ActiveSupport::TestCase
     assert_includes command, "verify"
     assert_includes command, "bundle.json"
   end
+
+  test "bundle verification separates cryptographic and external status" do
+    report = InkReceipts.verify_bundle(
+      manifest: {
+        receipts: [
+          {
+            sequence: 1,
+            receipt_type: "practice_receipt",
+            evidence: [
+              { name: "Invoice", status: "present" }
+            ]
+          }
+        ]
+      }
+    )
+
+    assert_equal "valid", report.fetch(:cryptographic_status)
+    assert_equal "indeterminate", report.fetch(:external_status)
+  end
 end

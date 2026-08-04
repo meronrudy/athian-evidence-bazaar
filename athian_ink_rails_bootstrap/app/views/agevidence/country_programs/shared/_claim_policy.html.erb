@@ -1,0 +1,8 @@
+<article class="resource-card h-100">
+  <h3>Claim policy</h3>
+  <% country_adapters.each do |adapter| %>
+    <% policy = adapter.country_claim_policy %>
+    <p class="mb-1"><strong><%= policy&.policy_id || "Unassigned" %></strong></p>
+    <p class="text-muted mb-0"><%= policy&.version || "No version" %></p>
+  <% end %>
+</article>

@@ -27,6 +27,12 @@ Rails.application.routes.draw do
   namespace :agevidence do
     root "overview#show"
 
+    resources :country_programs, only: %i[index show] do
+      member do
+        post :evaluate
+      end
+    end
+
     resources :developer_accounts
     resources :developer_projects do
       resources :model_runs, only: %i[new create]

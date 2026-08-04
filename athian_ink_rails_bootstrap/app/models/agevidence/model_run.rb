@@ -4,6 +4,7 @@ module Agevidence
 
     belongs_to :developer_project, class_name: "Agevidence::DeveloperProject"
     belongs_to :model_adapter, class_name: "Agevidence::ModelAdapter"
+    belongs_to :country_adapter, class_name: "Agevidence::CountryAdapter", optional: true
     belongs_to :receipt, optional: true
     has_many :evidence_candidates, class_name: "Agevidence::EvidenceCandidate", dependent: :destroy
     has_many :evidence_gaps, class_name: "Agevidence::EvidenceGap", dependent: :destroy
