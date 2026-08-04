@@ -47,6 +47,24 @@ module InkReceipts
       audience: "VVB, financial auditor, due diligence reviewer",
       problem: "An auditor needs the complete parent-linked evidence chain and verification command.",
       receipt_types: %w[practice_receipt measurement_receipt model_execution_receipt verifier_receipt issuance_receipt claim_receipt producer_payment_receipt methodology_delta_receipt]
+    },
+    "financing" => {
+      name: "Financing Bundle",
+      audience: "Lender, sponsor, finance partner",
+      problem: "A finance partner needs to connect evidence acceptance to producer economics and repayment assumptions.",
+      receipt_types: %w[practice_receipt measurement_receipt claim_receipt producer_payment_receipt]
+    },
+    "due_diligence" => {
+      name: "Due Diligence Bundle",
+      audience: "Investor, auditor, acquisition diligence team",
+      problem: "A diligence team needs replayable evidence, review decisions, exceptions, and reliance history.",
+      receipt_types: %w[practice_receipt measurement_receipt model_execution_receipt verifier_receipt issuance_receipt claim_receipt producer_payment_receipt]
+    },
+    "dispute" => {
+      name: "Dispute Bundle",
+      audience: "Protocol, registry, insurer, legal or dispute team",
+      problem: "A dispute reviewer needs append-only evidence showing what changed, who reviewed it, and what was relied on.",
+      receipt_types: %w[verifier_receipt claim_receipt methodology_delta_receipt producer_payment_receipt human_review_receipt reliance_event_receipt]
     }
   }.freeze
 
@@ -77,19 +95,19 @@ module InkReceipts
     },
     "due-diligence-bundle" => {
       name: "Due Diligence Bundle",
-      bundle_type: "auditor",
+      bundle_type: "due_diligence",
       problem: "Investors and auditors need replayable proof for acquisition or portfolio review.",
       receipts: %w[Practice Measurement Model Verifier Issuance Claim Payment]
     },
     "financing-bundle" => {
       name: "Financing Bundle",
-      bundle_type: "producer",
+      bundle_type: "financing",
       problem: "Lenders need to connect practice implementation, asset value, and producer economics.",
       receipts: %w[Practice Claim Payment]
     },
     "dispute-bundle" => {
       name: "Dispute Bundle",
-      bundle_type: "auditor",
+      bundle_type: "dispute",
       problem: "Disputes need a parent-linked record of what changed, who attested, and what was relied on.",
       receipts: %w[Verifier Claim Methodology\ Delta Payment]
     }
@@ -527,3 +545,12 @@ module InkReceipts
     end
   end
 end
+
+require_relative "ink_receipts/client"
+require_relative "ink_receipts/catalog"
+require_relative "ink_receipts/model_execution"
+require_relative "ink_receipts/evidence_candidates"
+require_relative "ink_receipts/review_decisions"
+require_relative "ink_receipts/reliance_artifacts"
+require_relative "ink_receipts/bundle_profiles"
+require_relative "ink_receipts/revenue_catalog"

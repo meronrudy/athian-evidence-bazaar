@@ -23,4 +23,27 @@ Rails.application.routes.draw do
 
   resources :producer_payments, only: %i[index show]
   resources :bundle_exports, only: %i[index create]
+
+  namespace :agevidence do
+    root "overview#show"
+
+    resources :developer_accounts
+    resources :developer_projects do
+      resources :model_runs, only: %i[new create]
+      resources :artifact_engagements, only: %i[index new create show]
+    end
+
+    resources :model_runs, only: :show do
+      member do
+        post :issue_receipt
+      end
+    end
+
+    resources :evidence_candidates, only: %i[show update]
+    resources :evidence_gaps, only: %i[show update]
+    resources :review_decisions, only: :create
+    resources :reliance_events, only: :create
+
+    resource :revenue_model, only: :show
+  end
 end

@@ -1,0 +1,3 @@
+Map candidate evidence to protocol requirements.
+
+Return mappings as proposed fields only. Human scientific and protocol reviewers retain authority.

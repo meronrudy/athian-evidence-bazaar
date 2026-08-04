@@ -1,0 +1,72 @@
+<% content_for :title, "Evidence Candidate #{@candidate.id}" %>
+
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Candidate Review Workbench</p>
+    <h1><%= @candidate.candidate_type.humanize %></h1>
+    <p class="lead"><%= @candidate.claim_text %></p>
+  </div>
+  <%= link_to "Project map", agevidence_developer_project_path(@project), class: "btn btn-outline-primary" %>
+</section>
+
+<div class="alert alert-boundary">Accepting a candidate records a human review decision. It does not make the model an approving authority.</div>
+
+<section class="dashboard-grid">
+  <article class="metric-card">
+    <span class="metric-label">Candidate status</span>
+    <strong><%= @candidate.review_status.humanize %></strong>
+    <small>Projected from append-only decisions</small>
+  </article>
+  <article class="metric-card">
+    <span class="metric-label">Model confidence</span>
+    <strong><%= number_to_percentage(@candidate.model_confidence.to_f * 100, precision: 0) %></strong>
+    <small>Routing signal, not validity</small>
+  </article>
+  <article class="metric-card">
+    <span class="metric-label">Receipt</span>
+    <strong><%= @candidate.receipt ? compact_digest(@candidate.receipt.body_digest) : "Pending" %></strong>
+    <small>Candidate receipt projection</small>
+  </article>
+</section>
+
+<section class="content-section">
+  <h2>Source references</h2>
+  <ul>
+    <% @candidate.source_references.each do |reference| %>
+      <li><code><%= reference["document_id"] %></code> <%= reference["locator"] %></li>
+    <% end %>
+  </ul>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Append-only review</p>
+      <h2>Record decision</h2>
+    </div>
+  </div>
+  <%= form_with url: agevidence_review_decisions_path, local: true, class: "vstack gap-3" do |form| %>
+    <%= hidden_field_tag :evidence_candidate_id, @candidate.id %>
+    <%= select_tag :decision, options_for_select(Agevidence::ReviewDecision::DECISIONS), class: "form-select" %>
+    <%= text_field_tag :reviewer_role, "Synthetic Athian scientific reviewer", class: "form-control" %>
+    <%= text_area_tag :reason, nil, class: "form-control", rows: 3, placeholder: "Review reason" %>
+    <%= text_field_tag :policy_version, "ATH-AGEV-POLICY-v1", class: "form-control" %>
+    <%= form.submit "Append review decision", class: "btn btn-primary" %>
+  <% end %>
+</section>
+
+<section class="content-section">
+  <h2>Decision history</h2>
+  <div class="list-group">
+    <% @decisions.each do |decision| %>
+      <div class="list-group-item">
+        <div class="d-flex justify-content-between">
+          <strong><%= decision.decision.humanize %></strong>
+          <span><%= l(decision.decided_at, format: :short) %></span>
+        </div>
+        <p class="mb-1"><%= decision.reason %></p>
+        <small><%= decision.reviewer_role %> · receipt <%= decision.receipt ? compact_digest(decision.receipt.body_digest) : "pending" %></small>
+      </div>
+    <% end %>
+  </div>
+</section>

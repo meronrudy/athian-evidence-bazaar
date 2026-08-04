@@ -1,0 +1,122 @@
+<% content_for :title, "AgEvidence Developer Launchpad" %>
+
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Athian AgEvidence</p>
+    <h1>Developer Launchpad</h1>
+    <p class="lead">Funded agriculture startups connect source records to model candidates, human review, INK receipts, premium artifacts, and external reliance.</p>
+  </div>
+  <div class="d-flex gap-2 flex-wrap">
+    <%= link_to "New project", new_agevidence_developer_project_path, class: "btn btn-primary" %>
+    <%= link_to "Revenue model", agevidence_revenue_model_path, class: "btn btn-outline-primary" %>
+  </div>
+</section>
+
+<div class="alert alert-boundary">
+  Model output is candidate evidence only. Protocol governance, scientific reviewers, VVBs, buyers, auditors, sponsors, and insurers retain authority.
+</div>
+
+<section class="dashboard-grid">
+  <article class="metric-card">
+    <span class="metric-label">Developer accounts</span>
+    <strong><%= @accounts.size %></strong>
+    <small>Synthetic and real integration prospects</small>
+  </article>
+  <article class="metric-card">
+    <span class="metric-label">Model runs</span>
+    <strong><%= Agevidence::ModelRun.count %></strong>
+    <small>Fixture-backed extraction records</small>
+  </article>
+  <article class="metric-card">
+    <span class="metric-label">Candidates awaiting review</span>
+    <strong><%= Agevidence::EvidenceCandidate.where(review_status: "review_required").count %></strong>
+    <small>Not approved evidence</small>
+  </article>
+  <article class="metric-card">
+    <span class="metric-label">External reliance events</span>
+    <strong><%= Agevidence::RelianceEvent.count %></strong>
+    <small>North-star commercial signal</small>
+  </article>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Projects</p>
+      <h2>Evidence readiness map</h2>
+    </div>
+    <%= link_to "All accounts", agevidence_developer_accounts_path, class: "btn btn-sm btn-outline-secondary" %>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Startup</th>
+          <th>Project</th>
+          <th>Claim</th>
+          <th>Protocol</th>
+          <th>Integration</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @projects.each do |project| %>
+          <tr>
+            <td><%= project.developer_account.name %></td>
+            <td><%= project.name %></td>
+            <td><%= truncate(project.target_claim, length: 90) %></td>
+            <td><%= project.protocol&.display_name || "Unmapped" %></td>
+            <td><span class="badge text-bg-info"><%= project.integration_status.humanize %></span></td>
+            <td class="text-end"><%= link_to "Open map", agevidence_developer_project_path(project), class: "btn btn-sm btn-primary" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Commercial layer</p>
+      <h2>Premium artifact pipeline</h2>
+    </div>
+    <span class="small text-muted"><%= @product_notice %></span>
+  </div>
+
+  <div class="row g-3">
+    <% @engagements.each do |engagement| %>
+      <div class="col-md-6 col-xl-4">
+        <article class="resource-card h-100">
+          <h3><%= Agevidence::ProductCatalog.fetch(engagement.product_code).fetch("name") %></h3>
+          <p><%= engagement.developer_project.name %></p>
+          <div class="d-flex justify-content-between">
+            <span class="badge text-bg-secondary"><%= engagement.pipeline_stage.humanize %></span>
+            <strong><%= money(engagement.price_label / 100.0, engagement.currency) %></strong>
+          </div>
+        </article>
+      </div>
+    <% end %>
+  </div>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Revenue scenarios</p>
+      <h2>Projected pipeline, not recognized revenue</h2>
+    </div>
+  </div>
+  <div class="row g-3">
+    <% @projection.scenario_summaries.each do |name, totals| %>
+      <div class="col-md-4">
+        <div class="metric-card">
+          <span class="metric-label"><%= name.humanize %></span>
+          <strong><%= money(totals.fetch("y1_cents") / 100.0) %></strong>
+          <small>Y1 illustrative contracted value</small>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</section>

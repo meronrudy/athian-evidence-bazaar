@@ -1,0 +1,17 @@
+<% content_for :title, "Run AgEvidence Model" %>
+
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Fixture-backed extraction</p>
+    <h1>Run model evidence extraction</h1>
+    <p class="lead"><%= @project.name %></p>
+  </div>
+</section>
+
+<section class="content-section">
+  <div class="alert alert-boundary">Fixture mode is the default and requires no model download. Local and remote modes are reserved for configured deployments.</div>
+  <%= form_with url: agevidence_developer_project_model_runs_path(@project), local: true, class: "vstack gap-3" do |form| %>
+    <%= select_tag :model_adapter_id, options_from_collection_for_select(@adapters, :id, :display_name), class: "form-select" %>
+    <%= form.submit "Run fixture extraction", class: "btn btn-primary" %>
+  <% end %>
+</section>

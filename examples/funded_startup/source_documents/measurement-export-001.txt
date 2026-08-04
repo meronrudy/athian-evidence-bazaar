@@ -1,0 +1,5 @@
+Synthetic source document for Northstar Methane Systems.
+
+Measurement export ID: measurement-export-001
+Observation: Measurement records are linked to the protocol pilot period.
+Limitation: Methodology version metadata references VM0042 v2.2 while the current review track references VM0042 v3.0.

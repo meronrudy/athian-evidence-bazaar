@@ -1,0 +1,78 @@
+streams:
+  architecture_sprint:
+    label: "Architecture Sprint"
+    recurring: false
+    price_cents: 2500000
+    units:
+      y1: 10
+      y2: 22
+      y3: 36
+  protocol_implementation:
+    label: "Protocol Implementation"
+    recurring: false
+    price_cents: 10000000
+    units:
+      y1: 5
+      y2: 10
+      y3: 18
+  verification_readiness:
+    label: "Verification Readiness"
+    recurring: false
+    price_cents: 6000000
+    units:
+      y1: 4
+      y2: 10
+      y3: 22
+  enterprise_artifact:
+    label: "Enterprise Artifact"
+    recurring: false
+    price_cents: 3000000
+    units:
+      y1: 6
+      y2: 18
+      y3: 45
+  managed_evidence_plane:
+    label: "Managed Evidence Plane"
+    recurring: true
+    price_cents: 15000000
+    units:
+      y1: 4
+      y2: 12
+      y3: 26
+  private_deployment:
+    label: "Private Deployment"
+    recurring: true
+    price_cents: 30000000
+    units:
+      y1: 2
+      y2: 5
+      y3: 9
+  sponsor_program:
+    label: "Sponsor Program"
+    recurring: true
+    price_cents: 20000000
+    units:
+      y1: 3
+      y2: 6
+      y3: 10
+  migration_or_dispute:
+    label: "Migration or Dispute"
+    recurring: false
+    price_cents: 25000000
+    units:
+      y1: 1
+      y2: 2
+      y3: 4
+scenario_summaries:
+  conservative:
+    y1_cents: 100500000
+    y2_cents: 252000000
+    y3_cents: 584000000
+  base:
+    y1_cents: 322000000
+    y2_cents: 769000000
+    y3_cents: 1497000000
+  upside:
+    y1_cents: 576500000
+    y2_cents: 1437500000
+    y3_cents: 2860000000

@@ -1,0 +1,102 @@
+{
+  "model_run": {
+    "adapter_id": "qwen3.5-4b-reference",
+    "base_model_id": "Qwen/Qwen3.5-4B",
+    "weights_digest": "sha256:qwen35-reference-weights",
+    "adapter_digest": "sha256:athian-qwen35-reference-adapter",
+    "prompt_digest": "sha256:athian-agevidence-prompt-v1",
+    "retrieval_digest": "sha256:northstar-source-manifest",
+    "normalized_output_digest": "sha256:northstar-normalized-output-v1",
+    "runtime": "fixture",
+    "started_at": "2026-08-04T16:30:00Z",
+    "completed_at": "2026-08-04T16:30:03Z"
+  },
+  "candidates": [
+    {
+      "candidate_id": "candidate-001",
+      "candidate_type": "observation",
+      "claim_text": "Feed additive product was delivered to the enterprise dairy pilot site.",
+      "source_references": [{ "document_id": "invoice-001", "locator": "line:4" }],
+      "confidence": 0.94,
+      "status": "review_required"
+    },
+    {
+      "candidate_id": "candidate-002",
+      "candidate_type": "observation",
+      "claim_text": "The pilot period is linked to enterprise dairy animals.",
+      "source_references": [{ "document_id": "trial-report-001", "locator": "line:4" }],
+      "confidence": 0.91,
+      "status": "review_required"
+    },
+    {
+      "candidate_id": "candidate-003",
+      "candidate_type": "calculation_input",
+      "claim_text": "Measurement exports are available for the protocol pilot period.",
+      "source_references": [{ "document_id": "measurement-export-001", "locator": "line:4" }],
+      "confidence": 0.9,
+      "status": "review_required"
+    },
+    {
+      "candidate_id": "candidate-004",
+      "candidate_type": "source_link",
+      "claim_text": "Ration records reference the intervention product.",
+      "source_references": [{ "document_id": "ration-log-001", "locator": "line:4" }],
+      "confidence": 0.88,
+      "status": "review_required"
+    },
+    {
+      "candidate_id": "candidate-005",
+      "candidate_type": "assumption",
+      "claim_text": "Delivered product was consumed at the protocol dosage for every material day.",
+      "source_references": [
+        { "document_id": "invoice-001", "locator": "line:4" },
+        { "document_id": "ration-log-001", "locator": "line:5" }
+      ],
+      "confidence": 0.52,
+      "status": "review_required"
+    },
+    {
+      "candidate_id": "candidate-006",
+      "candidate_type": "methodology_mapping",
+      "claim_text": "The trial maps to VM0042 v2.2 evidence requirements.",
+      "source_references": [{ "document_id": "measurement-export-001", "locator": "line:5" }],
+      "confidence": 0.73,
+      "status": "review_required"
+    },
+    {
+      "candidate_id": "candidate-007",
+      "candidate_type": "judgment",
+      "claim_text": "The intervention caused the observed methane reduction.",
+      "source_references": [{ "document_id": "trial-report-001", "locator": "line:5" }],
+      "confidence": 0.48,
+      "status": "review_required"
+    }
+  ],
+  "gaps": [
+    {
+      "gap_type": "missing_independent_support",
+      "requirement": "Dosage confirmation",
+      "severity": "material",
+      "description": "Dosage appears in the trial narrative but lacks telemetry or ration-log support for one material interval.",
+      "source_context": { "document_id": "ration-log-001", "locator": "line:5" }
+    },
+    {
+      "gap_type": "methodology_version_mismatch",
+      "requirement": "Current methodology mapping",
+      "severity": "medium",
+      "description": "Source records reference VM0042 v2.2 while the migration review references VM0042 v3.0.",
+      "source_context": { "document_id": "measurement-export-001", "locator": "line:5" }
+    },
+    {
+      "gap_type": "unsupported_causal_statement",
+      "requirement": "Independent causal support",
+      "severity": "material",
+      "description": "The causal statement requires human scientific review and cannot be accepted from model output alone.",
+      "source_context": { "document_id": "trial-report-001", "locator": "line:5" }
+    }
+  ],
+  "limitations": [
+    "Model output is an evidence candidate and not a scientific or verification determination.",
+    "Human protocol governance, scientific review, and VVB reliance remain external authorities."
+  ]
+}

@@ -1,0 +1,58 @@
+<% product = @products.fetch(@engagement.product_code) %>
+<% content_for :title, product.fetch("name") %>
+
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Reliance artifact</p>
+    <h1><%= product.fetch("name") %></h1>
+    <p class="lead"><%= product.fetch("description") %></p>
+  </div>
+  <%= link_to "Project map", agevidence_developer_project_path(@project), class: "btn btn-outline-primary" %>
+</section>
+
+<div class="alert alert-boundary"><%= @product_notice %></div>
+
+<section class="dashboard-grid">
+  <article class="metric-card">
+    <span class="metric-label">Pipeline stage</span>
+    <strong><%= @engagement.pipeline_stage.humanize %></strong>
+    <small>Commercial scaffold</small>
+  </article>
+  <article class="metric-card">
+    <span class="metric-label">Planning price</span>
+    <strong><%= money(@engagement.price_label / 100.0, @engagement.currency) %></strong>
+    <small>Not a quote or recognized revenue</small>
+  </article>
+  <article class="metric-card">
+    <span class="metric-label">Bundle</span>
+    <strong><%= @engagement.evidence_bundle ? @engagement.evidence_bundle.artifact_filename : "Pending" %></strong>
+    <small>Portable artifact</small>
+  </article>
+</section>
+
+<% if @engagement.evidence_bundle %>
+  <section class="content-section">
+    <h2>Reliance Event Record</h2>
+    <%= form_with url: agevidence_reliance_events_path, local: true, class: "vstack gap-3" do |form| %>
+      <%= hidden_field_tag :artifact_engagement_id, @engagement.id %>
+      <%= text_field_tag :relying_party_name, "Synthetic VVB Reliance Review", class: "form-control" %>
+      <%= select_tag :relying_party_role, options_for_select(Agevidence::RelianceEvent::ROLES, "vvb"), class: "form-select" %>
+      <%= text_field_tag :decision_type, "verification_readiness_review", class: "form-control" %>
+      <%= select_tag :outcome, options_for_select(Agevidence::RelianceEvent::OUTCOMES, "relied_on"), class: "form-select" %>
+      <%= text_area_tag :notes, nil, class: "form-control", rows: 3, placeholder: "Reliance notes" %>
+      <%= form.submit "Record reliance event", class: "btn btn-primary" %>
+    <% end %>
+  </section>
+<% end %>
+
+<section class="content-section">
+  <h2>Reliance events</h2>
+  <div class="list-group">
+    <% @reliance_events.each do |event| %>
+      <div class="list-group-item">
+        <strong><%= event.relying_party_name %></strong>
+        <span class="text-muted d-block"><%= event.relying_party_role %> · <%= event.outcome.humanize %> · <%= l(event.occurred_at, format: :short) %></span>
+      </div>
+    <% end %>
+  </div>
+</section>

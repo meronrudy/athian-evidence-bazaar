@@ -1,0 +1,3 @@
+Extract candidate evidence from source records.
+
+Return observations, calculations, assumptions, source links, methodology mappings, and judgments as candidates. Preserve document identifiers and locators. Do not approve evidence.

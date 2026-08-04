@@ -1,0 +1,80 @@
+<% content_for :title, "Model Run #{@model_run.id}" %>
+
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Model Run Detail</p>
+    <h1><%= @model_run.model_adapter.adapter_id %></h1>
+    <p class="lead"><%= @model_run.task.humanize %> · <%= @model_run.status.humanize %></p>
+  </div>
+  <div class="d-flex gap-2 flex-wrap">
+    <%= link_to "Project map", agevidence_developer_project_path(@project), class: "btn btn-outline-primary" %>
+    <% unless @model_run.receipt %>
+      <%= button_to "Issue receipts", issue_receipt_agevidence_model_run_path(@model_run), method: :post, class: "btn btn-primary" %>
+    <% end %>
+  </div>
+</section>
+
+<section class="dashboard-grid">
+  <article class="metric-card">
+    <span class="metric-label">Base model</span>
+    <strong><%= @model_run.model_adapter.base_model_id %></strong>
+    <small>No sponsorship or endorsement implied</small>
+  </article>
+  <article class="metric-card">
+    <span class="metric-label">Runtime</span>
+    <strong><%= @model_run.runtime_metadata["runtime"] %></strong>
+    <small>Default scaffold mode</small>
+  </article>
+  <article class="metric-card">
+    <span class="metric-label">Output commitment</span>
+    <strong><%= compact_digest(@model_run.output_digest) %></strong>
+    <small>Provided by normalized response</small>
+  </article>
+  <article class="metric-card">
+    <span class="metric-label">Receipt</span>
+    <strong><%= @model_run.receipt ? compact_digest(@model_run.receipt.body_digest) : "Pending" %></strong>
+    <small>Issued through ink_receipts</small>
+  </article>
+</section>
+
+<section class="content-section">
+  <h2>Limitations</h2>
+  <ul>
+    <% @model_run.limitations.each do |limitation| %>
+      <li><%= limitation %></li>
+    <% end %>
+  </ul>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Candidates</p>
+      <h2>Source-linked evidence candidates</h2>
+    </div>
+  </div>
+  <div class="list-group">
+    <% @model_run.evidence_candidates.each do |candidate| %>
+      <%= link_to agevidence_evidence_candidate_path(candidate), class: "list-group-item list-group-item-action" do %>
+        <div class="d-flex justify-content-between">
+          <strong><%= candidate.claim_text %></strong>
+          <span class="badge text-bg-info"><%= candidate.review_status.humanize %></span>
+        </div>
+        <small><%= candidate.source_reference_labels.join(", ") %> · receipt <%= candidate.receipt ? compact_digest(candidate.receipt.body_digest) : "pending" %></small>
+      <% end %>
+    <% end %>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2>Evidence gaps</h2>
+  <div class="list-group">
+    <% @model_run.evidence_gaps.each do |gap| %>
+      <%= link_to agevidence_evidence_gap_path(gap), class: "list-group-item list-group-item-action" do %>
+        <span class="badge text-bg-warning"><%= gap.severity.humanize %></span>
+        <strong class="d-block mt-2"><%= gap.requirement %></strong>
+        <small><%= gap.description %></small>
+      <% end %>
+    <% end %>
+  </div>
+</section>

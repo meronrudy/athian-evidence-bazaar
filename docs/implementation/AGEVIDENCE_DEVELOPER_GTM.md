@@ -947,3 +947,16 @@ PR 8 — Canonical seed story, bundle export and end-to-end acceptance tests
 ```
 
 Do not begin with production Qwen deployment, GPU orchestration, authentication, billing, multitenancy or confidential customer data. First prove the complete evidence and commercial chain with synthetic data, fixture inference and independently verifiable artifacts.
+
+---
+
+## 18. Scaffold Handoff
+
+Implementation handoff details live in:
+
+* `docs/implementation/MODEL_AUTHORITY_BOUNDARY.md`
+* `docs/implementation/PREMIUM_ARTIFACT_CATALOG.md`
+* `docs/implementation/AGEVIDENCE_SCAFFOLD_HANDOFF.md`
+* `docs/strategy/ATHIAN_AGEVIDENCE_CSUITE_PROPOSAL.md`
+
+Use the handoff guide as the source of truth for fractional developer ownership, TODO marker policy, validation commands, and PR completion criteria.

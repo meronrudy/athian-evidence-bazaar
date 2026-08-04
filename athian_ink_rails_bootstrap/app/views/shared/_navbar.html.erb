@@ -14,6 +14,7 @@
 
     <div class="ms-auto d-flex align-items-center gap-2">
       <span class="badge rounded-pill text-bg-warning d-none d-md-inline">Pilot surface</span>
+      <%= link_to "AgEvidence", agevidence_root_path, class: "btn btn-sm btn-outline-light" %>
       <% if canonical_avsa %>
         <%= link_to "Open canonical chain", avsa_path(canonical_avsa), class: "btn btn-sm btn-light" %>
       <% end %>

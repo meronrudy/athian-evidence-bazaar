@@ -1,6 +1,15 @@
 puts "Resetting Athian Evidence Bazaar demo data..."
 
 [
+  Agevidence::RelianceEvent,
+  Agevidence::ReviewDecision,
+  Agevidence::EvidenceGap,
+  Agevidence::EvidenceCandidate,
+  Agevidence::ModelRun,
+  Agevidence::ArtifactEngagement,
+  Agevidence::DeveloperProject,
+  Agevidence::DeveloperAccount,
+  Agevidence::ModelAdapter,
   EvidenceBundle,
   MethodologyMigration,
   VerificationException,
@@ -344,6 +353,164 @@ canonical_avsa.evidence_bundles.create!(
   generated_at: now
 )
 
+source_receipt = receipts[2]
+[
+  ["Northstar Trial Report", "trial_report", "trial-report-001"],
+  ["Northstar Product Invoice", "feed_invoice", "invoice-001"],
+  ["Northstar Ration Log", "ration_log", "ration-log-001"],
+  ["Northstar Measurement Export", "measurement_export", "measurement-export-001"]
+].each do |name, type, document_id|
+  source_receipt.evidence_items.create!(
+    name: name,
+    evidence_type: type,
+    source_system: "northstar_methane_systems",
+    commitment: commitment.call("northstar:#{document_id}"),
+    disclosure_status: "restricted",
+    required: true,
+    status: "present",
+    captured_at: now - 5.days,
+    metadata: {
+      document_id: document_id,
+      synthetic_demo: true,
+      source_owner: "Northstar Methane Systems"
+    }
+  )
+end
+
+developer_account = Agevidence::DeveloperAccount.create!(
+  name: "Northstar Methane Systems",
+  website: "https://synthetic.example/northstar",
+  funding_stage: "Series A",
+  capital_raised_cents: 1_800_000_000,
+  primary_segment: "Livestock methane-reduction intervention",
+  headquarters: "Synthetic demonstration entity",
+  status: "synthetic_demo"
+)
+
+developer_project = developer_account.developer_projects.create!(
+  protocol: feed_protocol,
+  avsa: canonical_avsa,
+  name: "Enterprise Dairy Methane Pilot",
+  project_type: "intervention",
+  commercialization_stage: "Enterprise dairy pilot",
+  target_claim: "The intervention reduces enteric methane for enterprise dairy operations.",
+  protocol_status: "review_required",
+  integration_status: "source_registered"
+)
+
+model_adapter = Agevidence::ModelAdapter.create!(
+  adapter_id: "qwen3.5-4b-reference",
+  base_model_id: "Qwen/Qwen3.5-4B",
+  provider: "Reference adapter registry entry",
+  license: "Reference declaration only; no sponsorship or endorsement implied",
+  runtime: "fixture",
+  weights_digest: "sha256:qwen35-reference-weights",
+  adapter_digest: "sha256:athian-qwen35-reference-adapter",
+  context_limit: 32768,
+  multimodal: false,
+  status: "reference"
+)
+
+model_run = Agevidence::ModelRunIngestion.new(
+  project: developer_project,
+  model_adapter: model_adapter
+).call
+
+agevidence_issuer = Agevidence::ReceiptIssuer.new
+agevidence_issuer.issue_model_execution!(model_run)
+model_run.evidence_candidates.order(:id).each { |candidate| agevidence_issuer.issue_evidence_candidate!(candidate) }
+
+review_plan = [
+  ["accepted", "Synthetic reviewer accepted source-linked delivery evidence."],
+  ["accepted", "Synthetic reviewer accepted enterprise pilot-period linkage."],
+  ["accepted", "Synthetic reviewer accepted measurement export availability."],
+  ["accepted", "Synthetic reviewer accepted ration-log source linkage."],
+  ["rejected", "Synthetic reviewer rejected dosage consumption as unsupported by the submitted records."],
+  ["needs_more_evidence", "Synthetic reviewer requested methodology-version reconciliation."],
+  ["needs_more_evidence", "Synthetic reviewer requested independent causal support."]
+]
+
+model_run.evidence_candidates.order(:id).zip(review_plan).each do |candidate, (decision, reason)|
+  review = candidate.review_decisions.create!(
+    reviewer_role: "Synthetic Athian scientific reviewer",
+    decision: decision,
+    reason: reason,
+    policy_version: "ATH-AGEV-POLICY-v1",
+    decided_at: now + candidate.id.minutes
+  )
+  agevidence_issuer.issue_review_decision!(review)
+end
+
+source_receipt.evidence_items.create!(
+  name: "Northstar Dosage Telemetry Export",
+  evidence_type: "dosage_telemetry",
+  source_system: "northstar_methane_systems",
+  commitment: commitment.call("northstar:dosage-telemetry-001"),
+  disclosure_status: "restricted",
+  required: true,
+  status: "present",
+  captured_at: now - 1.day,
+  metadata: {
+    document_id: "dosage-telemetry-001",
+    synthetic_demo: true,
+    source_owner: "Northstar Methane Systems"
+  }
+)
+
+model_run.evidence_gaps.find_by(gap_type: "missing_independent_support")&.update!(resolution_status: "resolved")
+
+sprint_product = Agevidence::ProductCatalog.fetch("evidence_architecture_sprint")
+sprint_engagement = developer_project.artifact_engagements.create!(
+  product_code: "evidence_architecture_sprint",
+  pipeline_stage: "scoped",
+  billing_type: sprint_product.fetch("billing_type"),
+  list_price_cents: sprint_product.fetch("base_planning_price_cents"),
+  quoted_price_cents: sprint_product.fetch("base_planning_price_cents"),
+  currency: "USD",
+  commercial_status: "completed",
+  started_on: Date.new(2026, 8, 4),
+  completed_on: Date.new(2026, 8, 8)
+)
+Agevidence::ArtifactAssembler.new(engagement: sprint_engagement).call
+
+readiness_product = Agevidence::ProductCatalog.fetch("verification_readiness_cycle")
+readiness_engagement = developer_project.artifact_engagements.create!(
+  product_code: "verification_readiness_cycle",
+  pipeline_stage: "scoped",
+  billing_type: readiness_product.fetch("billing_type"),
+  list_price_cents: readiness_product.fetch("base_planning_price_cents"),
+  quoted_price_cents: readiness_product.fetch("base_planning_price_cents"),
+  currency: "USD",
+  commercial_status: "proposed",
+  started_on: Date.new(2026, 8, 9)
+)
+Agevidence::ArtifactAssembler.new(engagement: readiness_engagement).call
+
+reliance_event = readiness_engagement.reliance_events.create!(
+  evidence_bundle: readiness_engagement.evidence_bundle,
+  relying_party_name: "Synthetic VVB Reliance Review",
+  relying_party_role: "vvb",
+  decision_type: "verification_readiness_review",
+  outcome: "relied_on",
+  evidence_bundle_digest: readiness_engagement.evidence_bundle.evidence_bundle_digest,
+  occurred_at: now + 2.days,
+  notes: "Synthetic VVB reviewer relied on the fixture artifact for demonstration only."
+)
+agevidence_issuer.issue_reliance_event!(reliance_event)
+
+managed_product = Agevidence::ProductCatalog.fetch("managed_evidence_plane")
+developer_project.artifact_engagements.create!(
+  product_code: "managed_evidence_plane",
+  pipeline_stage: "converted",
+  billing_type: managed_product.fetch("billing_type"),
+  list_price_cents: managed_product.fetch("base_planning_price_cents"),
+  quoted_price_cents: managed_product.fetch("base_planning_price_cents"),
+  currency: "USD",
+  commercial_status: "active",
+  started_on: Date.new(2026, 8, 15)
+)
+developer_project.update!(integration_status: "relied_on", protocol_status: "aligned")
+
 canonical_avsa.verification_runs.create!(
   receipt: receipts.first,
   status: "valid",
@@ -417,4 +584,4 @@ secondary_avsa.verification_runs.create!(
   completed_at: now - 2.hours + 1.second
 )
 
-puts "Seeded #{Protocol.count} protocols, #{Avsa.count} AVSAs, #{Receipt.count} receipts, #{EvidenceItem.count} evidence items, #{EvidenceBundle.count} bundle projections, and #{MethodologyMigration.count} migration(s)."
+puts "Seeded #{Protocol.count} protocols, #{Avsa.count} AVSAs, #{Receipt.count} receipts, #{EvidenceItem.count} evidence items, #{EvidenceBundle.count} bundle projections, #{MethodologyMigration.count} migration(s), and #{Agevidence::DeveloperProject.count} AgEvidence project(s)."

@@ -1,0 +1,22 @@
+<% content_for :title, @account.name %>
+
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Synthetic developer account</p>
+    <h1><%= @account.name %></h1>
+    <p class="lead"><%= @account.primary_segment %> · <%= @account.funding_stage %> · <%= @account.headquarters %></p>
+  </div>
+  <%= link_to "New project", new_agevidence_developer_project_path(developer_account_id: @account.id), class: "btn btn-primary" %>
+</section>
+
+<section class="content-section">
+  <h2>Projects</h2>
+  <div class="list-group">
+    <% @projects.each do |project| %>
+      <%= link_to agevidence_developer_project_path(project), class: "list-group-item list-group-item-action" do %>
+        <strong><%= project.name %></strong>
+        <span class="text-muted d-block"><%= truncate(project.target_claim, length: 120) %></span>
+      <% end %>
+    <% end %>
+  </div>
+</section>

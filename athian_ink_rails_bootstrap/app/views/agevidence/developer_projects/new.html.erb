@@ -1,0 +1,23 @@
+<% content_for :title, "New AgEvidence Project" %>
+
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Developer project</p>
+    <h1>New Project Evidence Map</h1>
+  </div>
+</section>
+
+<section class="content-section">
+  <%= form_with model: [:agevidence, @project], local: true, class: "vstack gap-3" do |form| %>
+    <%= form.collection_select :developer_account_id, @accounts, :id, :name, { prompt: "Developer account" }, class: "form-select" %>
+    <%= form.collection_select :protocol_id, @protocols, :id, :display_name, { include_blank: "Protocol" }, class: "form-select" %>
+    <%= form.collection_select :avsa_id, @avsas, :id, :external_id, { include_blank: "Linked AVSA" }, class: "form-select" %>
+    <%= form.text_field :name, class: "form-control", placeholder: "Project name" %>
+    <%= form.select :project_type, Agevidence::DeveloperProject::PROJECT_TYPES, {}, class: "form-select" %>
+    <%= form.text_field :commercialization_stage, class: "form-control", placeholder: "Commercialization stage" %>
+    <%= form.text_area :target_claim, class: "form-control", rows: 3, placeholder: "Target claim" %>
+    <%= form.select :protocol_status, Agevidence::DeveloperProject::PROTOCOL_STATUSES, {}, class: "form-select" %>
+    <%= form.select :integration_status, Agevidence::DeveloperProject::INTEGRATION_STATUSES, {}, class: "form-select" %>
+    <%= form.submit "Create project", class: "btn btn-primary" %>
+  <% end %>
+</section>

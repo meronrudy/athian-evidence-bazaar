@@ -1,0 +1,90 @@
+<% content_for :title, "AgEvidence Revenue Model" %>
+
+<section class="page-header">
+  <div>
+    <p class="eyebrow">C-Suite Revenue Model</p>
+    <h1>Projected pipeline, reliance events, and artifact revenue</h1>
+    <p class="lead">Visible assumptions for conservative, base, and upside AgEvidence scenarios.</p>
+  </div>
+</section>
+
+<div class="alert alert-boundary"><%= @product_notice %> Never display projected revenue as booked or recognized revenue.</div>
+
+<section class="dashboard-grid">
+  <article class="metric-card">
+    <span class="metric-label">Projected pipeline Y1</span>
+    <strong><%= money(@projection.base_totals.fetch("y1") / 100.0) %></strong>
+    <small>Base case</small>
+  </article>
+  <article class="metric-card">
+    <span class="metric-label">Annual recurring Y1</span>
+    <strong><%= money(@projection.recurring_totals.fetch("y1") / 100.0) %></strong>
+    <small>Illustrative recurring component</small>
+  </article>
+  <article class="metric-card">
+    <span class="metric-label">Episodic artifact Y1</span>
+    <strong><%= money(@projection.episodic_totals.fetch("y1") / 100.0) %></strong>
+    <small>Non-recurring artifacts</small>
+  </article>
+  <article class="metric-card">
+    <span class="metric-label">Realized reliance events</span>
+    <strong><%= @reliance_events %></strong>
+    <small>Actual commercial signal</small>
+  </article>
+</section>
+
+<section class="content-section">
+  <h2>Scenario summaries</h2>
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Scenario</th>
+          <th>Year 1</th>
+          <th>Year 2</th>
+          <th>Year 3</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @projection.scenario_summaries.each do |name, totals| %>
+          <tr>
+            <td><%= name.humanize %></td>
+            <td><%= money(totals.fetch("y1_cents") / 100.0) %></td>
+            <td><%= money(totals.fetch("y2_cents") / 100.0) %></td>
+            <td><%= money(totals.fetch("y3_cents") / 100.0) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2>Base stream assumptions</h2>
+  <div class="table-responsive">
+    <table class="table table-sm align-middle">
+      <thead>
+        <tr>
+          <th>Stream</th>
+          <th>Price</th>
+          <th>Y1 units</th>
+          <th>Y2 units</th>
+          <th>Y3 units</th>
+          <th>Recurring</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @projection.streams.each do |stream| %>
+          <tr>
+            <td><%= stream.fetch("label") %></td>
+            <td><%= money(stream.fetch("price_cents") / 100.0) %></td>
+            <td><%= stream.fetch("units").fetch("y1") %></td>
+            <td><%= stream.fetch("units").fetch("y2") %></td>
+            <td><%= stream.fetch("units").fetch("y3") %></td>
+            <td><%= stream.fetch("recurring") ? "Yes" : "No" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</section>

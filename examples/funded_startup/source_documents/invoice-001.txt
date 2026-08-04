@@ -1,0 +1,5 @@
+Synthetic source document for Northstar Methane Systems.
+
+Invoice ID: invoice-001
+Observation: Feed additive product was delivered to the enterprise dairy pilot site on the stated date.
+Limitation: Invoice delivery does not prove actual dosage or consumption.

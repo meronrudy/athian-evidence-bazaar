@@ -1,0 +1,36 @@
+<% content_for :title, @gap.requirement %>
+
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Evidence gap</p>
+    <h1><%= @gap.requirement %></h1>
+    <p class="lead"><%= @gap.description %></p>
+  </div>
+  <%= link_to "Project map", agevidence_developer_project_path(@gap.model_run.developer_project), class: "btn btn-outline-primary" %>
+</section>
+
+<section class="dashboard-grid">
+  <article class="metric-card">
+    <span class="metric-label">Severity</span>
+    <strong><%= @gap.severity.humanize %></strong>
+    <small>Review prioritization</small>
+  </article>
+  <article class="metric-card">
+    <span class="metric-label">Status</span>
+    <strong><%= @gap.resolution_status.humanize %></strong>
+    <small>Append historical decisions elsewhere</small>
+  </article>
+</section>
+
+<section class="content-section">
+  <h2>Source context</h2>
+  <pre class="code-panel"><%= JSON.pretty_generate(@gap.source_context) %></pre>
+</section>
+
+<section class="content-section">
+  <h2>Resolution projection</h2>
+  <%= form_with model: [:agevidence, @gap], local: true, class: "d-flex gap-2" do |form| %>
+    <%= form.select :resolution_status, Agevidence::EvidenceGap::RESOLUTION_STATUSES, {}, class: "form-select" %>
+    <%= form.submit "Update", class: "btn btn-primary" %>
+  <% end %>
+</section>

@@ -1,0 +1,23 @@
+<% content_for :title, "AgEvidence Projects" %>
+
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Developer projects</p>
+    <h1>Project Evidence Maps</h1>
+  </div>
+  <%= link_to "New project", new_agevidence_developer_project_path, class: "btn btn-primary" %>
+</section>
+
+<section class="content-section">
+  <div class="list-group">
+    <% @projects.each do |project| %>
+      <%= link_to agevidence_developer_project_path(project), class: "list-group-item list-group-item-action" do %>
+        <div class="d-flex justify-content-between">
+          <strong><%= project.name %></strong>
+          <span class="badge text-bg-info"><%= project.integration_status.humanize %></span>
+        </div>
+        <span class="text-muted"><%= project.developer_account.name %> · <%= truncate(project.target_claim, length: 120) %></span>
+      <% end %>
+    <% end %>
+  </div>
+</section>

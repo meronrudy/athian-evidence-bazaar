@@ -1,0 +1,3 @@
+Identify missing, contradictory, or unsupported evidence.
+
+Return gaps with severity and source context. Do not certify emissions reductions or final verification outcomes.

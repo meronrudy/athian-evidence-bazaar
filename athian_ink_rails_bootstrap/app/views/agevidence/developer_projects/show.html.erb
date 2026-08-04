@@ -1,0 +1,118 @@
+<% content_for :title, @project.name %>
+
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Project Evidence Map</p>
+    <h1><%= @project.name %></h1>
+    <p class="lead"><%= @project.target_claim %></p>
+  </div>
+  <div class="d-flex gap-2 flex-wrap">
+    <%= link_to "Run fixture extraction", new_agevidence_developer_project_model_run_path(@project), class: "btn btn-primary" %>
+    <%= link_to "Build premium artifact", new_agevidence_developer_project_artifact_engagement_path(@project), class: "btn btn-outline-primary" %>
+  </div>
+</section>
+
+<div class="alert alert-boundary">Claim -> source -> model run -> candidate -> human review -> receipt -> artifact. Confidence is never displayed as scientific validity.</div>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Source records</p>
+      <h2>Controlled source-document commitments</h2>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-sm align-middle">
+      <thead>
+        <tr>
+          <th>Document</th>
+          <th>Commitment</th>
+          <th>Controlled URI</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @project.source_documents.each do |document| %>
+          <tr>
+            <td><%= document.fetch(:document_id) %></td>
+            <td><code><%= compact_digest(document.fetch(:commitment)) %></code></td>
+            <td><code><%= document.fetch(:controlled_uri) %></code></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Model runs</p>
+      <h2>Adapter execution records</h2>
+    </div>
+  </div>
+  <div class="list-group">
+    <% @model_runs.each do |run| %>
+      <%= link_to agevidence_model_run_path(run), class: "list-group-item list-group-item-action" do %>
+        <div class="d-flex justify-content-between">
+          <strong><%= run.model_adapter.display_name %></strong>
+          <span class="badge text-bg-secondary"><%= run.status.humanize %></span>
+        </div>
+        <span class="text-muted"><%= run.evidence_candidates.size %> candidates · <%= run.evidence_gaps.size %> gaps · output <%= compact_digest(run.output_digest) %></span>
+      <% end %>
+    <% end %>
+  </div>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Review workbench</p>
+      <h2>Candidates and material gaps</h2>
+    </div>
+  </div>
+  <div class="row g-3">
+    <div class="col-lg-7">
+      <div class="list-group">
+        <% @candidates.each do |candidate| %>
+          <%= link_to agevidence_evidence_candidate_path(candidate), class: "list-group-item list-group-item-action" do %>
+            <span class="badge text-bg-info"><%= candidate.review_status.humanize %></span>
+            <strong class="d-block mt-2"><%= candidate.claim_text %></strong>
+            <small><%= candidate.source_reference_labels.join(", ") %></small>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+    <div class="col-lg-5">
+      <div class="list-group">
+        <% @gaps.each do |gap| %>
+          <%= link_to agevidence_evidence_gap_path(gap), class: "list-group-item list-group-item-action" do %>
+            <span class="badge text-bg-warning"><%= gap.severity.humanize %></span>
+            <strong class="d-block mt-2"><%= gap.requirement %></strong>
+            <small><%= gap.resolution_status.humanize %></small>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Commercial artifacts</p>
+      <h2>Engagements tied to this project</h2>
+    </div>
+    <span class="small text-muted"><%= @product_notice %></span>
+  </div>
+  <div class="row g-3">
+    <% @engagements.each do |engagement| %>
+      <div class="col-md-6">
+        <%= link_to agevidence_developer_project_artifact_engagement_path(@project, engagement), class: "resource-card d-block text-decoration-none h-100" do %>
+          <h3><%= Agevidence::ProductCatalog.fetch(engagement.product_code).fetch("name") %></h3>
+          <p><%= engagement.pipeline_stage.humanize %> · <%= engagement.commercial_status.humanize %></p>
+          <strong><%= money(engagement.price_label / 100.0, engagement.currency) %></strong>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</section>

@@ -1,0 +1,38 @@
+<% content_for :title, "AgEvidence Developer Accounts" %>
+
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Developer accounts</p>
+    <h1>Funded startup accounts</h1>
+  </div>
+  <%= link_to "New account", new_agevidence_developer_account_path, class: "btn btn-primary" %>
+</section>
+
+<section class="content-section">
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Stage</th>
+          <th>Segment</th>
+          <th>Capital raised</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @accounts.each do |account| %>
+          <tr>
+            <td><%= account.name %></td>
+            <td><%= account.funding_stage %></td>
+            <td><%= account.primary_segment %></td>
+            <td><%= money(account.capital_raised_cents / 100.0) %></td>
+            <td><span class="badge text-bg-secondary"><%= account.status.humanize %></span></td>
+            <td class="text-end"><%= link_to "Open", agevidence_developer_account_path(account), class: "btn btn-sm btn-outline-primary" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</section>

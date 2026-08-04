@@ -1,0 +1,44 @@
+[
+  {
+    "candidate_id": "candidate-001",
+    "candidate_type": "observation",
+    "claim_text": "Feed additive product was delivered to the enterprise dairy pilot site.",
+    "status": "review_required"
+  },
+  {
+    "candidate_id": "candidate-002",
+    "candidate_type": "observation",
+    "claim_text": "The pilot period is linked to enterprise dairy animals.",
+    "status": "review_required"
+  },
+  {
+    "candidate_id": "candidate-003",
+    "candidate_type": "calculation_input",
+    "claim_text": "Measurement exports are available for the protocol pilot period.",
+    "status": "review_required"
+  },
+  {
+    "candidate_id": "candidate-004",
+    "candidate_type": "source_link",
+    "claim_text": "Ration records reference the intervention product.",
+    "status": "review_required"
+  },
+  {
+    "candidate_id": "candidate-005",
+    "candidate_type": "assumption",
+    "claim_text": "Delivered product was consumed at the protocol dosage for every material day.",
+    "status": "review_required"
+  },
+  {
+    "candidate_id": "candidate-006",
+    "candidate_type": "methodology_mapping",
+    "claim_text": "The trial maps to VM0042 v2.2 evidence requirements.",
+    "status": "review_required"
+  },
+  {
+    "candidate_id": "candidate-007",
+    "candidate_type": "judgment",
+    "claim_text": "The intervention caused the observed methane reduction.",
+    "status": "review_required"
+  }
+]

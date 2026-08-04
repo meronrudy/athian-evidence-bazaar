@@ -3,6 +3,9 @@ target/
 **/target/
 *.log
 *.tmp
+__pycache__/
+*.py[cod]
+.pytest_cache/
 
 # Rails local state
 athian_ink_rails_bootstrap/.env

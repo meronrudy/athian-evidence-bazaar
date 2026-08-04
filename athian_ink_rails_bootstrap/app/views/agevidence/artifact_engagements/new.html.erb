@@ -1,0 +1,32 @@
+<% content_for :title, "Premium Artifact Builder" %>
+
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Premium Artifact Builder</p>
+    <h1>Select commercial product and artifact scope</h1>
+    <p class="lead"><%= @project.name %></p>
+  </div>
+</section>
+
+<div class="alert alert-boundary"><%= @product_notice %></div>
+
+<section class="content-section">
+  <%= form_with url: agevidence_developer_project_artifact_engagements_path(@project), local: true, class: "vstack gap-3" do |form| %>
+    <%= select_tag :product_code, options_for_select(@products.map { |code, product| [product.fetch("name"), code] }), class: "form-select" %>
+    <%= number_field_tag :quoted_price_cents, nil, class: "form-control", placeholder: "Optional quoted planning price cents" %>
+    <div class="form-check">
+      <%= check_box_tag :assemble, "1", true, class: "form-check-input" %>
+      <%= label_tag :assemble, "Assemble fixture evidence bundle immediately", class: "form-check-label" %>
+    </div>
+    <%= form.submit "Create artifact engagement", class: "btn btn-primary" %>
+  <% end %>
+</section>
+
+<section class="content-section">
+  <h2>Pricing factors</h2>
+  <div class="row g-2">
+    <% Agevidence::ProductCatalog.pricing_factors.each do |factor| %>
+      <div class="col-md-4"><span class="badge text-bg-light border"><%= factor %></span></div>
+    <% end %>
+  </div>
+</section>

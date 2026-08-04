@@ -1,0 +1,22 @@
+<% content_for :title, "Premium Artifact Engagements" %>
+
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Premium artifacts</p>
+    <h1><%= @project.name %></h1>
+  </div>
+  <%= link_to "New artifact", new_agevidence_developer_project_artifact_engagement_path(@project), class: "btn btn-primary" %>
+</section>
+
+<div class="alert alert-boundary"><%= @product_notice %></div>
+
+<section class="content-section">
+  <div class="list-group">
+    <% @engagements.each do |engagement| %>
+      <%= link_to agevidence_developer_project_artifact_engagement_path(@project, engagement), class: "list-group-item list-group-item-action" do %>
+        <strong><%= @products.fetch(engagement.product_code).fetch("name") %></strong>
+        <span class="text-muted d-block"><%= engagement.pipeline_stage.humanize %> · <%= money(engagement.price_label / 100.0) %></span>
+      <% end %>
+    <% end %>
+  </div>
+</section>

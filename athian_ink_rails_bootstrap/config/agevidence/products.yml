@@ -1,0 +1,52 @@
+notice: "Illustrative management hypotheses-not quotes, commitments, or recognized revenue."
+pricing_factors:
+  - Protocol complexity
+  - Evidence classes
+  - Source systems
+  - Review burden
+  - Relying-party count
+  - Transaction materiality
+  - Selective-disclosure requirements
+  - Response time
+  - Migration or dispute exposure
+products:
+  evidence_architecture_sprint:
+    name: "Evidence Architecture Sprint"
+    base_planning_price_cents: 2500000
+    billing_type: "fixed_fee"
+    description: "Map a funded startup claim into source records, candidate receipts, gaps, and an evidence artifact plan."
+  protocol_evidence_implementation:
+    name: "Protocol Evidence Implementation"
+    base_planning_price_cents: 10000000
+    billing_type: "fixed_fee"
+    description: "Implement evidence capture against a protocol or methodology review surface."
+  verification_readiness_cycle:
+    name: "Verification Readiness Cycle"
+    base_planning_price_cents: 6000000
+    billing_type: "fixed_fee"
+    description: "Assemble evidence, gaps, review decisions, and receipt chains for verifier review."
+  enterprise_reliance_artifact:
+    name: "Enterprise Reliance Artifact"
+    base_planning_price_cents: 3000000
+    billing_type: "fixed_fee"
+    description: "Package a receipt-backed evidence artifact for a relying buyer, auditor, or insurer."
+  managed_evidence_plane:
+    name: "Managed Evidence Plane"
+    base_planning_price_cents: 15000000
+    billing_type: "annual"
+    description: "Operate the evidence plane for ongoing source records, reviews, artifacts, and reliance events."
+  private_deployment_model_registry:
+    name: "Private Deployment Model Registry"
+    base_planning_price_cents: 30000000
+    billing_type: "annual"
+    description: "Register controlled model adapters and runtime policies for private evidence extraction."
+  sponsor_portfolio_program:
+    name: "Sponsor Portfolio Program"
+    base_planning_price_cents: 20000000
+    billing_type: "annual"
+    description: "Apply the evidence plane across a sponsor portfolio of funded agriculture startups."
+  methodology_migration_dispute_event:
+    name: "Methodology Migration or Dispute Event"
+    base_planning_price_cents: 25000000
+    billing_type: "event"
+    description: "Create a receipt-backed migration or dispute artifact without overwriting prior evidence."

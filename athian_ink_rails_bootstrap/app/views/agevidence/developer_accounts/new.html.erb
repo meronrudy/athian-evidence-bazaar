@@ -1,0 +1,21 @@
+<% content_for :title, "New AgEvidence Account" %>
+
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Developer account</p>
+    <h1>New funded startup account</h1>
+  </div>
+</section>
+
+<section class="content-section">
+  <%= form_with model: [:agevidence, @account], local: true, class: "vstack gap-3" do |form| %>
+    <%= form.text_field :name, class: "form-control", placeholder: "Company name" %>
+    <%= form.text_field :website, class: "form-control", placeholder: "Website" %>
+    <%= form.text_field :funding_stage, class: "form-control", placeholder: "Funding stage" %>
+    <%= form.number_field :capital_raised_cents, class: "form-control", placeholder: "Capital raised cents" %>
+    <%= form.text_field :primary_segment, class: "form-control", placeholder: "Primary segment" %>
+    <%= form.text_field :headquarters, class: "form-control", placeholder: "Headquarters" %>
+    <%= form.select :status, Agevidence::DeveloperAccount::STATUSES, {}, class: "form-select" %>
+    <%= form.submit "Create account", class: "btn btn-primary" %>
+  <% end %>
+</section>

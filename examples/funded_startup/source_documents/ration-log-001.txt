@@ -1,0 +1,5 @@
+Synthetic source document for Northstar Methane Systems.
+
+Ration log ID: ration-log-001
+Observation: Daily ration records reference the intervention product.
+Gap: One dosage confirmation record is missing for the material review period.

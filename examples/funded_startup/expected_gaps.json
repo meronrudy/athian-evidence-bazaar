@@ -1,0 +1,20 @@
+[
+  {
+    "gap_type": "missing_independent_support",
+    "requirement": "Dosage confirmation",
+    "severity": "material",
+    "description": "Dosage appears in the trial narrative but lacks telemetry or ration-log support for one material interval."
+  },
+  {
+    "gap_type": "methodology_version_mismatch",
+    "requirement": "Current methodology mapping",
+    "severity": "medium",
+    "description": "Source records reference VM0042 v2.2 while the migration review references VM0042 v3.0."
+  },
+  {
+    "gap_type": "unsupported_causal_statement",
+    "requirement": "Independent causal support",
+    "severity": "material",
+    "description": "The causal statement requires human scientific review and cannot be accepted from model output alone."
+  }
+]

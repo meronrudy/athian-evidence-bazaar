@@ -1,0 +1,6 @@
+Synthetic source document for Northstar Methane Systems.
+
+Trial report ID: trial-report-001
+Claim: The livestock methane-reduction intervention was piloted with enterprise dairy animals during the demonstration period.
+Observation: The report records lower enteric methane intensity for the treated cohort.
+Limitation: The causal statement requires independent measurement and protocol review before acceptance.
