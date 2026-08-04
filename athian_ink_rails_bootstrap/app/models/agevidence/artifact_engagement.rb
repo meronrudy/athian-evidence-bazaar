@@ -5,8 +5,11 @@ module Agevidence
     COMMERCIAL_STATUSES = %w[illustrative proposed active completed closed].freeze
 
     belongs_to :developer_project, class_name: "Agevidence::DeveloperProject"
+    belongs_to :country_program, class_name: "Agevidence::CountryProgram", optional: true
     belongs_to :evidence_bundle, optional: true
     has_many :reliance_events, class_name: "Agevidence::RelianceEvent", dependent: :destroy
+
+    before_validation :inherit_country_program
 
     validates :product_code, :pipeline_stage, :billing_type, :currency, :commercial_status, presence: true
     validates :pipeline_stage, inclusion: { in: PIPELINE_STAGES }
@@ -16,6 +19,12 @@ module Agevidence
 
     def price_label
       quoted_price_cents.positive? ? quoted_price_cents : list_price_cents
+    end
+
+    private
+
+    def inherit_country_program
+      self.country_program ||= developer_project&.country_program
     end
   end
 end

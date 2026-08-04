@@ -13,11 +13,16 @@ module Agevidence
       ActiveRecord::Base.transaction do
         run = project.model_runs.create!(
           model_adapter: model_adapter,
+          country_adapter: project.country_program&.default_adapter,
           task: "protocol_evidence_extraction",
           status: "completed",
           prompt_digest: metadata["prompt_digest"],
           retrieval_digest: metadata["retrieval_digest"],
-          input_manifest: { documents: project.source_documents },
+          input_manifest: {
+            documents: project.source_documents,
+            country: project.country_program&.code,
+            country_context: project.country_context
+          },
           normalized_output: response,
           output_digest: metadata["normalized_output_digest"],
           runtime_metadata: metadata,
@@ -47,6 +52,7 @@ module Agevidence
         end
 
         project.update!(integration_status: "model_ready")
+        project.refresh_country_determination! if project.country_program
         run
       end
     end

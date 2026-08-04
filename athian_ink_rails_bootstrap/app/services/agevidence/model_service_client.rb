@@ -27,23 +27,29 @@ module Agevidence
     end
 
     def request_payload(project:, documents:, task:, adapter: nil)
+      country_adapter = project.country_program&.default_adapter
+      method_version = project.protocol&.country_method_version || country_adapter&.country_method_version
+
       {
         adapter_id: adapter&.adapter_id || project.model_runs.last&.model_adapter&.adapter_id || "qwen3.5-4b-reference",
         task: task,
         project: {
           id: "project-#{project.id}",
-          claim: project.target_claim
+          claim: project.target_claim,
+          country_context: project.country_context
         },
+        country: country_payload(project.country_program, country_adapter, method_version),
         protocol: {
-          code: project.protocol&.code || "ATH-LI-CH4",
-          version: project.protocol&.version || "v1"
+          code: project.protocol&.code || method_version&.country_method&.code || "ATH-LI-CH4",
+          version: project.protocol&.version || method_version&.version || "v1"
         },
         documents: documents.map do |document|
           {
             document_id: document_value(document, :document_id),
             commitment: document_value(document, :commitment),
-            controlled_uri: document_value(document, :controlled_uri)
-          }
+            controlled_uri: document_value(document, :controlled_uri),
+            evidence_type: document_value(document, :evidence_type, required: false)
+          }.compact
         end,
         generation: {
           temperature: 0,
@@ -81,8 +87,26 @@ module Agevidence
       JSON.parse(response.body)
     end
 
-    def document_value(document, key)
+    def country_payload(program, country_adapter, method_version)
+      return nil unless program
+
+      {
+        code: program.code,
+        program_id: program.id,
+        adapter_id: country_adapter&.adapter_id,
+        adapter_version: country_adapter&.version,
+        method_code: method_version&.country_method&.code,
+        method_version: method_version&.version,
+        determination_role: CountryEligibilityEvaluator::DETERMINATION_ROLE
+      }
+    end
+
+    def document_value(document, key, required: true)
       document.fetch(key) { document.fetch(key.to_s) }
+    rescue KeyError
+      raise if required
+
+      nil
     end
   end
 end

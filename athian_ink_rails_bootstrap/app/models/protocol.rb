@@ -1,6 +1,7 @@
 class Protocol < ApplicationRecord
   STATUSES = %w[draft active annual_review retired].freeze
 
+  belongs_to :country_method_version, class_name: "Agevidence::CountryMethodVersion", optional: true
   has_many :avsas, dependent: :restrict_with_error
 
   validates :code, :name, :version, :governance_version, presence: true
@@ -10,7 +11,8 @@ class Protocol < ApplicationRecord
   scope :active, -> { where(status: "active") }
 
   def display_name
-    "#{code} v#{version}"
+    version_label = version.to_s.start_with?("v") ? version : "v#{version}"
+    "#{code} #{version_label}"
   end
 
   def protocol_digest
@@ -19,6 +21,7 @@ class Protocol < ApplicationRecord
         code: code,
         version: version,
         governance_version: governance_version,
+        country_method_version: country_method_version&.display_name,
         effective_on: effective_on,
         retired_on: retired_on
       },
