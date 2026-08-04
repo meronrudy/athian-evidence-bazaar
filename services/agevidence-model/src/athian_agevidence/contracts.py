@@ -13,6 +13,19 @@ class ProjectRef(BaseModel):
 
     id: str
     claim: str
+    country_context: dict[str, Any] = Field(default_factory=dict)
+
+
+class CountryRef(BaseModel):
+    """Versioned country-program context supplied by Rails."""
+
+    code: str
+    program_id: int
+    adapter_id: str | None = None
+    adapter_version: str | None = None
+    method_code: str | None = None
+    method_version: str | None = None
+    determination_role: str
 
 
 class ProtocolRef(BaseModel):
@@ -28,6 +41,7 @@ class DocumentRef(BaseModel):
     document_id: str
     commitment: str
     controlled_uri: str
+    evidence_type: str | None = None
 
 
 class GenerationConfig(BaseModel):
@@ -43,6 +57,7 @@ class EvidenceRunRequest(BaseModel):
     adapter_id: str
     task: str
     project: ProjectRef
+    country: CountryRef | None = None
     protocol: ProtocolRef
     documents: list[DocumentRef] = Field(default_factory=list)
     generation: GenerationConfig = Field(default_factory=GenerationConfig)
