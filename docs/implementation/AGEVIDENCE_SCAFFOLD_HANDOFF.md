@@ -16,6 +16,59 @@ The scaffold adds a fixture-backed AgEvidence path across the monorepo:
 
 The existing AVSA Evidence Bazaar demo remains the carbon-domain anchor. AgEvidence extends it with developer projects, model runs, candidate review, country determinations, premium artifacts, reliance events, and revenue scenarios.
 
+## Developer OS scaffold
+
+The Developer OS layer makes the scaffold usable without an enterprise
+implementation project. It adds two entry paths into the same evidence state:
+
+- Event Inbox Path: upstream Athian systems submit signed operational events to
+  `/v1/integrations/events`.
+- Source Records Path: startups submit controlled references to
+  `/v1/developer/projects/:project_id/source_records`.
+
+New Rails projection objects:
+
+- `Agevidence::SourceRecord`
+- `Agevidence::PricingQuote`
+- `Agevidence::ArtifactOrder`
+
+New browser surface:
+
+- `/agevidence/developer-os`
+- `/agevidence/developer_projects/:id/source_records`
+- `/agevidence/developer_projects/:id/pricing_quotes/new`
+- `/agevidence/developer_projects/:id/artifact_orders/:id`
+
+New public API surface:
+
+- `/v1/developer/projects`
+- `/v1/developer/projects/:project_id/source_records`
+- `/v1/developer/projects/:project_id/model_runs`
+- `/v1/developer/candidates/:id`
+- `/v1/pricing/products`
+- `/v1/pricing/quotes`
+- `/v1/artifact-orders`
+- `/v1/developer/projects/:project_id/artifacts`
+
+The OpenAPI contract lives at `docs/openapi/agevidence.v1.yaml`. Minimal SDK
+examples live under `examples/sdk/python` and `examples/sdk/typescript`.
+
+Important boundary notes:
+
+- Direct source-record submission is converted into a `source.manifest_available`
+  inbox event through `Agevidence::SourceRecordProjection`.
+- Model runs remain fixture-backed by default and every model-derived candidate
+  remains `review_required`.
+- Review decisions are append-only and project the latest decision back onto the
+  candidate.
+- Quotes and orders are sandbox planning records. They are not booked,
+  collected, or recognized revenue.
+- Artifact assembly still uses the scaffold `ink_receipts` reliance-artifact
+  path. When a self-service project lacks an AVSA, fulfillment creates a
+  lightweight Developer OS AVSA projection solely to anchor demo bundles.
+  Production work must replace that with an explicit receipt aggregate or
+  approved AVSA anchoring policy.
+
 ## Global thin-waist scaffold
 
 Read `docs/implementation/GLOBAL_THIN_WAIST_ARCHITECTURE.md` before adding a country. The implementation invariant is:

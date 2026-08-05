@@ -1,0 +1,70 @@
+<% content_for :title, "#{@project.name} Quote Builder" %>
+
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Quote builder</p>
+    <h1>Price a reliance artifact</h1>
+    <p class="lead">Sandbox quotes preserve the price-book version, exact scope inputs, breakdown, and expiration.</p>
+  </div>
+  <%= link_to "Project map", agevidence_developer_project_path(@project), class: "btn btn-outline-primary" %>
+</section>
+
+<div class="alert alert-boundary"><%= @product_notice %></div>
+
+<section class="content-section">
+  <%= form_with scope: :pricing_quote, url: agevidence_developer_project_pricing_quotes_path(@project), class: "row g-3" do |form| %>
+    <div class="col-md-6">
+      <%= form.label :product_code, "Product", class: "form-label" %>
+      <%= form.select :product_code, @products.map { |code, product| ["#{product.fetch('name')} - #{money(product.fetch('base_planning_price_cents') / 100.0)}", code] }, { selected: "verification_readiness_cycle" }, class: "form-select" %>
+    </div>
+    <div class="col-md-3">
+      <%= label_tag "pricing_quote_scope_protocol_complexity", "Protocol complexity", class: "form-label" %>
+      <%= select_tag "pricing_quote[scope][protocol_complexity]", options_for_select(%w[low medium high].map { |value| [value.humanize, value] }, "medium"), class: "form-select" %>
+    </div>
+    <div class="col-md-3">
+      <%= label_tag "pricing_quote_scope_evidence_classes", "Evidence classes", class: "form-label" %>
+      <%= number_field_tag "pricing_quote[scope][evidence_classes]", @quote_scope.fetch(:evidence_classes), min: 1, class: "form-control" %>
+    </div>
+    <div class="col-md-3">
+      <%= label_tag "pricing_quote_scope_source_systems", "Source systems", class: "form-label" %>
+      <%= number_field_tag "pricing_quote[scope][source_systems]", @quote_scope.fetch(:source_systems), min: 1, class: "form-control" %>
+    </div>
+    <div class="col-md-3">
+      <%= label_tag "pricing_quote_scope_countries", "Country policies", class: "form-label" %>
+      <%= number_field_tag "pricing_quote[scope][countries]", @quote_scope.fetch(:countries), min: 1, class: "form-control" %>
+    </div>
+    <div class="col-md-3">
+      <%= label_tag "pricing_quote_scope_relying_parties", "Relying parties", class: "form-label" %>
+      <%= number_field_tag "pricing_quote[scope][relying_parties]", @quote_scope.fetch(:relying_parties), min: 1, class: "form-control" %>
+    </div>
+    <div class="col-md-3">
+      <%= label_tag "pricing_quote_scope_turnaround_days", "Turnaround days", class: "form-label" %>
+      <%= number_field_tag "pricing_quote[scope][turnaround_days]", @quote_scope.fetch(:turnaround_days), min: 1, class: "form-control" %>
+    </div>
+    <div class="col-md-6 d-flex align-items-end">
+      <div class="form-check">
+        <%= check_box_tag "pricing_quote[scope][selective_disclosure]", "1", false, class: "form-check-input" %>
+        <%= label_tag "pricing_quote_scope_selective_disclosure", "Selective disclosure required", class: "form-check-label" %>
+      </div>
+    </div>
+    <div class="col-12">
+      <%= form.submit "Create sandbox quote", class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Pricing basis</p>
+      <h2>Artifact value drivers</h2>
+    </div>
+  </div>
+  <div class="row g-2">
+    <% Agevidence::ProductCatalog.pricing_factors.each do |factor| %>
+      <div class="col-md-4">
+        <div class="resource-card h-100"><%= factor %></div>
+      </div>
+    <% end %>
+  </div>
+</section>

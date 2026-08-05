@@ -1,0 +1,105 @@
+<% content_for :title, @order.external_id %>
+
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Artifact order</p>
+    <h1><%= @product.fetch("name") %></h1>
+    <p class="lead">Order <code><%= @order.external_id %></code> demonstrates quote, sandbox checkout, artifact assembly, and local verification metadata.</p>
+  </div>
+  <div class="d-flex gap-2 flex-wrap">
+    <% unless @order.status == "paid" || @order.fulfilled? %>
+      <%= button_to "Sandbox checkout", checkout_agevidence_developer_project_artifact_order_path(@project, @order), class: "btn btn-primary" %>
+    <% end %>
+    <% if @order.status == "paid" %>
+      <%= button_to "Assemble artifact", assemble_agevidence_developer_project_artifact_order_path(@project, @order), class: "btn btn-primary" %>
+    <% end %>
+    <%= link_to "Project map", agevidence_developer_project_path(@project), class: "btn btn-outline-primary" %>
+  </div>
+</section>
+
+<div class="alert alert-boundary">
+  <%= @product_notice %> Sandbox checkout is not collected revenue. Artifact verification is separate from method compatibility and reliance.
+</div>
+
+<section class="dashboard-grid">
+  <article class="metric-card">
+    <span class="metric-label">Order status</span>
+    <strong><%= @order.status.humanize %></strong>
+    <small>Quote-to-artifact lifecycle</small>
+  </article>
+  <article class="metric-card">
+    <span class="metric-label">Sandbox value</span>
+    <strong><%= money(@order.amount_cents / 100.0, @order.currency) %></strong>
+    <small>Planning value only</small>
+  </article>
+  <article class="metric-card">
+    <span class="metric-label">Integrity state</span>
+    <strong><%= @order.metadata_json["integrity_status"].presence || "pending" %></strong>
+    <small>Bundle verifier output</small>
+  </article>
+  <article class="metric-card">
+    <span class="metric-label">Reliance state</span>
+    <strong><%= @order.metadata_json["reliance_status"].presence || "not yet relied upon" %></strong>
+    <small>External use is separate</small>
+  </article>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Artifact metadata</p>
+      <h2>Portable verification packet</h2>
+    </div>
+  </div>
+  <% if @order.evidence_bundle %>
+    <div class="row g-3">
+      <div class="col-lg-6">
+        <article class="resource-card h-100">
+          <h3>Bundle</h3>
+          <dl class="row mb-0">
+            <dt class="col-sm-4">Artifact ID</dt>
+            <dd class="col-sm-8"><code><%= @order.metadata_json["artifact_id"] %></code></dd>
+            <dt class="col-sm-4">File</dt>
+            <dd class="col-sm-8"><code><%= @order.evidence_bundle.artifact_filename %></code></dd>
+            <dt class="col-sm-4">Download</dt>
+            <dd class="col-sm-8"><code><%= @order.metadata_json["download_url"] %></code></dd>
+            <dt class="col-sm-4">Receipt root</dt>
+            <dd class="col-sm-8"><code><%= compact_digest(@order.metadata_json["receipt_root"]) %></code></dd>
+          </dl>
+        </article>
+      </div>
+      <div class="col-lg-6">
+        <article class="resource-card h-100">
+          <h3>Verify outside Rails</h3>
+          <pre class="code-panel mb-0"><%= @order.metadata_json["verification_command"] %></pre>
+        </article>
+      </div>
+    </div>
+  <% else %>
+    <p class="text-muted mb-0">Complete sandbox checkout before assembling this artifact.</p>
+  <% end %>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">State boundaries</p>
+      <h2>Do not collapse trust states</h2>
+    </div>
+  </div>
+  <div class="row g-3">
+    <% {
+      "integrity_status" => "Receipt and bundle verification",
+      "policy_compatibility" => "Country or protocol compatibility",
+      "review_status" => "Human evidence review",
+      "reliance_status" => "External institutional use"
+    }.each do |state, label| %>
+      <div class="col-md-3">
+        <div class="resource-card h-100">
+          <strong><%= state %></strong>
+          <p class="mb-0"><%= label %>: <%= @order.metadata_json[state].presence || "pending" %></p>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</section>

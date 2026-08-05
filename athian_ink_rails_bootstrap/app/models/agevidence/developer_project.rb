@@ -12,6 +12,9 @@ module Agevidence
     has_many :model_runs, class_name: "Agevidence::ModelRun", dependent: :destroy
     has_many :artifact_engagements, class_name: "Agevidence::ArtifactEngagement", dependent: :destroy
     has_many :country_determinations, class_name: "Agevidence::CountryDetermination", dependent: :destroy
+    has_many :source_records, class_name: "Agevidence::SourceRecord", dependent: :destroy
+    has_many :pricing_quotes, class_name: "Agevidence::PricingQuote", dependent: :destroy
+    has_many :artifact_orders, class_name: "Agevidence::ArtifactOrder", dependent: :destroy
 
     validates :name, :project_type, :protocol_status, :integration_status, presence: true
     validates :project_type, inclusion: { in: PROJECT_TYPES }
@@ -19,6 +22,30 @@ module Agevidence
     validates :integration_status, inclusion: { in: INTEGRATION_STATUSES }
 
     def source_documents
+      source_record_documents + avsa_evidence_documents
+    end
+
+    def evidence_graph_root
+      avsa&.root_digest.presence || avsa&.portable_reference || "project-#{id}"
+    end
+
+    private
+
+    def source_record_documents
+      source_records.order(:document_id).map do |record|
+        {
+          document_id: record.document_id,
+          commitment: record.commitment,
+          controlled_uri: record.controlled_uri,
+          source_record_id: record.id,
+          evidence_type: record.evidence_type,
+          global_evidence_type: record.metadata_json["global_evidence_type"],
+          source_system: record.source_system
+        }
+      end
+    end
+
+    def avsa_evidence_documents
       return [] unless avsa
 
       avsa.receipts.includes(:evidence_items).flat_map do |receipt|
@@ -35,10 +62,6 @@ module Agevidence
           }
         end
       end
-    end
-
-    def evidence_graph_root
-      avsa&.root_digest.presence || avsa&.portable_reference || "project-#{id}"
     end
   end
 end

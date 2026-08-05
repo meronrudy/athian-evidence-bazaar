@@ -1,0 +1,88 @@
+<% content_for :title, @quote.external_id %>
+
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Sandbox quote</p>
+    <h1><%= @product.fetch("name") %></h1>
+    <p class="lead">Quote <code><%= @quote.external_id %></code> preserves the exact scope and price-book version used when it was created.</p>
+  </div>
+  <div class="d-flex gap-2 flex-wrap">
+    <%= button_to "Create artifact order", agevidence_developer_project_artifact_orders_path(@project), params: { pricing_quote_id: @quote.id }, class: "btn btn-primary" %>
+    <%= link_to "Project map", agevidence_developer_project_path(@project), class: "btn btn-outline-primary" %>
+  </div>
+</section>
+
+<div class="alert alert-boundary"><%= @product_notice %></div>
+
+<section class="dashboard-grid">
+  <article class="metric-card">
+    <span class="metric-label">Amount</span>
+    <strong><%= money(@quote.amount_cents / 100.0, @quote.currency) %></strong>
+    <small>Sandbox planning value</small>
+  </article>
+  <article class="metric-card">
+    <span class="metric-label">Status</span>
+    <strong><%= @quote.status.humanize %></strong>
+    <small>Accepted only after checkout</small>
+  </article>
+  <article class="metric-card">
+    <span class="metric-label">Price book</span>
+    <strong><%= @quote.pricing_version %></strong>
+    <small>Versioned assumptions</small>
+  </article>
+  <article class="metric-card">
+    <span class="metric-label">Expires</span>
+    <strong><%= l(@quote.expires_at, format: :short) %></strong>
+    <small>Not recalculated after acceptance</small>
+  </article>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Breakdown</p>
+      <h2>Exact quote components</h2>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Component</th>
+          <th class="text-end">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @quote.breakdown_json.each do |item| %>
+          <tr>
+            <td><%= item.fetch("component", item[:component]).to_s.humanize %></td>
+            <td class="text-end"><%= money(item.fetch("amount_cents", item[:amount_cents]).to_i / 100.0, @quote.currency) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Orders</p>
+      <h2>Quote-to-artifact flow</h2>
+    </div>
+  </div>
+  <div class="list-group">
+    <% @orders.each do |order| %>
+      <%= link_to agevidence_developer_project_artifact_order_path(@project, order), class: "list-group-item list-group-item-action" do %>
+        <div class="d-flex justify-content-between">
+          <strong><%= order.external_id %></strong>
+          <span class="badge text-bg-secondary"><%= order.status.humanize %></span>
+        </div>
+        <small><%= money(order.amount_cents / 100.0, order.currency) %></small>
+      <% end %>
+    <% end %>
+    <% if @orders.empty? %>
+      <p class="text-muted mb-0">No artifact orders have been created from this quote yet.</p>
+    <% end %>
+  </div>
+</section>

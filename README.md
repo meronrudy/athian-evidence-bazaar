@@ -76,9 +76,13 @@ Key routes:
 - `/methodology_migrations`: methodology migration.
 - `/marketplace`: evidence marketplace.
 - `/agevidence`: funded-startup developer launchpad.
+- `/agevidence/developer-os`: self-service Developer OS start page.
 - `/agevidence/country_programs`: country adapter and method-compatibility projections.
 - `/agevidence/revenue_model`: illustrative C-suite revenue scenario.
 - `/v1/integrations/events`: append-only signed event intake for upstream Athian systems.
+- `/v1/developer/projects`: source-record developer API.
+- `/v1/pricing/products`: machine-readable artifact price book.
+- `/v1/artifact-orders`: sandbox quote-to-order artifact flow.
 - `/integrations/events`: internal inbox inspection, replay, outbox, delivery, and dead-letter views.
 
 ## Trust Boundary
@@ -132,6 +136,31 @@ The bridge is intentionally one-way for operational data: existing Athian
 systems publish signed events; Rails preserves them, maps external identifiers,
 creates evidence projections, and writes receipt requests through
 `ReceiptOutbox`.
+
+The Australian executive GTM backlog is documented in
+`docs/strategy/AUSTRALIAN_AGEVIDENCE_GTM_BACKLOG.md`.
+
+## Developer OS
+
+AgEvidence is now scaffolded as a developer operating system, not only an
+enterprise implementation practice. A startup can enter through either:
+
+- signed operational events into `/v1/integrations/events`; or
+- controlled source references into `/v1/developer/projects/:id/source_records`.
+
+Both paths produce Rails evidence projections and async receipt requests while
+the original operating platform or source owner remains authoritative. Fixture
+model runs create review-required candidates and gaps, human decisions are
+append-only, sandbox quotes preserve versioned pricing inputs, and artifact
+orders expose metadata plus a local verification command.
+
+Developer-facing contracts and examples:
+
+- OpenAPI: `docs/openapi/agevidence.v1.yaml`
+- Python SDK example: `examples/sdk/python/agevidence_client.py`
+- TypeScript SDK example: `examples/sdk/typescript/agevidenceClient.ts`
+- Project 4030 replay script:
+  `examples/integrations/project_4030_beef/replay_project_4030.rb`
 
 ## Validation
 

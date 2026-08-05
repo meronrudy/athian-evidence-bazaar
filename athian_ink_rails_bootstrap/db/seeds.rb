@@ -1,6 +1,7 @@
 puts "Resetting Athian Evidence Bazaar demo data..."
 
 [
+  Agevidence::SourceRecord,
   IntegrationDelivery,
   IntegrationWebhookEndpoint,
   ReceiptOutbox,
@@ -14,6 +15,8 @@ puts "Resetting Athian Evidence Bazaar demo data..."
   Agevidence::EvidenceGap,
   Agevidence::EvidenceCandidate,
   Agevidence::CountryDetermination,
+  Agevidence::ArtifactOrder,
+  Agevidence::PricingQuote,
   Agevidence::ModelRun,
   Agevidence::ArtifactEngagement,
   Agevidence::DeveloperProject,
@@ -443,6 +446,30 @@ developer_project = developer_account.developer_projects.create!(
   }
 )
 
+[
+  ["trial-report-001", "evidence.animal_cohort", "Northstar trial report", "evidence://trial-report-001"],
+  ["invoice-001", "evidence.intervention_delivery", "Northstar product invoice", "evidence://invoice-001"],
+  ["ration-log-001", "evidence.feed_record", "Northstar ration log", "evidence://ration-log-001"],
+  ["measurement-export-001", "evidence.weight_record", "Northstar measurement export", "evidence://measurement-export-001"]
+].each do |document_id, evidence_type, title, controlled_uri|
+  developer_project.source_records.create!(
+    document_id: document_id,
+    evidence_type: evidence_type,
+    evidence_class: "source_record",
+    source_system: "northstar_methane_systems",
+    controlled_uri: controlled_uri,
+    commitment: commitment.call("developer-os:#{document_id}"),
+    disclosure_status: "restricted",
+    status: "referenced",
+    captured_at: now - 5.days,
+    metadata_json: {
+      title: title,
+      synthetic_demo: true,
+      authority_boundary: "Source document remains under Northstar control."
+    }
+  )
+end
+
 model_adapter = Agevidence::ModelAdapter.create!(
   adapter_id: "qwen3.5-4b-reference",
   base_model_id: "Qwen/Qwen3.5-4B",
@@ -558,6 +585,32 @@ developer_project.artifact_engagements.create!(
   commercial_status: "active",
   started_on: Date.new(2026, 8, 15)
 )
+
+developer_os_quote = Agevidence::PricingEngine.new(
+  project: developer_project,
+  product_code: "verification_readiness_cycle",
+  scope: {
+    protocol_complexity: "high",
+    evidence_classes: 7,
+    source_systems: 4,
+    countries: 1,
+    relying_parties: 2,
+    selective_disclosure: true,
+    turnaround_days: 15
+  }
+).quote
+developer_project.artifact_orders.create!(
+  pricing_quote: developer_os_quote,
+  product_code: developer_os_quote.product_code,
+  status: "quoted",
+  amount_cents: developer_os_quote.amount_cents,
+  currency: developer_os_quote.currency,
+  metadata_json: {
+    source: "seeded_developer_os",
+    sandbox: true,
+    note: "Synthetic quote-to-order scaffold. No payment collected."
+  }
+)
 developer_project.update!(integration_status: "relied_on", protocol_status: "aligned")
 
 canonical_avsa.verification_runs.create!(
@@ -633,4 +686,4 @@ secondary_avsa.verification_runs.create!(
   completed_at: now - 2.hours + 1.second
 )
 
-puts "Seeded #{Protocol.count} protocols, #{Avsa.count} AVSAs, #{Receipt.count} receipts, #{EvidenceItem.count} evidence items, #{EvidenceBundle.count} bundle projections, #{MethodologyMigration.count} migration(s), and #{Agevidence::DeveloperProject.count} AgEvidence project(s)."
+puts "Seeded #{Protocol.count} protocols, #{Avsa.count} AVSAs, #{Receipt.count} receipts, #{EvidenceItem.count} evidence items, #{EvidenceBundle.count} bundle projections, #{Agevidence::SourceRecord.count} source records, #{Agevidence::PricingQuote.count} quote(s), #{Agevidence::ArtifactOrder.count} artifact order(s), #{MethodologyMigration.count} migration(s), and #{Agevidence::DeveloperProject.count} AgEvidence project(s)."

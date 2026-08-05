@@ -1,0 +1,213 @@
+<% content_for :title, "AgEvidence Developer OS" %>
+
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Developer operating system</p>
+    <h1>From source record to reliance artifact</h1>
+    <p class="lead">Start with a signed operational event or a controlled source reference, then move through extraction, review, pricing, artifact assembly, and local verification.</p>
+  </div>
+  <div class="d-flex gap-2 flex-wrap">
+    <%= link_to "Create project", new_agevidence_developer_project_path, class: "btn btn-primary" %>
+    <%= link_to "Event inbox", integrations_events_path, class: "btn btn-outline-primary" %>
+    <%= link_to "API contract", agevidence_developer_os_openapi_path, class: "btn btn-outline-secondary" %>
+  </div>
+</section>
+
+<div class="alert alert-boundary">
+  One bridge, two entry paths. The existing Athian platform remains authoritative for operations; Rails preserves event and source projections, and portable receipts remain independently verifiable.
+</div>
+
+<section class="dashboard-grid">
+  <article class="metric-card">
+    <span class="metric-label">Inbox events</span>
+    <strong><%= @inbox_counts.fetch(:events) %></strong>
+    <small>Signed operational inputs</small>
+  </article>
+  <article class="metric-card">
+    <span class="metric-label">Evidence projections</span>
+    <strong><%= @inbox_counts.fetch(:projections) %></strong>
+    <small>Append-only Rails state</small>
+  </article>
+  <article class="metric-card">
+    <span class="metric-label">Receipt outbox</span>
+    <strong><%= @inbox_counts.fetch(:outbox) %></strong>
+    <small>Async trust-boundary requests</small>
+  </article>
+  <article class="metric-card">
+    <span class="metric-label">Result callbacks</span>
+    <strong><%= @inbox_counts.fetch(:deliveries) %></strong>
+    <small>Artifact and reliance notifications</small>
+  </article>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Start here</p>
+      <h2>Dual-path launchpad</h2>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-lg-6">
+      <article class="resource-card h-100">
+        <span class="badge text-bg-dark">Event Inbox Path</span>
+        <h3 class="mt-3">Existing Athian operational events</h3>
+        <p>Publish eight signed material events into <code>POST /v1/integrations/events</code>. The inbox accepts quickly, maps upstream IDs, creates projections, and sends receipt work to the outbox.</p>
+        <div class="code-panel">
+<pre class="mb-0"><code>curl -X POST http://localhost:3000/v1/integrations/events \
+  -H "Content-Type: application/json" \
+  -H "X-Athian-Integration-Source: athian_salesforce_production" \
+  -H "X-Athian-Timestamp: 2026-08-04T18:42:11Z" \
+  -H "X-Athian-Signature: v1=&lt;signature&gt;" \
+  --data @examples/integrations/project_4030_beef/01-project.registered.json</code></pre>
+        </div>
+        <div class="d-flex gap-2 mt-3">
+          <%= link_to "Inspect inbox", integrations_events_path, class: "btn btn-sm btn-primary" %>
+          <%= link_to "Operations", integrations_operations_path, class: "btn btn-sm btn-outline-secondary" %>
+        </div>
+      </article>
+    </div>
+    <div class="col-lg-6">
+      <article class="resource-card h-100">
+        <span class="badge text-bg-success">Source Records Path</span>
+        <h3 class="mt-3">Startup-controlled source references</h3>
+        <p>Create a project, submit controlled references, run fixture-backed extraction, append human review decisions, and request a priced reliance artifact.</p>
+        <div class="code-panel">
+<pre class="mb-0"><code>curl -X POST http://localhost:3000/v1/developer/projects \
+  -H "Content-Type: application/json" \
+  --data '{"developer_account":{"name":"Northstar Methane Systems Sandbox"},"project":{"name":"Enterprise dairy pilot","target_claim":"The intervention reduces enteric methane."}}'</code></pre>
+        </div>
+        <div class="d-flex gap-2 mt-3">
+          <%= link_to "New project", new_agevidence_developer_project_path, class: "btn btn-sm btn-primary" %>
+          <%= link_to "All projects", agevidence_developer_projects_path, class: "btn btn-sm btn-outline-secondary" %>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Sandbox projects</p>
+      <h2>Evidence maps ready for developer workflow</h2>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Startup</th>
+          <th>Project</th>
+          <th>Sources</th>
+          <th>Runs</th>
+          <th>Orders</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @projects.each do |project| %>
+          <tr>
+            <td><%= project.developer_account.name %></td>
+            <td><%= project.name %></td>
+            <td><%= project.source_records.size %></td>
+            <td><%= project.model_runs.size %></td>
+            <td><%= project.artifact_orders.size %></td>
+            <td class="text-end"><%= link_to "Open OS", agevidence_developer_project_path(project), class: "btn btn-sm btn-primary" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Project 4030 fixture runner</p>
+      <h2>One-click current-business bridge scaffold</h2>
+    </div>
+  </div>
+  <p>The canonical fixture sequence is intentionally limited to the implemented eight-event vocabulary. Future livestock events stay deferred until a paid mapping requires them.</p>
+  <div class="row g-2">
+    <% @project_4030_events.each do |event_file| %>
+      <div class="col-md-6 col-xl-3">
+        <div class="resource-card h-100">
+          <code><%= event_file %></code>
+        </div>
+      </div>
+    <% end %>
+  </div>
+  <div class="code-panel mt-3">
+<pre class="mb-0"><code>ruby examples/integrations/project_4030_beef/replay_project_4030.rb \
+  http://localhost:3000 athian_salesforce_production "$ATHIAN_INTEGRATION_SECRET"</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Commercial sandbox</p>
+      <h2>Quote, order, assemble, verify</h2>
+    </div>
+    <span class="small text-muted"><%= @product_notice %></span>
+  </div>
+  <div class="row g-3">
+    <% @products.each do |code, product| %>
+      <div class="col-md-6 col-xl-4">
+        <article class="resource-card h-100">
+          <h3><%= product.fetch("name") %></h3>
+          <p><%= product.fetch("description") %></p>
+          <div class="d-flex justify-content-between">
+            <span class="badge text-bg-secondary"><%= product.fetch("billing_type").humanize %></span>
+            <strong><%= money(product.fetch("base_planning_price_cents") / 100.0) %></strong>
+          </div>
+        </article>
+      </div>
+    <% end %>
+  </div>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">SDK snippets</p>
+      <h2>Same contract from Python or TypeScript</h2>
+    </div>
+  </div>
+  <div class="row g-3">
+    <div class="col-lg-6">
+      <div class="code-panel h-100">
+<pre class="mb-0"><code>from agevidence_client import AgEvidenceClient
+
+client = AgEvidenceClient("http://localhost:3000")
+project = client.create_project(
+    account_name="Northstar Methane Systems Sandbox",
+    project_name="Enterprise dairy pilot",
+    target_claim="The intervention reduces enteric methane.",
+)</code></pre>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="code-panel h-100">
+<pre class="mb-0"><code>const client = new AgEvidenceClient("http://localhost:3000");
+const project = await client.createProject({
+  accountName: "Northstar Methane Systems Sandbox",
+  projectName: "Enterprise dairy pilot",
+  targetClaim: "The intervention reduces enteric methane."
+});</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Webhook tester</p>
+      <h2>Signed result callbacks</h2>
+    </div>
+  </div>
+  <p>Register endpoints under <code>/v1/integrations/webhook_endpoints</code>. Result payloads stay small: artifact ID, receipt root, verification state, compatibility state, reliance state, download metadata, and the local verifier command.</p>
+</section>

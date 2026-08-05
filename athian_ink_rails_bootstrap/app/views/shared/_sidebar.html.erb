@@ -1,17 +1,18 @@
 <% links = [
   ["Dashboard", root_path, "01"],
   ["AgEvidence Launchpad", agevidence_root_path, "02"],
-  ["Country Programs", agevidence_country_programs_path, "03"],
-  ["Integration Inbox", integrations_events_path, "04"],
-  ["Evidence Explorer", evidence_index_path(avsa_id: canonical_avsa&.id), "05"],
-  ["Receipt Chain", canonical_avsa ? avsa_path(canonical_avsa) : root_path, "06"],
-  ["Bundle Builder", bundle_exports_path, "07"],
-  ["Co-Claim Workbench", canonical_avsa&.claim_group ? avsa_co_claim_group_path(canonical_avsa) : root_path, "08"],
-  ["VVB Console", verifier_console_path(avsa_id: canonical_avsa&.id), "09"],
-  ["Producer Ledger", producer_payments_path, "10"],
-  ["Methodology Migration", methodology_migrations_path, "11"],
-  ["Evidence Marketplace", evidence_marketplace_index_path, "12"],
-  ["Protocols", protocols_path, "13"]
+  ["Developer OS", agevidence_developer_os_path, "03"],
+  ["Country Programs", agevidence_country_programs_path, "04"],
+  ["Integration Inbox", integrations_events_path, "05"],
+  ["Evidence Explorer", evidence_index_path(avsa_id: canonical_avsa&.id), "06"],
+  ["Receipt Chain", canonical_avsa ? avsa_path(canonical_avsa) : root_path, "07"],
+  ["Bundle Builder", bundle_exports_path, "08"],
+  ["Co-Claim Workbench", canonical_avsa&.claim_group ? avsa_co_claim_group_path(canonical_avsa) : root_path, "09"],
+  ["VVB Console", verifier_console_path(avsa_id: canonical_avsa&.id), "10"],
+  ["Producer Ledger", producer_payments_path, "11"],
+  ["Methodology Migration", methodology_migrations_path, "12"],
+  ["Evidence Marketplace", evidence_marketplace_index_path, "13"],
+  ["Protocols", protocols_path, "14"]
 ] %>
 
 <aside class="app-sidebar d-none d-lg-flex flex-column">

@@ -1,0 +1,128 @@
+<% content_for :title, "#{@project.name} Source Records" %>
+
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Source record console</p>
+    <h1><%= @project.name %></h1>
+    <p class="lead">Submit controlled references and commitments. Large source documents stay outside Rails.</p>
+  </div>
+  <div class="d-flex gap-2 flex-wrap">
+    <%= link_to "Project map", agevidence_developer_project_path(@project), class: "btn btn-outline-primary" %>
+    <%= link_to "Run extraction", new_agevidence_developer_project_model_run_path(@project), class: "btn btn-primary" %>
+  </div>
+</section>
+
+<div class="alert alert-boundary">
+  Source records submitted here are converted into <code>source.manifest_available</code> events and processed through the same append-only inbox as upstream operational events.
+</div>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Add reference</p>
+      <h2>Controlled source metadata</h2>
+    </div>
+  </div>
+
+  <%= form_with model: [@project, @source_record], url: agevidence_developer_project_source_records_path(@project), class: "row g-3" do |form| %>
+    <div class="col-md-4">
+      <%= form.label :document_id, class: "form-label" %>
+      <%= form.text_field :document_id, class: "form-control", placeholder: "ration-log-2026-07" %>
+    </div>
+    <div class="col-md-4">
+      <%= form.label :evidence_type, class: "form-label" %>
+      <%= form.text_field :evidence_type, class: "form-control", placeholder: "evidence.ration_log" %>
+    </div>
+    <div class="col-md-4">
+      <%= form.label :evidence_class, class: "form-label" %>
+      <%= form.text_field :evidence_class, class: "form-control", placeholder: "source_record" %>
+    </div>
+    <div class="col-md-4">
+      <%= form.label :source_system, class: "form-label" %>
+      <%= form.text_field :source_system, class: "form-control", placeholder: "developer_data_room" %>
+    </div>
+    <div class="col-md-4">
+      <%= form.label :controlled_uri, "Controlled URI", class: "form-label" %>
+      <%= form.text_field :controlled_uri, class: "form-control", placeholder: "evidence://ration-log-2026-07" %>
+    </div>
+    <div class="col-md-4">
+      <%= form.label :commitment, class: "form-label" %>
+      <%= form.text_field :commitment, class: "form-control", placeholder: "source:demo-ration-log-2026-07" %>
+    </div>
+    <div class="col-md-4">
+      <%= form.label :disclosure_status, class: "form-label" %>
+      <%= form.select :disclosure_status, Agevidence::SourceRecord::DISCLOSURE_STATUSES.map { |status| [status.humanize, status] }, {}, class: "form-select" %>
+    </div>
+    <div class="col-md-4">
+      <%= form.label :captured_at, class: "form-label" %>
+      <%= form.datetime_field :captured_at, class: "form-control" %>
+    </div>
+    <div class="col-12">
+      <%= form.submit "Submit through inbox", class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Source records</p>
+      <h2>Append-only source manifest inputs</h2>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Document</th>
+          <th>Evidence type</th>
+          <th>Commitment</th>
+          <th>Controlled URI</th>
+          <th>Status</th>
+          <th>Event</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @source_records.each do |record| %>
+          <tr>
+            <td><%= record.document_id %></td>
+            <td><%= record.evidence_type %></td>
+            <td><code><%= compact_digest(record.commitment) %></code></td>
+            <td><code><%= record.controlled_uri %></code></td>
+            <td><span class="badge text-bg-info"><%= record.status.humanize %></span></td>
+            <td>
+              <% if record.source_event %>
+                <%= link_to record.source_event.external_event_id, integrations_event_path(record.source_event) %>
+              <% else %>
+                Pending
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Operations</p>
+      <h2>Async processing state</h2>
+    </div>
+  </div>
+  <div class="list-group">
+    <% @operations.each do |operation| %>
+      <%= link_to integrations_operation_path(operation), class: "list-group-item list-group-item-action" do %>
+        <div class="d-flex justify-content-between">
+          <strong><%= operation.external_id %></strong>
+          <span class="badge text-bg-secondary"><%= operation.status.humanize %></span>
+        </div>
+        <small><%= operation.operation_type.humanize %></small>
+      <% end %>
+    <% end %>
+    <% if @operations.empty? %>
+      <p class="text-muted mb-0">No source-record operations yet.</p>
+    <% end %>
+  </div>
+</section>

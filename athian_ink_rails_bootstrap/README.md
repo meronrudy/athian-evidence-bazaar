@@ -112,9 +112,16 @@ Append-only receipts, such as contribution, retirement, VVB attestation, and met
 | `/methodology_migrations` | Methodology Migration | Append Methodology Delta Receipts for VM0042 v2.2 to v3.0 |
 | `/marketplace` | Evidence Marketplace | Sell evidence acceptance products, not carbon |
 | `/agevidence` | Developer Launchpad | Funded-startup projects, model runs, candidate review, artifacts, reliance events, and revenue projections |
+| `/agevidence/developer-os` | Developer OS | Dual-path sandbox from event inbox or source records to review, quote, order, artifact, and local verification |
 | `/agevidence/developer_projects/:id` | Project Evidence Map | Global source records to candidates, reviews, receipts, country determinations, artifacts, and reliance |
+| `/agevidence/developer_projects/:id/source_records` | Source Record Console | Submit controlled source references through the append-only inbox |
+| `/agevidence/developer_projects/:id/pricing_quotes/new` | Quote Builder | Create sandbox artifact quotes from versioned product assumptions |
+| `/agevidence/developer_projects/:id/artifact_orders/:id` | Artifact Order | Complete sandbox checkout, assemble an artifact, and inspect verification metadata |
 | `/agevidence/country_programs` | Country Programs | Shared country adapter projections for method compatibility without country-specific Rails branches |
 | `/agevidence/revenue_model` | Revenue Model | Conservative, base, and upside projections labeled as management hypotheses |
+| `/v1/developer/projects` | Developer API | Create and inspect self-service projects |
+| `/v1/pricing/products` | Pricing API | Machine-readable artifact price book |
+| `/v1/artifact-orders` | Order API | Sandbox quote-to-order artifact lifecycle |
 | `/v1/integrations/events` | Integration API | Signed append-only event intake from upstream Athian systems |
 | `/integrations/events` | Integration Inbox | Internal inspection, replay, receipt outbox, webhook delivery, and dead-letter surfaces |
 
@@ -138,6 +145,38 @@ Documentation and contracts:
 - `../docs/integrations`
 - `../specs/integrations`
 - `../examples/integrations/project_4030_beef`
+
+Replay helper:
+
+```bash
+ruby ../examples/integrations/project_4030_beef/replay_project_4030.rb \
+  http://localhost:3000 athian_salesforce_production "$ATHIAN_INTEGRATION_SECRET"
+```
+
+## Developer OS
+
+The Developer OS is the self-service layer around the same evidence rail:
+
+```text
+source record or signed event
+  -> evidence projection
+  -> fixture-backed model run
+  -> review-required candidates and gaps
+  -> append-only human review
+  -> sandbox quote
+  -> artifact order
+  -> reliance bundle metadata and local verifier command
+```
+
+Source records are converted into `source.manifest_available` events through the
+same inbox path used by upstream operational events. Quotes and orders are
+sandbox planning records, not booked, collected, or recognized revenue.
+
+Developer-facing artifacts:
+
+- `../docs/openapi/agevidence.v1.yaml`
+- `../examples/sdk/python/agevidence_client.py`
+- `../examples/sdk/typescript/agevidenceClient.ts`
 
 ## Evidence Products
 

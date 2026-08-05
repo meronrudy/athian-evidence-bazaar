@@ -11,6 +11,9 @@ module Agevidence
       @candidates = EvidenceCandidate.joins(:model_run).where(agevidence_model_runs: { developer_project_id: @project.id }).order(:id)
       @gaps = EvidenceGap.joins(:model_run).where(agevidence_model_runs: { developer_project_id: @project.id }).order(:id)
       @engagements = @project.artifact_engagements.includes(:evidence_bundle).order(created_at: :desc)
+      @source_records = @project.source_records.order(:document_id)
+      @pricing_quotes = @project.pricing_quotes.order(created_at: :desc)
+      @artifact_orders = @project.artifact_orders.includes(:pricing_quote, :evidence_bundle).order(created_at: :desc)
       @country_programs = CountryProgram.includes(:country_adapters).order(:country_code, :name)
       @country_determinations = @project.country_determinations.includes(:country_program, :country_adapter, :receipt).order(evaluated_at: :desc)
       @product_notice = product_notice
