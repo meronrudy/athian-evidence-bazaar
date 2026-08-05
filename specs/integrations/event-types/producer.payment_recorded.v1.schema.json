@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "athian.integrations.producer.payment_recorded.v1",
+  "title": "producer.payment_recorded v1",
+  "type": "object",
+  "required": ["payment_id", "producer_id", "project_id", "gross_amount", "producer_amount", "currency", "payment_date", "payment_status", "calculation_basis", "transaction_reference"],
+  "properties": {
+    "payment_id": { "type": "string" },
+    "producer_id": { "type": "string" },
+    "project_id": { "type": "string" },
+    "asset_id": { "type": "string" },
+    "gross_amount": { "type": "string" },
+    "producer_amount": { "type": "string" },
+    "currency": { "type": "string" },
+    "payment_date": { "type": "string", "format": "date-time" },
+    "payment_status": { "type": "string" },
+    "calculation_basis": { "type": "string" },
+    "transaction_reference": { "type": "string" }
+  },
+  "additionalProperties": true
+}

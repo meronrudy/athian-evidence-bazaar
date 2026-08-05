@@ -1,0 +1,13 @@
+{
+  "source_event_type": "Athian_Evidence_Event__e",
+  "rails_event_type": "project.registered",
+  "field_map": {
+    "Event_Id__c": "event_id",
+    "Event_Type__c": "event_type",
+    "Schema_Version__c": "schema_version",
+    "Object_Type__c": "subject.type",
+    "Object_Id__c": "subject.external_id",
+    "Occurred_At__c": "occurred_at",
+    "Payload__c": "data"
+  }
+}

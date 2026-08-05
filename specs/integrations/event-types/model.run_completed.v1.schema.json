@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "athian.integrations.model.run_completed.v1",
+  "title": "model.run_completed v1",
+  "type": "object",
+  "required": ["model_run_id", "project_id", "model_identifier", "model_version", "weight_digest", "adapter_identifier", "runtime_configuration", "input_manifest_digest", "output_digest", "limitations", "status"],
+  "properties": {
+    "model_run_id": { "type": "string" },
+    "project_id": { "type": "string" },
+    "model_identifier": { "type": "string" },
+    "model_version": { "type": "string" },
+    "weight_digest": { "type": "string" },
+    "adapter_identifier": { "type": "string" },
+    "adapter_digest": { "type": "string" },
+    "runtime_configuration": { "type": "object" },
+    "input_manifest_digest": { "type": "string" },
+    "output_digest": { "type": "string" },
+    "uncertainty": { "type": "object" },
+    "limitations": { "type": "array", "items": { "type": "string" } },
+    "status": { "type": "string" },
+    "candidates": { "type": "array", "items": { "type": "object" } },
+    "gaps": { "type": "array", "items": { "type": "object" } }
+  },
+  "additionalProperties": true
+}

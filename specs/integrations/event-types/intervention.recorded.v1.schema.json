@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "athian.integrations.intervention.recorded.v1",
+  "title": "intervention.recorded v1",
+  "type": "object",
+  "required": ["intervention_id", "project_id", "product_id", "animal_or_herd_reference", "delivery_or_administration_date", "dose_or_quantity", "unit", "source_manifest_id"],
+  "properties": {
+    "intervention_id": { "type": "string" },
+    "project_id": { "type": "string" },
+    "product_id": { "type": "string" },
+    "product_batch": { "type": "string" },
+    "animal_or_herd_reference": { "type": "string" },
+    "delivery_or_administration_date": { "type": "string", "format": "date" },
+    "dose_or_quantity": { "type": "string" },
+    "unit": { "type": "string" },
+    "source_manifest_id": { "type": "string" }
+  },
+  "additionalProperties": true
+}

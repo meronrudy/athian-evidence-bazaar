@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "athian.integrations.result.artifact.ready.v1",
+  "type": "object",
+  "required": ["event_id", "event_type", "external_project_id", "artifact_id", "profile", "receipt_root", "integrity_status", "policy_compatibility", "reliance_status", "download_url", "verification_command"],
+  "properties": {
+    "event_id": { "type": "string" },
+    "event_type": { "const": "artifact.ready" },
+    "external_project_id": { "type": "string" },
+    "artifact_id": { "type": "string" },
+    "profile": { "type": "string" },
+    "receipt_root": { "type": "string" },
+    "integrity_status": { "enum": ["valid", "invalid", "indeterminate"] },
+    "policy_compatibility": { "type": "string" },
+    "reliance_status": { "type": "string" },
+    "download_url": { "type": "string" },
+    "verification_command": { "type": "string" }
+  },
+  "additionalProperties": true
+}

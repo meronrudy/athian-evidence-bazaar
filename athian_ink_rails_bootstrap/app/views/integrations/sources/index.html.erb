@@ -1,0 +1,28 @@
+<% content_for :title, "Integration Sources" %>
+
+<div class="page-header">
+  <div>
+    <p class="eyebrow mb-2">Upstream systems</p>
+    <h1>Integration Sources</h1>
+    <p class="lead">Source credentials authorize event submission. Upstream systems remain authoritative for their operational records.</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead><tr><th>Key</th><th>Name</th><th>Environment</th><th>Status</th><th>Last event</th></tr></thead>
+      <tbody>
+        <% @sources.each do |source| %>
+          <tr>
+            <td><%= link_to source.key, integrations_source_path(source) %></td>
+            <td><%= source.name %></td>
+            <td><%= source.environment %></td>
+            <td><span class="badge text-bg-secondary"><%= source.status %></span></td>
+            <td><%= source.last_event_at&.to_fs(:db) || "None" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

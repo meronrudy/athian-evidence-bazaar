@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "athian.integrations.protocol.version_assigned.v1",
+  "title": "protocol.version_assigned v1",
+  "type": "object",
+  "required": ["project_id", "protocol_id", "protocol_version_id", "version", "effective_from", "country_code", "status"],
+  "properties": {
+    "project_id": { "type": "string" },
+    "protocol_id": { "type": "string" },
+    "protocol_version_id": { "type": "string" },
+    "protocol_name": { "type": "string" },
+    "version": { "type": "string" },
+    "effective_from": { "type": "string", "format": "date" },
+    "effective_to": { "type": "string", "format": "date" },
+    "methodology_reference": { "type": "string" },
+    "country_code": { "type": "string" },
+    "status": { "type": "string" }
+  },
+  "additionalProperties": true
+}

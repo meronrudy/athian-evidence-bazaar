@@ -24,6 +24,35 @@ Rails.application.routes.draw do
   resources :producer_payments, only: %i[index show]
   resources :bundle_exports, only: %i[index create]
 
+  namespace :v1, defaults: { format: :json } do
+    namespace :integrations do
+      resources :events, only: %i[create show], param: :external_event_id do
+        member do
+          post :replay
+        end
+      end
+      resources :operations, only: :show, param: :external_id
+      resources :webhook_endpoints, only: %i[create index destroy]
+    end
+  end
+
+  namespace :integrations do
+    resources :sources, only: %i[index show]
+    resources :events, only: %i[index show] do
+      member do
+        post :replay
+      end
+    end
+    resources :operations, only: %i[index show]
+    get "outbox", to: "outbox#index", as: :outbox
+    resources :deliveries, only: %i[index show] do
+      member do
+        post :retry
+      end
+    end
+    get "dead-letter", to: "dead_letter#index", as: :dead_letter
+  end
+
   namespace :agevidence do
     root "overview#show"
 

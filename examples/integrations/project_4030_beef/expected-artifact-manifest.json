@@ -1,0 +1,13 @@
+{
+  "artifact_profile": "verification-readiness.au.v1",
+  "external_project_id": "project-4030-001",
+  "required_sections": [
+    "source_manifest",
+    "intervention",
+    "model_execution",
+    "human_review",
+    "verification_status",
+    "local_verification_command"
+  ],
+  "result_event": "artifact.ready"
+}

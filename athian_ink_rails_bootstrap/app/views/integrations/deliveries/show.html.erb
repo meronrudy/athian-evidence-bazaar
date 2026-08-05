@@ -1,0 +1,23 @@
+<% content_for :title, @delivery.external_id %>
+
+<div class="page-header">
+  <div>
+    <p class="eyebrow mb-2">Webhook delivery</p>
+    <h1><%= @delivery.external_id %></h1>
+  </div>
+  <div class="page-actions">
+    <%= button_to "Retry", retry_integrations_delivery_path(@delivery), method: :post, class: "btn btn-warning" %>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <dl class="row">
+      <dt class="col-sm-3">Event type</dt><dd class="col-sm-9"><%= @delivery.event_type %></dd>
+      <dt class="col-sm-3">Status</dt><dd class="col-sm-9"><%= @delivery.status %></dd>
+      <dt class="col-sm-3">Response</dt><dd class="col-sm-9"><%= @delivery.response_status || "None" %></dd>
+      <dt class="col-sm-3">Last error</dt><dd class="col-sm-9"><%= @delivery.last_error.presence || "None" %></dd>
+    </dl>
+    <pre class="small mb-0"><%= JSON.pretty_generate(@delivery.payload_json) %></pre>
+  </div>
+</div>

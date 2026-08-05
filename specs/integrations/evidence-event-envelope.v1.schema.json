@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "athian.integrations.evidence-event-envelope.v1",
+  "title": "Athian Evidence Event Envelope v1",
+  "type": "object",
+  "required": ["event_id", "event_type", "schema_version", "source", "occurred_at", "subject", "correlation", "data", "integrity"],
+  "properties": {
+    "event_id": { "type": "string", "pattern": "^evt_[A-Za-z0-9_\\-]+$" },
+    "event_type": { "type": "string" },
+    "schema_version": { "const": "1.0.0" },
+    "source": { "type": "string" },
+    "occurred_at": { "type": "string", "format": "date-time" },
+    "supersedes_event_id": { "type": "string" },
+    "subject": {
+      "type": "object",
+      "required": ["type", "external_id"],
+      "properties": {
+        "type": { "type": "string" },
+        "external_id": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "correlation": {
+      "type": "object",
+      "properties": {
+        "project_id": { "type": "string" },
+        "protocol_version_id": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "data": { "type": "object" },
+    "integrity": {
+      "type": "object",
+      "required": ["payload_digest", "signature_algorithm", "signature"],
+      "properties": {
+        "payload_digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$|^sha256:scaffold-.+$" },
+        "signature_algorithm": { "enum": ["hmac-sha256", "hmac_sha256", "ed25519"] },
+        "signature": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "extensions": { "type": "object" }
+  },
+  "additionalProperties": false
+}

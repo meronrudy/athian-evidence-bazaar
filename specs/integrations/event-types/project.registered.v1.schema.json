@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "athian.integrations.project.registered.v1",
+  "title": "project.registered v1",
+  "type": "object",
+  "required": ["project_id", "project_name", "producer_id", "country_code", "monitoring_period_start", "monitoring_period_end", "current_status"],
+  "properties": {
+    "project_id": { "type": "string" },
+    "project_name": { "type": "string" },
+    "producer_id": { "type": "string" },
+    "producer_name": { "type": "string" },
+    "facility_or_farm_id": { "type": "string" },
+    "country_code": { "type": "string" },
+    "monitoring_period_start": { "type": "string", "format": "date" },
+    "monitoring_period_end": { "type": "string", "format": "date" },
+    "current_status": { "type": "string" },
+    "target_claim": { "type": "string" }
+  },
+  "additionalProperties": true
+}

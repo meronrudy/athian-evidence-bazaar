@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "athian.integrations.result.artifact.verification_failed.v1",
+  "type": "object",
+  "required": ["event_id", "event_type", "external_project_id", "artifact_id", "integrity_status", "failure_reason"],
+  "properties": {
+    "event_id": { "type": "string" },
+    "event_type": { "const": "artifact.verification_failed" },
+    "external_project_id": { "type": "string" },
+    "artifact_id": { "type": "string" },
+    "integrity_status": { "enum": ["invalid", "indeterminate"] },
+    "failure_reason": { "type": "string" }
+  },
+  "additionalProperties": true
+}

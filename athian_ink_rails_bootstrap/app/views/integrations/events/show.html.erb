@@ -1,0 +1,95 @@
+<% content_for :title, "Integration Event #{@event.external_event_id}" %>
+
+<div class="page-header">
+  <div>
+    <p class="eyebrow mb-2">Immutable event</p>
+    <h1><%= @event.external_event_id %></h1>
+    <p class="lead"><%= @event.event_type %> from <%= @event.integration_source.key %>. Original payloads are inspectable but not editable.</p>
+  </div>
+  <div class="page-actions">
+    <%= link_to "Inbox", integrations_events_path, class: "btn btn-outline-secondary" %>
+  </div>
+</div>
+
+<div class="row g-3 mb-3">
+  <% [["Signature", @event.signature_status], ["Schema", @event.schema_status], ["Processing", @event.processing_status], ["Commitment", @event.payload_digest]].each do |label, value| %>
+    <div class="col-md-3">
+      <div class="reliance-metric">
+        <span><%= label %></span>
+        <strong class="metric-value--compact"><%= value %></strong>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-8">
+    <div class="card mb-3">
+      <div class="card-header"><h2 class="h5 mb-0">Original Payload</h2></div>
+      <div class="card-body">
+        <pre class="small mb-0"><%= JSON.pretty_generate(@event.parsed_payload) %></pre>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h2 class="h5 mb-0">Canonical Payload</h2></div>
+      <div class="card-body">
+        <pre class="small mb-0"><%= JSON.pretty_generate(JSON.parse(@event.canonical_payload_json)) %></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card mb-3">
+      <div class="card-header"><h2 class="h5 mb-0">Replay</h2></div>
+      <div class="card-body">
+        <% if @event.replayable? %>
+          <%= form_with url: replay_integrations_event_path(@event), method: :post, local: true do |form| %>
+            <%= form.label :reason, "Reason", class: "form-label" %>
+            <%= form.text_area :reason, rows: 3, class: "form-control mb-2", required: true %>
+            <%= form.submit "Replay preserved event", class: "btn btn-warning" %>
+          <% end %>
+        <% else %>
+          <p class="text-muted mb-0">Replay is unavailable because the event has not passed signature checks.</p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-header"><h2 class="h5 mb-0">Operations</h2></div>
+      <ul class="list-group list-group-flush">
+        <% @event.integration_operations.order(created_at: :desc).each do |operation| %>
+          <li class="list-group-item">
+            <%= link_to operation.external_id, integrations_operation_path(operation) %>
+            <span class="badge text-bg-secondary float-end"><%= operation.status %></span>
+            <span class="d-block text-muted small"><%= operation.operation_type %></span>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-header"><h2 class="h5 mb-0">Mappings</h2></div>
+      <ul class="list-group list-group-flush">
+        <% @mappings.each do |mapping| %>
+          <li class="list-group-item small">
+            <strong><%= mapping.external_object_type %></strong> <%= mapping.external_object_id %>
+            <span class="d-block text-muted"><%= mapping.internal_record_type %>#<%= mapping.internal_record_id %></span>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h2 class="h5 mb-0">Receipt Outbox</h2></div>
+      <ul class="list-group list-group-flush">
+        <% @event.receipt_outboxes.each do |outbox| %>
+          <li class="list-group-item small">
+            <strong><%= outbox.receipt_type %></strong>
+            <span class="badge text-bg-secondary float-end"><%= outbox.status %></span>
+            <span class="d-block text-muted"><%= outbox.idempotency_key %></span>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+</div>

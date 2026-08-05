@@ -1,0 +1,5 @@
+{
+  "case": "source manifest arrives before project.registered",
+  "event_type": "source.manifest_available",
+  "expected_projection_state": "pending_parent"
+}

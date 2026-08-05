@@ -1,0 +1,22 @@
+<% content_for :title, @operation.external_id %>
+
+<div class="page-header">
+  <div>
+    <p class="eyebrow mb-2">Integration operation</p>
+    <h1><%= @operation.external_id %></h1>
+    <p class="lead"><%= @operation.operation_type %> for <%= link_to @operation.integration_event.external_event_id, integrations_event_path(@operation.integration_event) %>.</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <dl class="row mb-0">
+      <dt class="col-sm-3">Status</dt><dd class="col-sm-9"><%= @operation.status %></dd>
+      <dt class="col-sm-3">Started</dt><dd class="col-sm-9"><%= @operation.started_at&.to_fs(:db) || "Not started" %></dd>
+      <dt class="col-sm-3">Completed</dt><dd class="col-sm-9"><%= @operation.completed_at&.to_fs(:db) || "Pending" %></dd>
+      <dt class="col-sm-3">Error</dt><dd class="col-sm-9"><%= [@operation.error_code, @operation.error_message].compact.join(": ").presence || "None" %></dd>
+    </dl>
+    <hr>
+    <pre class="small mb-0"><%= JSON.pretty_generate(@operation.result_json) %></pre>
+  </div>
+</div>

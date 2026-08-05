@@ -1,0 +1,29 @@
+<% content_for :title, "Receipt Outbox" %>
+
+<div class="page-header">
+  <div>
+    <p class="eyebrow mb-2">Transactional outbox</p>
+    <h1>Receipt Outbox</h1>
+    <p class="lead">Projection writes and receipt requests commit atomically. Receipt issuance runs later through the local trust boundary.</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead><tr><th>Created</th><th>Event</th><th>Receipt type</th><th>Status</th><th>Verification</th><th>Commitment</th></tr></thead>
+      <tbody>
+        <% @outboxes.each do |outbox| %>
+          <tr>
+            <td><%= outbox.created_at.to_fs(:db) %></td>
+            <td><%= link_to outbox.integration_event.external_event_id, integrations_event_path(outbox.integration_event) %></td>
+            <td><%= outbox.receipt_type %></td>
+            <td><span class="badge text-bg-secondary"><%= outbox.status %></span></td>
+            <td><%= outbox.verification_status || "pending" %></td>
+            <td class="small text-muted"><%= outbox.payload_digest %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

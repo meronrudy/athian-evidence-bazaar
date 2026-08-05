@@ -1,0 +1,5 @@
+{
+  "case": "duplicate event with conflicting payload",
+  "base_event_id": "evt_project_4030_01",
+  "expected_error": "EVENT_ID_PAYLOAD_CONFLICT"
+}

@@ -1,0 +1,29 @@
+{
+  "event_id": "evt_project_4030_07",
+  "event_type": "asset.status_changed",
+  "schema_version": "1.0.0",
+  "source": "athian_salesforce_production",
+  "occurred_at": "2026-08-04T18:35:00Z",
+  "subject": { "type": "asset", "external_id": "asset-4030-001" },
+  "correlation": {
+    "project_id": "project-4030-001",
+    "protocol_version_id": "au-beef-working-profile-0.3"
+  },
+  "data": {
+    "asset_id": "asset-4030-001",
+    "project_id": "project-4030-001",
+    "asset_type": "evidence_backed_claim_unit",
+    "quantity": "187.500",
+    "unit": "tCO2e",
+    "vintage": "2026",
+    "registry_reference": "registry://synthetic/project-4030/asset-001",
+    "status": "issued",
+    "buyer_or_owner_reference": "buyer-synthetic-001",
+    "claim_reference": "claim-4030-001"
+  },
+  "integrity": {
+    "payload_digest": "sha256:scaffold-asset-status",
+    "signature_algorithm": "hmac-sha256",
+    "signature": "v1=scaffold-signature"
+  }
+}

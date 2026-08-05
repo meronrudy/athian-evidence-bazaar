@@ -1,0 +1,36 @@
+{
+  "event_id": "evt_project_4030_06",
+  "event_type": "verification.status_changed",
+  "schema_version": "1.0.0",
+  "source": "athian_salesforce_production",
+  "occurred_at": "2026-08-04T18:30:00Z",
+  "subject": { "type": "verification_engagement", "external_id": "verification-4030-001" },
+  "correlation": {
+    "project_id": "project-4030-001",
+    "protocol_version_id": "au-beef-working-profile-0.3"
+  },
+  "data": {
+    "verification_engagement_id": "verification-4030-001",
+    "project_id": "project-4030-001",
+    "verifier_id": "synthetic-vvb-004",
+    "scope": "project_quantification",
+    "criteria": "verification-readiness.au.v1",
+    "criteria_version": "au-project-4030-profile-0.3",
+    "status": "review_required",
+    "exceptions": [
+      {
+        "code": "MISSING_SOURCE_RECORD",
+        "materiality": "material",
+        "reference": "feeding-log-2026-07",
+        "description": "Ration-log evidence requires reviewer confirmation."
+      }
+    ],
+    "statement_reference": "evidence://verification-4030-statement",
+    "effective_at": "2026-08-04T18:30:00Z"
+  },
+  "integrity": {
+    "payload_digest": "sha256:scaffold-verification-status",
+    "signature_algorithm": "hmac-sha256",
+    "signature": "v1=scaffold-signature"
+  }
+}

@@ -78,6 +78,8 @@ Key routes:
 - `/agevidence`: funded-startup developer launchpad.
 - `/agevidence/country_programs`: country adapter and method-compatibility projections.
 - `/agevidence/revenue_model`: illustrative C-suite revenue scenario.
+- `/v1/integrations/events`: append-only signed event intake for upstream Athian systems.
+- `/integrations/events`: internal inbox inspection, replay, outbox, delivery, and dead-letter views.
 
 ## Trust Boundary
 
@@ -119,6 +121,17 @@ many institution-specific reliance artifacts
 ```
 
 Country methodology rules live in YAML adapter packs under `specs/agevidence/country_adapters`, while stable global vocabulary and receipt contracts live under `specs/agevidence`. Rails displays country programs as projections over the same objects; it does not fork the workflow by country.
+
+## Integration Bridge
+
+The append-only Evidence Event Inbox is documented under `docs/integrations`.
+Its versioned contracts live under `specs/integrations`, and the synthetic
+Project 4030 scenario lives under `examples/integrations/project_4030_beef`.
+
+The bridge is intentionally one-way for operational data: existing Athian
+systems publish signed events; Rails preserves them, maps external identifiers,
+creates evidence projections, and writes receipt requests through
+`ReceiptOutbox`.
 
 ## Validation
 

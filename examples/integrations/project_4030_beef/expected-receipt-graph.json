@@ -1,0 +1,12 @@
+{
+  "scenario": "project_4030_beef",
+  "expected_receipt_types": [
+    "source_manifest_receipt",
+    "intervention_receipt",
+    "model_execution_receipt",
+    "verification_determination_receipt",
+    "producer_payment_receipt"
+  ],
+  "verification_states": ["valid", "invalid", "indeterminate"],
+  "note": "The operational asset state remains upstream; Rails emits portable evidence receipts only."
+}

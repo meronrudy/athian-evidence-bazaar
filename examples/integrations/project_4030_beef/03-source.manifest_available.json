@@ -1,0 +1,31 @@
+{
+  "event_id": "evt_project_4030_03",
+  "event_type": "source.manifest_available",
+  "schema_version": "1.0.0",
+  "source": "athian_salesforce_production",
+  "occurred_at": "2026-08-04T18:10:00Z",
+  "subject": { "type": "source_manifest", "external_id": "manifest-4030-001" },
+  "correlation": {
+    "project_id": "project-4030-001",
+    "protocol_version_id": "au-beef-working-profile-0.3"
+  },
+  "data": {
+    "manifest_id": "manifest-4030-001",
+    "project_id": "project-4030-001",
+    "source_systems": ["supplier_erp", "ration_log", "measurement_export"],
+    "objects": [
+      { "document_id": "feed-invoice-4030", "controlled_uri": "evidence://feed-invoice-4030", "digest": "sha256:feedinvoice4030" },
+      { "document_id": "ration-log-4030", "controlled_uri": "evidence://ration-log-4030", "digest": "sha256:rationlog4030" },
+      { "document_id": "measurement-export-4030", "controlled_uri": "evidence://measurement-export-4030", "digest": "sha256:measurement4030" }
+    ],
+    "object_digests": ["sha256:feedinvoice4030", "sha256:rationlog4030", "sha256:measurement4030"],
+    "retention_policy": "controlled_7_year",
+    "access_references": ["s3://synthetic-athian-project-4030/manifest.json"],
+    "data_classification": "restricted"
+  },
+  "integrity": {
+    "payload_digest": "sha256:scaffold-source-manifest",
+    "signature_algorithm": "hmac-sha256",
+    "signature": "v1=scaffold-signature"
+  }
+}

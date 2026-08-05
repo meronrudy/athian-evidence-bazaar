@@ -1,6 +1,14 @@
 puts "Resetting Athian Evidence Bazaar demo data..."
 
 [
+  IntegrationDelivery,
+  IntegrationWebhookEndpoint,
+  ReceiptOutbox,
+  EvidenceProjection,
+  ExternalObjectMapping,
+  IntegrationOperation,
+  IntegrationEvent,
+  IntegrationSource,
   Agevidence::RelianceEvent,
   Agevidence::ReviewDecision,
   Agevidence::EvidenceGap,
@@ -35,6 +43,19 @@ puts "Resetting Athian Evidence Bazaar demo data..."
 ].each(&:delete_all)
 
 now = Time.utc(2026, 8, 4, 16, 30, 0)
+
+IntegrationSource.create!(
+  key: "athian_salesforce_production",
+  name: "Synthetic Athian Salesforce Production",
+  environment: "synthetic_demo",
+  signature_algorithm: "hmac_sha256",
+  verification_secret_ciphertext: "project-4030-demo-secret",
+  allowed_event_types: Integrations::EventRegistry::EVENT_TYPES.keys,
+  metadata_json: {
+    authority_boundary: "Upstream platform remains authoritative for operational records.",
+    fixture_path: "examples/integrations/project_4030_beef"
+  }
+)
 
 commitment = lambda do |label|
   InkReceipts.issue(

@@ -1,0 +1,41 @@
+<% content_for :title, "Integration Dead Letter" %>
+
+<div class="page-header">
+  <div>
+    <p class="eyebrow mb-2">Failures requiring operator review</p>
+    <h1>Dead Letter</h1>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-4">
+    <div class="card h-100">
+      <div class="card-header"><h2 class="h5 mb-0">Events</h2></div>
+      <ul class="list-group list-group-flush">
+        <% @events.each do |event| %>
+          <li class="list-group-item small"><%= link_to event.external_event_id, integrations_event_path(event) %><span class="d-block text-muted"><%= event.processing_error_code %></span></li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card h-100">
+      <div class="card-header"><h2 class="h5 mb-0">Receipt Outbox</h2></div>
+      <ul class="list-group list-group-flush">
+        <% @outboxes.each do |outbox| %>
+          <li class="list-group-item small"><%= outbox.receipt_type %><span class="d-block text-muted"><%= outbox.last_error_code %></span></li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card h-100">
+      <div class="card-header"><h2 class="h5 mb-0">Deliveries</h2></div>
+      <ul class="list-group list-group-flush">
+        <% @deliveries.each do |delivery| %>
+          <li class="list-group-item small"><%= link_to delivery.external_id, integrations_delivery_path(delivery) %><span class="d-block text-muted"><%= delivery.last_error %></span></li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+</div>

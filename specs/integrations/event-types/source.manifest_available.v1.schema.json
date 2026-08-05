@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "athian.integrations.source.manifest_available.v1",
+  "title": "source.manifest_available v1",
+  "type": "object",
+  "required": ["manifest_id", "project_id", "source_systems", "objects", "retention_policy", "access_references", "data_classification"],
+  "properties": {
+    "manifest_id": { "type": "string" },
+    "project_id": { "type": "string" },
+    "source_systems": { "type": "array", "items": { "type": "string" } },
+    "objects": { "type": "array", "items": { "type": "object" } },
+    "object_digests": { "type": "array", "items": { "type": "string" } },
+    "retention_policy": { "type": "string" },
+    "access_references": { "type": "array", "items": { "type": "string" } },
+    "data_classification": { "type": "string" }
+  },
+  "additionalProperties": true
+}

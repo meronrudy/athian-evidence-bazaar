@@ -1,0 +1,6 @@
+{
+  "case": "payment amount represented as a float",
+  "event_type": "producer.payment_recorded",
+  "expected_error": "EVENT_SCHEMA_INVALID",
+  "reason": "Money values must be decimal strings plus currency codes."
+}

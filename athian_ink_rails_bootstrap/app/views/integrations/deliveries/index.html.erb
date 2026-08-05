@@ -1,0 +1,27 @@
+<% content_for :title, "Webhook Deliveries" %>
+
+<div class="page-header">
+  <div>
+    <p class="eyebrow mb-2">Outbound results</p>
+    <h1>Webhook Deliveries</h1>
+  </div>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead><tr><th>Event</th><th>Endpoint</th><th>Status</th><th>Attempts</th><th>Next attempt</th></tr></thead>
+      <tbody>
+        <% @deliveries.each do |delivery| %>
+          <tr>
+            <td><%= link_to delivery.external_id, integrations_delivery_path(delivery) %><span class="d-block small text-muted"><%= delivery.event_type %></span></td>
+            <td class="small"><%= delivery.integration_webhook_endpoint.url %></td>
+            <td><span class="badge text-bg-secondary"><%= delivery.status %></span></td>
+            <td><%= delivery.attempt_count %></td>
+            <td><%= delivery.next_attempt_at&.to_fs(:db) || "None" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -115,6 +115,29 @@ Append-only receipts, such as contribution, retirement, VVB attestation, and met
 | `/agevidence/developer_projects/:id` | Project Evidence Map | Global source records to candidates, reviews, receipts, country determinations, artifacts, and reliance |
 | `/agevidence/country_programs` | Country Programs | Shared country adapter projections for method compatibility without country-specific Rails branches |
 | `/agevidence/revenue_model` | Revenue Model | Conservative, base, and upside projections labeled as management hypotheses |
+| `/v1/integrations/events` | Integration API | Signed append-only event intake from upstream Athian systems |
+| `/integrations/events` | Integration Inbox | Internal inspection, replay, receipt outbox, webhook delivery, and dead-letter surfaces |
+
+## Append-Only Integration Bridge
+
+The bridge receives signed normalized events from Athian's existing operational
+platform without migrating producer, protocol, asset, marketplace, ledger, or
+payment authority into Rails.
+
+Rails becomes authoritative only for:
+
+- received integration events
+- normalized external identifiers
+- evidence projections
+- receipt issuance requests
+- receipt graphs and verification status
+- reliance artifact and webhook result projections
+
+Documentation and contracts:
+
+- `../docs/integrations`
+- `../specs/integrations`
+- `../examples/integrations/project_4030_beef`
 
 ## Evidence Products
 

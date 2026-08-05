@@ -1,0 +1,31 @@
+# Error Codes
+
+Stable ingestion errors:
+
+- `INTEGRATION_SOURCE_UNKNOWN`
+- `INTEGRATION_SOURCE_SUSPENDED`
+- `INVALID_JSON`
+- `EVENT_ID_MISSING`
+- `EVENT_ID_PAYLOAD_CONFLICT`
+- `UNSUPPORTED_SCHEMA_VERSION`
+- `UNKNOWN_EVENT_TYPE`
+- `PAYLOAD_DIGEST_MISMATCH`
+- `SIGNATURE_INVALID`
+- `ENVELOPE_SCHEMA_INVALID`
+- `EVENT_SCHEMA_INVALID`
+- `EVENT_TOO_LARGE`
+- `RATE_LIMITED`
+- `INTERNAL_INGESTION_ERROR`
+- `SIGNATURE_ALGORITHM_UNSUPPORTED`
+
+Error response shape:
+
+```json
+{
+  "error": {
+    "code": "SIGNATURE_INVALID",
+    "message": "The event signature could not be verified.",
+    "event_id": "evt_01J..."
+  }
+}
+```

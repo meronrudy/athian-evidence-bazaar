@@ -1,0 +1,49 @@
+{
+  "event_id": "evt_project_4030_05",
+  "event_type": "model.run_completed",
+  "schema_version": "1.0.0",
+  "source": "athian_salesforce_production",
+  "occurred_at": "2026-08-04T18:20:00Z",
+  "subject": { "type": "model_run", "external_id": "model-run-4030-001" },
+  "correlation": {
+    "project_id": "project-4030-001",
+    "protocol_version_id": "au-beef-working-profile-0.3"
+  },
+  "data": {
+    "model_run_id": "model-run-4030-001",
+    "project_id": "project-4030-001",
+    "model_identifier": "Qwen/Qwen3.5-4B",
+    "model_version": "reference-fixture",
+    "weight_digest": "sha256:qwen35weightsfixture",
+    "adapter_identifier": "qwen3.5-4b-reference",
+    "adapter_digest": "sha256:qwen35adapterfixture",
+    "runtime_configuration": { "runtime": "fixture", "temperature": "0", "seed": "42" },
+    "input_manifest_digest": "sha256:manifest4030input",
+    "output_digest": "sha256:modelrun4030output",
+    "uncertainty": { "mode": "fixture" },
+    "limitations": ["Model output is candidate evidence only and requires human review."],
+    "status": "completed",
+    "candidates": [
+      {
+        "candidate_type": "observation",
+        "claim_text": "The feed additive was delivered to the stated cohort.",
+        "confidence": "0.94",
+        "source_references": [{ "document_id": "feed-invoice-4030", "locator": "page:1" }]
+      }
+    ],
+    "gaps": [
+      {
+        "gap_type": "missing_independent_support",
+        "requirement": "Dosage confirmation",
+        "severity": "material",
+        "description": "The dosage appears in the invoice but needs ration-log confirmation.",
+        "source_context": { "document_id": "ration-log-4030" }
+      }
+    ]
+  },
+  "integrity": {
+    "payload_digest": "sha256:scaffold-model-run-completed",
+    "signature_algorithm": "hmac-sha256",
+    "signature": "v1=scaffold-signature"
+  }
+}

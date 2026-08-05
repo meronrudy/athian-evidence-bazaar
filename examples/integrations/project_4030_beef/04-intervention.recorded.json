@@ -1,0 +1,28 @@
+{
+  "event_id": "evt_project_4030_04",
+  "event_type": "intervention.recorded",
+  "schema_version": "1.0.0",
+  "source": "athian_salesforce_production",
+  "occurred_at": "2026-08-04T18:15:00Z",
+  "subject": { "type": "intervention", "external_id": "intervention-4030-001" },
+  "correlation": {
+    "project_id": "project-4030-001",
+    "protocol_version_id": "au-beef-working-profile-0.3"
+  },
+  "data": {
+    "intervention_id": "intervention-4030-001",
+    "project_id": "project-4030-001",
+    "product_id": "feed-additive-synth-01",
+    "product_batch": "batch-2026-07-a",
+    "animal_or_herd_reference": "cohort-4030-finishing-steers",
+    "delivery_or_administration_date": "2026-07-12",
+    "dose_or_quantity": "1250.000",
+    "unit": "kg",
+    "source_manifest_id": "manifest-4030-001"
+  },
+  "integrity": {
+    "payload_digest": "sha256:scaffold-intervention-recorded",
+    "signature_algorithm": "hmac-sha256",
+    "signature": "v1=scaffold-signature"
+  }
+}

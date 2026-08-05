@@ -1,0 +1,30 @@
+{
+  "event_id": "evt_project_4030_08",
+  "event_type": "producer.payment_recorded",
+  "schema_version": "1.0.0",
+  "source": "athian_salesforce_production",
+  "occurred_at": "2026-08-04T18:40:00Z",
+  "subject": { "type": "producer_payment", "external_id": "payment-4030-001" },
+  "correlation": {
+    "project_id": "project-4030-001",
+    "protocol_version_id": "au-beef-working-profile-0.3"
+  },
+  "data": {
+    "payment_id": "payment-4030-001",
+    "producer_id": "producer-4030",
+    "project_id": "project-4030-001",
+    "asset_id": "asset-4030-001",
+    "gross_amount": "62500.00",
+    "producer_amount": "54000.00",
+    "currency": "USD",
+    "payment_date": "2026-08-04T18:40:00Z",
+    "payment_status": "paid",
+    "calculation_basis": "asset-4030-001 evidence-linked producer economics",
+    "transaction_reference": "ach-synthetic-4030-001"
+  },
+  "integrity": {
+    "payload_digest": "sha256:scaffold-producer-payment",
+    "signature_algorithm": "hmac-sha256",
+    "signature": "v1=scaffold-signature"
+  }
+}

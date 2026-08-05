@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "athian.integrations.asset.status_changed.v1",
+  "title": "asset.status_changed v1",
+  "type": "object",
+  "required": ["asset_id", "project_id", "asset_type", "quantity", "unit", "vintage", "status"],
+  "properties": {
+    "asset_id": { "type": "string" },
+    "project_id": { "type": "string" },
+    "asset_type": { "type": "string" },
+    "quantity": { "type": "string" },
+    "unit": { "type": "string" },
+    "vintage": { "type": "string" },
+    "registry_reference": { "type": "string" },
+    "status": { "type": "string" },
+    "buyer_or_owner_reference": { "type": "string" },
+    "claim_reference": { "type": "string" }
+  },
+  "additionalProperties": true
+}

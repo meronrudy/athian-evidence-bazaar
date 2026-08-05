@@ -1,0 +1,29 @@
+{
+  "event_id": "evt_project_4030_02",
+  "event_type": "protocol.version_assigned",
+  "schema_version": "1.0.0",
+  "source": "athian_salesforce_production",
+  "occurred_at": "2026-08-04T18:05:00Z",
+  "subject": { "type": "protocol_version", "external_id": "au-beef-working-profile-0.3" },
+  "correlation": {
+    "project_id": "project-4030-001",
+    "protocol_version_id": "au-beef-working-profile-0.3"
+  },
+  "data": {
+    "project_id": "project-4030-001",
+    "protocol_id": "AU-BEEF-WORKING-PROFILE",
+    "protocol_version_id": "au-beef-working-profile-0.3",
+    "protocol_name": "Australian Beef Methane Working Profile",
+    "version": "0.3",
+    "effective_from": "2026-07-01",
+    "effective_to": "2026-12-31",
+    "methodology_reference": "au-project-4030-profile-0.3",
+    "country_code": "AU",
+    "status": "assigned"
+  },
+  "integrity": {
+    "payload_digest": "sha256:scaffold-protocol-version-assigned",
+    "signature_algorithm": "hmac-sha256",
+    "signature": "v1=scaffold-signature"
+  }
+}

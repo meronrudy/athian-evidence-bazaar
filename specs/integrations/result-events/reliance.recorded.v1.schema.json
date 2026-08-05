@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "athian.integrations.result.reliance.recorded.v1",
+  "type": "object",
+  "required": ["event_id", "event_type", "external_project_id", "artifact_id", "reliance_status", "relying_party_role"],
+  "properties": {
+    "event_id": { "type": "string" },
+    "event_type": { "const": "reliance.recorded" },
+    "external_project_id": { "type": "string" },
+    "artifact_id": { "type": "string" },
+    "reliance_status": { "enum": ["accepted", "relied_on", "rejected", "needs_more_evidence"] },
+    "relying_party_role": { "type": "string" }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,26 @@
+{
+  "event_id": "evt_project_4030_01",
+  "event_type": "project.registered",
+  "schema_version": "1.0.0",
+  "source": "athian_salesforce_production",
+  "occurred_at": "2026-08-04T18:00:00Z",
+  "subject": { "type": "project", "external_id": "project-4030-001" },
+  "correlation": { "project_id": "project-4030-001" },
+  "data": {
+    "project_id": "project-4030-001",
+    "project_name": "Project 4030 Beef Methane Pilot",
+    "producer_id": "producer-4030",
+    "producer_name": "Synthetic Riverbend Beef Cooperative",
+    "facility_or_farm_id": "facility-riverbend-01",
+    "country_code": "AU",
+    "monitoring_period_start": "2026-07-01",
+    "monitoring_period_end": "2026-12-31",
+    "current_status": "registered",
+    "target_claim": "The feed intervention reduces enteric methane emissions."
+  },
+  "integrity": {
+    "payload_digest": "sha256:scaffold-project-registered",
+    "signature_algorithm": "hmac-sha256",
+    "signature": "v1=scaffold-signature"
+  }
+}

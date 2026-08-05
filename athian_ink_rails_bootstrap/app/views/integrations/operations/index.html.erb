@@ -1,0 +1,27 @@
+<% content_for :title, "Integration Operations" %>
+
+<div class="page-header">
+  <div>
+    <p class="eyebrow mb-2">Async work</p>
+    <h1>Integration Operations</h1>
+  </div>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead><tr><th>Operation</th><th>Event</th><th>Type</th><th>Status</th><th>Completed</th></tr></thead>
+      <tbody>
+        <% @operations.each do |operation| %>
+          <tr>
+            <td><%= link_to operation.external_id, integrations_operation_path(operation) %></td>
+            <td><%= link_to operation.integration_event.external_event_id, integrations_event_path(operation.integration_event) %></td>
+            <td><%= operation.operation_type %></td>
+            <td><span class="badge text-bg-secondary"><%= operation.status %></span></td>
+            <td><%= operation.completed_at&.to_fs(:db) || "Pending" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

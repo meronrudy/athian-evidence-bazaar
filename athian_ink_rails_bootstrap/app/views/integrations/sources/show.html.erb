@@ -1,0 +1,48 @@
+<% content_for :title, @source.key %>
+
+<div class="page-header">
+  <div>
+    <p class="eyebrow mb-2">Integration source</p>
+    <h1><%= @source.key %></h1>
+    <p class="lead"><%= @source.name %> in <%= @source.environment.presence || "unspecified" %>. Secrets are never displayed on this page.</p>
+  </div>
+  <div class="page-actions">
+    <%= link_to "Inbox", integrations_events_path(source_id: @source.id), class: "btn btn-outline-primary" %>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-header"><h2 class="h5 mb-0">Recent Events</h2></div>
+      <div class="table-responsive">
+        <table class="table table-sm mb-0">
+          <thead><tr><th>Event</th><th>Type</th><th>Status</th><th>Received</th></tr></thead>
+          <tbody>
+            <% @events.each do |event| %>
+              <tr>
+                <td><%= link_to event.external_event_id, integrations_event_path(event) %></td>
+                <td><%= event.event_type %></td>
+                <td><%= event.processing_status %></td>
+                <td><%= event.received_at&.to_fs(:db) %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header"><h2 class="h5 mb-0">Webhook Endpoints</h2></div>
+      <ul class="list-group list-group-flush">
+        <% @webhook_endpoints.each do |endpoint| %>
+          <li class="list-group-item small">
+            <strong><%= endpoint.status %></strong>
+            <span class="d-block text-muted"><%= endpoint.url %></span>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+</div>
