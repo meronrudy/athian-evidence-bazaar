@@ -8,8 +8,10 @@ module V1
         order.checkout! if ActiveModel::Type::Boolean.new.cast(params[:sandbox_checkout])
         if order.status == "paid"
           Agevidence::ArtifactOrderFulfillment.new(order: order).call
+          record_campaign_activation { |recorder| recorder.record_artifact_assembled(order.reload) }
           render json: order_payload(order.reload), status: :created
         else
+          record_campaign_activation { |recorder| recorder.record_artifact_order_created(order) }
           render json: order_payload(order).merge(next_step: "POST /v1/artifact-orders/#{order.external_id}/checkout"), status: :accepted
         end
       rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotFound, KeyError, RuntimeError => e

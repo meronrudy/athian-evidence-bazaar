@@ -29,6 +29,7 @@ Rails.application.routes.draw do
       resources :projects, only: %i[create show], param: :external_id do
         resources :source_records, only: %i[index create]
         resources :model_runs, only: %i[create show]
+        resources :country_determinations, only: %i[index create]
         resources :artifacts, only: %i[create show] do
           member do
             get :download
@@ -42,6 +43,12 @@ Rails.application.routes.draw do
     namespace :pricing do
       resources :products, only: %i[index show], param: :code
       resources :quotes, only: %i[create show], param: :external_id
+    end
+
+    resources :country_adapters, only: %i[index show], param: :adapter_id do
+      member do
+        post :validate
+      end
     end
 
     resources :artifact_orders, path: "artifact-orders", only: %i[create show], param: :external_id do
@@ -58,6 +65,23 @@ Rails.application.routes.draw do
       end
       resources :operations, only: :show, param: :external_id
       resources :webhook_endpoints, only: %i[create index destroy]
+    end
+
+    namespace :campaign do
+      get "dashboard", to: "dashboard#show"
+      resources :accounts, only: %i[index create show update], param: :external_id do
+        resources :activations, only: %i[index create], param: :external_id do
+          member do
+            post :complete
+            post :fail
+          end
+        end
+        resources :qualifications, only: %i[index create]
+        resources :handoffs, only: %i[index create]
+      end
+      namespace :connectors do
+        post "salesforce/events", to: "salesforce_events#create"
+      end
     end
   end
 
@@ -115,5 +139,10 @@ Rails.application.routes.draw do
     resources :reliance_events, only: :create
 
     resource :revenue_model, only: :show
+  end
+
+  namespace :campaign do
+    root "dashboard#show"
+    resources :accounts, only: %i[index show]
   end
 end

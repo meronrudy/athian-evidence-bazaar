@@ -17,6 +17,7 @@ module V1
           policy_version: review_params[:policy_version].presence || "athian.agevidence.review.sandbox.v1",
           decided_at: Time.current
         )
+        record_campaign_activation { |recorder| recorder.record_review_decision_created(decision) }
         render json: candidate_payload(candidate.reload).merge(latest_decision: decision_payload(decision))
       rescue ActiveRecord::RecordInvalid, ActionController::ParameterMissing => e
         render_error("REVIEW_DECISION_INVALID", status: :unprocessable_entity, message: e.message)

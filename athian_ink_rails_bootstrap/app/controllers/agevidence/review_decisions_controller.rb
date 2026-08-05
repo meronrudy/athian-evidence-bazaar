@@ -10,6 +10,7 @@ module Agevidence
         decided_at: Time.current
       )
       ReceiptIssuer.new.issue_review_decision!(decision) if candidate.receipt
+      record_campaign_activation { |recorder| recorder.record_review_decision_created(decision) }
       redirect_to agevidence_evidence_candidate_path(candidate), notice: "Append-only review decision recorded."
     rescue ActiveRecord::RecordInvalid, InkReceipts::Error, RuntimeError => e
       redirect_back fallback_location: agevidence_root_path, alert: e.message

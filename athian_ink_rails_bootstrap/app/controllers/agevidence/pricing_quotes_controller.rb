@@ -14,6 +14,7 @@ module Agevidence
         product_code: quote_params.require(:product_code),
         scope: quote_params[:scope].presence || {}
       ).quote
+      record_campaign_activation { |recorder| recorder.record_quote_created(quote) }
       redirect_to agevidence_developer_project_pricing_quote_path(@project, quote), notice: "Sandbox quote created."
     rescue ActiveRecord::RecordInvalid, ActionController::ParameterMissing, KeyError => e
       @products = products

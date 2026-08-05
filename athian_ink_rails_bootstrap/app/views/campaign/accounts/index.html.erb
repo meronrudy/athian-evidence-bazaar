@@ -1,0 +1,49 @@
+<% content_for :title, "Campaign Accounts" %>
+
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Campaign accounts</p>
+    <h1>Target Account Spine</h1>
+    <p class="lead">A bounded routing layer between Apollo discovery, AgEvidence product truth, and Salesforce handoff.</p>
+  </div>
+  <%= link_to "Dashboard", campaign_root_path, class: "btn btn-outline-secondary" %>
+</section>
+
+<section class="content-section">
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Target</th>
+          <th>Cohort</th>
+          <th>Status</th>
+          <th>Qualification</th>
+          <th>Priority</th>
+          <th>Activation</th>
+          <th>Handoff</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @accounts.each do |account| %>
+          <tr>
+            <td>
+              <strong><%= account.name %></strong>
+              <div class="text-muted small"><%= account.domain.presence || account.external_id %></div>
+            </td>
+            <td>
+              <%= account.country_code %>
+              <div class="text-muted small"><%= account.subsector.presence || "No subsector" %></div>
+            </td>
+            <td><span class="badge text-bg-secondary"><%= account.status.humanize %></span></td>
+            <td><span class="badge text-bg-info"><%= account.qualification_level.humanize %></span></td>
+            <td><%= account.priority_score %></td>
+            <td><%= account.activation_paths.order(updated_at: :desc).first&.status&.humanize || "None" %></td>
+            <td><%= account.commercial_handoffs.order(updated_at: :desc).first&.status&.humanize || "None" %></td>
+            <td class="text-end"><%= link_to "Open", campaign_account_path(account), class: "btn btn-sm btn-primary" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</section>

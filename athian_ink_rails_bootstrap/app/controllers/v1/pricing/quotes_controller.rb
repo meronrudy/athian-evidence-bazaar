@@ -8,6 +8,7 @@ module V1
           product_code: quote_params.require(:product_code),
           scope: quote_params[:scope].presence || {}
         ).quote
+        record_campaign_quote(quote)
         render json: quote_payload(quote), status: :created
       rescue ActiveRecord::RecordNotFound
         render json: { error: { code: "PROJECT_NOT_FOUND", message: "Project was not found." } }, status: :not_found
@@ -49,6 +50,12 @@ module V1
           accepted_at: quote.accepted_at&.iso8601,
           notice: Agevidence::ProductCatalog.notice
         }
+      end
+
+      def record_campaign_quote(quote)
+        ::Campaign::ActivationRecorder.from_headers(request.headers).record_quote_created(quote)
+      rescue StandardError
+        nil
       end
     end
   end

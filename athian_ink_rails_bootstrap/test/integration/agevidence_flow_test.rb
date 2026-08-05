@@ -85,4 +85,39 @@ class AgevidenceFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to agevidence_country_program_path(@country_adapter.country_program)
     assert_equal "country_compatibility_determination_receipt", Agevidence::CountryDetermination.last.receipt.receipt_type
   end
+
+  test "v1 country adapter API lists and validates manifests" do
+    get v1_country_adapters_path
+
+    assert_response :success
+    body = JSON.parse(response.body)
+    assert body.any? { |adapter| adapter.fetch("adapter_id") == "athian-country-ca-beef-v1" }
+
+    post validate_v1_country_adapter_path("athian-country-ca-beef-v1")
+
+    assert_response :success
+    report = JSON.parse(response.body)
+    assert_equal "active", report.fetch("classification")
+    assert_empty report.fetch("errors")
+  end
+
+  test "v1 country determination API appends with institution profile" do
+    assert_difference "Agevidence::CountryDetermination.count", 1 do
+      post v1_developer_project_country_determinations_path(@project),
+        params: {
+          adapter: "CA",
+          institution_profile: {
+            profile_type: "buyer",
+            profile_id: "processor-buyer-v1",
+            requirements: ["evidence.verification_readiness_report"]
+          }
+        },
+        as: :json
+    end
+
+    assert_response :created
+    body = JSON.parse(response.body)
+    assert_equal "CA", body.fetch("country_code")
+    assert_equal "processor-buyer-v1", body.dig("normalized_result", "institution_profile", "profile_id")
+  end
 end

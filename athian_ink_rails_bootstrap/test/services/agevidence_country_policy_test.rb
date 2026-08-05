@@ -57,12 +57,29 @@ class AgevidenceCountryPolicyTest < ActiveSupport::TestCase
   test "country adapter catalog loads uniform manifests" do
     manifests = Agevidence::CountryAdapterCatalog.manifests
 
-    assert_equal 6, manifests.size
+    assert_operator manifests.size, :>=, 8
     manifests.each do |manifest|
       assert_equal "ink.receipt.v2", manifest.fetch("global_contract").fetch("receipt_envelope")
       assert manifest.fetch("required_evidence").is_a?(Array)
       assert manifest.fetch("limitations").any?
     end
+
+    reports = manifests.map { |manifest| Agevidence::CountryAdapterCatalog.validation_report(manifest) }
+    assert_equal "active", reports.detect { |report| report.fetch("country_code") == "AU" }.fetch("classification")
+    assert_equal "active", reports.detect { |report| report.fetch("country_code") == "CA" }.fetch("classification")
+    assert_equal "scaffold", reports.detect { |report| report.fetch("country_code") == "NZ" }.fetch("classification")
+    assert_equal "research", reports.detect { |report| report.fetch("country_code") == "UK" }.fetch("classification")
+    assert reports.all? { |report| report.fetch("manifest_path").is_a?(String) }
+  end
+
+  test "country adapter catalog sync updates existing projections" do
+    @canada_adapter.update!(status: "scaffold")
+    @canada_adapter.country_method_version.update!(status: "scaffold")
+
+    synced = Agevidence::CountryAdapterCatalog.sync!.detect { |adapter| adapter.adapter_id == "athian-country-ca-beef-v1" }
+
+    assert_equal "active", synced.status
+    assert_equal "active", synced.country_method_version.status
   end
 
   test "artifact profiles are loaded from country adapter packs" do
@@ -82,7 +99,28 @@ class AgevidenceCountryPolicyTest < ActiveSupport::TestCase
     assert_includes result.fetch("missing_evidence"), "evidence.baseline_performance"
     assert_equal "Athian compatibility assessment only", result.fetch("determination_role")
     assert result.key?("policy_extensions")
+    assert result.key?("policy_stack")
+    assert result.key?("identifier_bindings")
+    assert result.key?("external_checks")
+    assert result.key?("source_profile_versions")
+    assert result.key?("supersedes")
     assert result.key?("registry_mapping")
+  end
+
+  test "policy stack resolver surfaces institution conflicts" do
+    result = Agevidence::PolicyStackResolver.new(
+      country_adapter: @canada_adapter,
+      institution_profile: {
+        "profile_type" => "buyer",
+        "profile_id" => "buyer-conflict-v1",
+        "requirements" => ["evidence.verification_readiness_report"],
+        "conflicts" => ["evidence.rights_receipt"]
+      }
+    ).call
+
+    assert_includes result.fetch("unresolved_conflicts"), "evidence.rights_receipt"
+    assert result.fetch("results").any? { |item| item.fetch("code") == "unresolved_conflict" }
+    assert result.fetch("results").any? { |item| item.fetch("code") == "institution_specific_requirement" }
   end
 
   test "same evidence graph can be evaluated through multiple adapters" do

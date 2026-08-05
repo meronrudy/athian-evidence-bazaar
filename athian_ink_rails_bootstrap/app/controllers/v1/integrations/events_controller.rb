@@ -9,6 +9,7 @@ module V1
         )
 
         if result.accepted
+          record_campaign_integration_event(result.integration_event) unless result.duplicate
           render json: {
             event_id: result.integration_event.external_event_id,
             status: "accepted",
@@ -83,6 +84,12 @@ module V1
         when ::Integrations::ErrorCatalog::CODES[:signature_invalid] then :unauthorized
         else :unprocessable_entity
         end
+      end
+
+      def record_campaign_integration_event(event)
+        ::Campaign::ActivationRecorder.from_headers(request.headers).record_integration_event_accepted(event)
+      rescue StandardError
+        nil
       end
     end
   end

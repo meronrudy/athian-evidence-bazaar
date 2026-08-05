@@ -31,6 +31,7 @@ module Agevidence
     def create
       @project = DeveloperProject.new(project_params)
       if @project.save
+        record_campaign_activation { |recorder| recorder.record_project_created(@project) }
         redirect_to agevidence_developer_project_path(@project), notice: "Developer project created."
       else
         load_form_options

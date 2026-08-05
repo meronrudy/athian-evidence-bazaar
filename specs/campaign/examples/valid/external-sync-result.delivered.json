@@ -1,0 +1,11 @@
+{
+  "destination": "salesforce",
+  "event_type": "architecture_sprint.qualified",
+  "aggregate_type": "Campaign::CommercialHandoff",
+  "aggregate_id": "handoff_123",
+  "idempotency_key": "salesforce-handoff:camp_northstar_au:tq_123:evidence_architecture_sprint",
+  "status": "delivered",
+  "attempt_count": 1,
+  "delivered_at": "2026-08-04T18:05:00Z",
+  "last_error": null
+}

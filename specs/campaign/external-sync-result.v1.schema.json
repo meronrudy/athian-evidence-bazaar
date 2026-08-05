@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://athian.example/specs/campaign/external-sync-result.v1.schema.json",
+  "title": "External Sync Result v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["destination", "event_type", "idempotency_key", "status", "attempt_count"],
+  "properties": {
+    "destination": { "type": "string", "enum": ["salesforce", "apollo"] },
+    "event_type": { "type": "string" },
+    "aggregate_type": { "type": "string" },
+    "aggregate_id": { "type": ["string", "integer"] },
+    "idempotency_key": { "type": "string", "minLength": 8 },
+    "status": { "type": "string", "enum": ["pending", "delivered", "retrying", "failed", "dead_letter"] },
+    "attempt_count": { "type": "integer", "minimum": 0 },
+    "delivered_at": { "type": ["string", "null"], "format": "date-time" },
+    "last_error": { "type": ["string", "null"], "maxLength": 2000 }
+  }
+}

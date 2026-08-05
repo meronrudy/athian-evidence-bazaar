@@ -161,6 +161,16 @@ module V1
       def render_error(code, status:, message: nil)
         render json: { error: { code: code, message: message.presence || code.to_s.humanize } }, status: status
       end
+
+      def campaign_activation_recorder
+        ::Campaign::ActivationRecorder.from_headers(request.headers)
+      end
+
+      def record_campaign_activation
+        yield campaign_activation_recorder
+      rescue StandardError
+        nil
+      end
     end
   end
 end

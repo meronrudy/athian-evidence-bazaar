@@ -1,0 +1,210 @@
+<% content_for :title, @account.name %>
+
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Campaign account</p>
+    <h1><%= @account.name %></h1>
+    <p class="lead"><%= @account.evidence_obligation_summary.presence || "No recorded external evidence obligation yet." %></p>
+  </div>
+  <div class="d-flex gap-2 flex-wrap">
+    <%= link_to "All accounts", campaign_accounts_path, class: "btn btn-outline-secondary" %>
+    <% if @account.developer_account %>
+      <%= link_to "Developer account", agevidence_developer_account_path(@account.developer_account), class: "btn btn-primary" %>
+    <% end %>
+  </div>
+</section>
+
+<div class="alert alert-boundary">
+  System of record: Campaign owns attribution. Apollo owns enrichment and outreach. Salesforce owns opportunity and contract state. AgEvidence owns developer project, evidence gaps, artifacts, and reliance.
+</div>
+
+<section class="dashboard-grid">
+  <article class="metric-card">
+    <span class="metric-label">Status</span>
+    <strong class="metric-value--compact"><%= @account.status.humanize %></strong>
+    <small>Campaign routing</small>
+  </article>
+  <article class="metric-card">
+    <span class="metric-label">Qualification</span>
+    <strong class="metric-value--compact"><%= @account.qualification_level.humanize %></strong>
+    <small>Campaign snapshot</small>
+  </article>
+  <article class="metric-card">
+    <span class="metric-label">Priority</span>
+    <strong><%= @account.priority_score %></strong>
+    <small>0 to 100</small>
+  </article>
+  <article class="metric-card">
+    <span class="metric-label">Country</span>
+    <strong><%= @account.country_code %></strong>
+    <small><%= @account.subsector.presence || "No subsector" %></small>
+  </article>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Identity and target cohort</p>
+      <h2>Account spine</h2>
+    </div>
+  </div>
+  <dl class="summary-list summary-list--six">
+    <div><dt>Campaign ID</dt><dd><code><%= @account.external_id %></code></dd></div>
+    <div><dt>Domain</dt><dd><%= @account.domain.presence || "Not stored" %></dd></div>
+    <div><dt>Funding stage</dt><dd><%= @account.funding_stage.presence || "Unknown" %></dd></div>
+    <div><dt>Capital raised</dt><dd><%= money(@account.capital_raised_cents / 100.0) %></dd></div>
+    <div><dt>Developer account</dt><dd><%= @account.developer_account&.name || "Optional link absent" %></dd></div>
+    <div><dt>Authoritative system</dt><dd><%= @account.authoritative_system.presence || "Not confirmed" %></dd></div>
+  </dl>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">External CRM references</p>
+      <h2>Bounded connector state</h2>
+    </div>
+  </div>
+  <dl class="summary-list summary-list--six">
+    <div><dt>Salesforce account</dt><dd><%= @account.salesforce_account_id.presence || "None" %></dd></div>
+    <div><dt>Apollo account</dt><dd><%= @account.apollo_account_id.presence || "None" %></dd></div>
+    <div><dt>Contacts stored</dt><dd><%= @account.contact_refs.size %></dd></div>
+  </dl>
+  <div class="table-responsive mt-3">
+    <table class="table table-sm align-middle">
+      <thead>
+        <tr>
+          <th>Contact ref</th>
+          <th>Role</th>
+          <th>Domain</th>
+          <th>Authority</th>
+          <th>Contactability</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @account.contact_refs.order(:id).each do |contact| %>
+          <tr>
+            <td>
+              <strong><%= contact.display_name.presence || contact.external_id %></strong>
+              <div class="text-muted small">Apollo: <%= contact.apollo_person_id.presence || "none" %> · SF: <%= contact.salesforce_contact_id.presence || "none" %></div>
+            </td>
+            <td><%= contact.role_category.presence || "Unclassified" %></td>
+            <td><%= contact.email_domain.presence || "Not stored" %></td>
+            <td class="small">
+              Tech <%= contact.technical_authority ? "yes" : "no" %> ·
+              Commercial <%= contact.commercial_authority ? "yes" : "no" %> ·
+              Scientific <%= contact.scientific_authority ? "yes" : "no" %>
+            </td>
+            <td><span class="badge text-bg-secondary"><%= contact.contactability_status.humanize %></span></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Activation history</p>
+      <h2>Developer OS paths</h2>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-sm align-middle">
+      <thead>
+        <tr>
+          <th>Path</th>
+          <th>Status</th>
+          <th>Repository SHA</th>
+          <th>Project ref</th>
+          <th>Support</th>
+          <th>Timing</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @account.activation_paths.order(updated_at: :desc).each do |activation| %>
+          <tr>
+            <td><code><%= activation.external_id %></code><br><%= activation.path_type.humanize %></td>
+            <td><span class="badge text-bg-info"><%= activation.status.humanize %></span></td>
+            <td><code><%= activation.repository_sha.presence || "none" %></code></td>
+            <td><%= activation.developer_project_external_id.presence || "none" %></td>
+            <td><%= activation.support_minutes %> min</td>
+            <td class="small">
+              Started <%= activation.started_at&.to_fs(:short) || "none" %><br>
+              Completed <%= activation.completed_at&.to_fs(:short) || "none" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Technical activity summary</p>
+      <h2>Evidence-grounded qualification</h2>
+    </div>
+  </div>
+  <div class="list-group">
+    <% @account.technical_qualifications.order(created_at: :desc).each do |qualification| %>
+      <div class="list-group-item">
+        <div class="d-flex justify-content-between">
+          <strong><%= qualification.qualification_level.humanize %></strong>
+          <span class="badge text-bg-secondary"><%= qualification.status.humanize %></span>
+        </div>
+        <p class="mb-2"><%= qualification.qualification_reason %></p>
+        <small>
+          Project <%= qualification.developer_project_id || "none" %> ·
+          Sources/events <%= qualification.supported_event_count %> ·
+          Gaps <%= qualification.evidence_gap_count %> ·
+          Obligation <%= qualification.named_obligation_code.presence || "none" %>
+        </small>
+      </div>
+    <% end %>
+  </div>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Commercial handoff summary</p>
+      <h2>Salesforce-bounded value references</h2>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-sm align-middle">
+      <thead>
+        <tr>
+          <th>Handoff</th>
+          <th>Product</th>
+          <th>Status</th>
+          <th>Planning</th>
+          <th>Contracted</th>
+          <th>Collected</th>
+          <th>References</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @account.commercial_handoffs.order(created_at: :desc).each do |handoff| %>
+          <tr>
+            <td><code><%= handoff.external_id %></code><br>SF opportunity: <%= handoff.salesforce_opportunity_id.presence || "none" %></td>
+            <td><%= handoff.product_code %></td>
+            <td><span class="badge text-bg-warning"><%= handoff.status.humanize %></span></td>
+            <td><%= money(handoff.planning_value_cents / 100.0, handoff.currency) %></td>
+            <td><%= money(handoff.contracted_value_cents / 100.0, handoff.currency) %></td>
+            <td><%= money(handoff.cash_collected_cents / 100.0, handoff.currency) %></td>
+            <td class="small">
+              Proposal: <%= handoff.salesforce_proposal_id.presence || handoff.proposal_reference.presence || "none" %><br>
+              Contract: <%= handoff.contract_reference.presence || "none" %><br>
+              Invoice: <%= handoff.invoice_reference.presence || "none" %><br>
+              Cash: <%= handoff.cash_collection_reference.presence || "none" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</section>

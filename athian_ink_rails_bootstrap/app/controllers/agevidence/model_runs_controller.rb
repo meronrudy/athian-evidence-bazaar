@@ -9,6 +9,7 @@ module Agevidence
     def create
       adapter = ModelAdapter.find(params.require(:model_adapter_id))
       run = ModelRunIngestion.new(project: @project, model_adapter: adapter).call
+      record_campaign_activation { |recorder| recorder.record_model_run_created(run) }
       redirect_to agevidence_model_run_path(run), notice: "Fixture-backed model run ingested."
     rescue KeyError, ActiveRecord::RecordInvalid, RuntimeError => e
       @adapters = ModelAdapter.order(:adapter_id)

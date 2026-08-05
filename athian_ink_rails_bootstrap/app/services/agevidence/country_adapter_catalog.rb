@@ -6,13 +6,15 @@ module Agevidence
       adapter global_contract method applicability required_evidence claim_policy
       verification_profile data_policy artifact_profiles limitations
     ].freeze
+    VALID_STATUSES = %w[active pilot scaffold research superseded retired].freeze
+    IMPLEMENTATION_CLASSIFICATIONS = %w[active pilot scaffold research].freeze
 
     class << self
       def manifests
         Dir[root.join("*", "adapter.yml")].sort.map do |path|
           manifest = YAML.load_file(path)
           validate_manifest!(manifest)
-          manifest.merge("slug" => File.basename(File.dirname(path)), "path" => path)
+          manifest.merge("slug" => File.basename(File.dirname(path)), "path" => path.to_s)
         end
       end
 
@@ -35,66 +37,143 @@ module Agevidence
       end
 
       def validate_manifest!(manifest)
-        REQUIRED_MANIFEST_KEYS.each { |key| manifest.fetch(key) }
-        manifest.fetch("adapter").fetch("id")
-        manifest.fetch("adapter").fetch("version")
-        manifest.fetch("adapter").fetch("country_code")
-        manifest.fetch("method").fetch("id")
-        manifest.fetch("method").fetch("version")
+        report = validation_report(manifest)
+        raise KeyError, report.fetch("errors").join(", ") unless report.fetch("errors").empty?
+
         manifest
+      end
+
+      def validation_report(manifest_or_path)
+        manifest = manifest_or_path.is_a?(String) || manifest_or_path.respond_to?(:to_path) ? YAML.load_file(manifest_or_path) : manifest_or_path
+        errors = []
+        REQUIRED_MANIFEST_KEYS.each { |key| errors << "missing required key: #{key}" unless manifest.key?(key) }
+        adapter = manifest.fetch("adapter", {})
+        method = manifest.fetch("method", {})
+        global_contract = manifest.fetch("global_contract", {})
+
+        %w[id version status country_code].each { |key| errors << "missing adapter.#{key}" if adapter[key].blank? }
+        %w[id version authority].each { |key| errors << "missing method.#{key}" if method[key].blank? }
+        errors << "adapter.status is not supported: #{adapter['status']}" if adapter["status"].present? && !VALID_STATUSES.include?(adapter["status"])
+        errors << "global_contract.receipt_envelope must be ink.receipt.v2" unless global_contract["receipt_envelope"] == "ink.receipt.v2"
+        errors << "global_contract.agricultural_vocabulary must be athian.agevidence.v1" unless global_contract["agricultural_vocabulary"] == "athian.agevidence.v1"
+        errors << "global_contract.verifier_contract must be ink.verify.v1" unless global_contract["verifier_contract"] == "ink.verify.v1"
+        errors << "artifact_profiles must not be empty" if Array(manifest["artifact_profiles"]).empty?
+        errors << "limitations must not be empty" if Array(manifest["limitations"]).empty?
+
+        {
+          "adapter_id" => adapter["id"],
+          "country_code" => adapter["country_code"],
+          "status" => adapter["status"],
+          "classification" => classification_for(adapter["status"], errors),
+          "errors" => errors,
+          "manifest_path" => manifest["path"].to_s
+        }
+      rescue Psych::SyntaxError, KeyError, NoMethodError => e
+        {
+          "adapter_id" => nil,
+          "country_code" => nil,
+          "status" => nil,
+          "classification" => "invalid",
+          "errors" => [e.message],
+          "manifest_path" => manifest_or_path.to_s
+        }
+      end
+
+      def resolve_adapter!(value)
+        sync! if CountryAdapter.none?
+        CountryAdapter.find_by(adapter_id: value) || resolve_country_code!(value)
       end
 
       private
 
+      def classification_for(status, errors)
+        return "invalid" if errors.any?
+        return status if IMPLEMENTATION_CLASSIFICATIONS.include?(status)
+
+        "research"
+      end
+
+      def resolve_country_code!(value)
+        matches = CountryAdapter.where(country_code: value.to_s.upcase).order(:adapter_id, :version)
+        active = matches.where(status: "active")
+        selected = active.presence || matches
+        raise ActiveRecord::RecordNotFound, "Unknown country adapter or country code: #{value}" if selected.empty?
+        raise ActiveRecord::RecordNotFound, "Country code #{value} maps to multiple adapters; use adapter id." if selected.size > 1
+
+        selected.first
+      end
+
+      def profile_status(status)
+        return "retired" if status == "retired"
+        return "research" if status == "superseded"
+        return status if IMPLEMENTATION_CLASSIFICATIONS.include?(status)
+
+        "scaffold"
+      end
+
       def sync_manifest!(manifest)
         adapter_data = manifest.fetch("adapter")
         method_data = manifest.fetch("method")
+        declared_status = adapter_data.fetch("status")
+        status = profile_status(declared_status)
 
-        program = CountryProgram.find_or_create_by!(
+        program = CountryProgram.find_or_initialize_by(
           country_code: adapter_data.fetch("country_code"),
           name: method_data.fetch("authority")
-        ) do |record|
-          record.program_type = "country_policy_adapter"
-          record.authority_name = method_data.fetch("authority")
-          record.status = adapter_data.fetch("status")
-          record.description = "Data-driven AgEvidence country program projection."
-        end
+        )
+        program.assign_attributes(
+          program_type: "country_policy_adapter",
+          authority_name: method_data.fetch("authority"),
+          status: status,
+          description: "Data-driven AgEvidence country program projection."
+        )
+        program.save!
 
-        method = program.country_methods.find_or_create_by!(method_id: method_data.fetch("id")) do |record|
-          record.name = method_data.fetch("id").tr("-", " ")
-          record.authority_name = method_data.fetch("authority")
-          record.status = adapter_data.fetch("status")
-        end
+        method = program.country_methods.find_or_initialize_by(method_id: method_data.fetch("id"))
+        method.assign_attributes(
+          name: method_data.fetch("id").tr("-", " "),
+          authority_name: method_data.fetch("authority"),
+          status: status
+        )
+        method.save!
 
-        method_version = method.country_method_versions.find_or_create_by!(version: method_data.fetch("version")) do |record|
-          record.authority_version = method_data.fetch("version")
-          record.status = adapter_data.fetch("status") == "active" ? "active" : "scaffold"
-          record.method_payload = method_data
-        end
+        method_version = method.country_method_versions.find_or_initialize_by(version: method_data.fetch("version"))
+        method_version.assign_attributes(
+          authority_version: method_data.fetch("version"),
+          status: status,
+          method_payload: method_data
+        )
+        method_version.save!
 
-        claim_policy = program.country_claim_policies.find_or_create_by!(
+        claim_policy = program.country_claim_policies.find_or_initialize_by(
           policy_id: manifest.fetch("claim_policy").fetch("profile"),
           version: adapter_data.fetch("version")
-        ) do |record|
-          record.status = adapter_data.fetch("status") == "active" ? "active" : "scaffold"
-          record.policy_payload = manifest.fetch("claim_policy")
-        end
+        )
+        claim_policy.assign_attributes(
+          status: status,
+          policy_payload: manifest.fetch("claim_policy")
+        )
+        claim_policy.save!
 
-        verification_profile = program.country_verification_profiles.find_or_create_by!(
+        verification_profile = program.country_verification_profiles.find_or_initialize_by(
           profile_id: manifest.fetch("verification_profile").fetch("profile"),
           version: adapter_data.fetch("version")
-        ) do |record|
-          record.status = adapter_data.fetch("status") == "active" ? "active" : "scaffold"
-          record.profile_payload = manifest.fetch("verification_profile")
-        end
+        )
+        verification_profile.assign_attributes(
+          status: status,
+          profile_payload: manifest.fetch("verification_profile")
+        )
+        verification_profile.save!
 
-        data_policy = program.country_data_policies.find_or_create_by!(
+        data_policy = program.country_data_policies.find_or_initialize_by(
           policy_id: manifest.fetch("data_policy").fetch("profile"),
           version: adapter_data.fetch("version")
-        ) do |record|
-          record.status = adapter_data.fetch("status") == "active" ? "active" : "scaffold"
-          record.policy_payload = manifest.fetch("data_policy")
-        end
+        )
+        data_policy.assign_attributes(
+          status: status,
+          policy_payload: manifest.fetch("data_policy")
+        )
+        data_policy.save!
 
         adapter = program.country_adapters.find_or_initialize_by(
           adapter_id: adapter_data.fetch("id"),
@@ -106,29 +185,33 @@ module Agevidence
           country_verification_profile: verification_profile,
           country_data_policy: data_policy,
           country_code: adapter_data.fetch("country_code"),
-          status: adapter_data.fetch("status"),
+          status: CountryAdapter::STATUSES.include?(declared_status) ? declared_status : status,
           manifest: manifest,
           activated_at: Time.current
         )
         adapter.save!
 
-        program.country_institutions.find_or_create_by!(
+        institution = program.country_institutions.find_or_initialize_by(
           name: method_data.fetch("authority"),
           institution_role: "government"
-        ) do |record|
-          record.status = adapter_data.fetch("status")
-        end
+        )
+        institution.status = status
+        institution.save!
 
-        program.country_pilots.find_or_create_by!(name: "#{adapter_data.fetch('country_code')} launch cell") do |record|
-          record.status = adapter_data.fetch("status") == "active" ? "active" : "scaffold"
-          record.description = "Shared launch-cell projection for #{adapter_data.fetch('id')}."
-        end
+        pilot = program.country_pilots.find_or_initialize_by(name: "#{adapter_data.fetch('country_code')} launch cell")
+        pilot.assign_attributes(
+          status: status == "active" ? "active" : "scaffold",
+          description: "Shared launch-cell projection for #{adapter_data.fetch('id')}."
+        )
+        pilot.save!
 
-        program.country_registries.find_or_create_by!(name: "#{adapter_data.fetch('country_code')} registry mapping") do |record|
-          record.registry_code = adapter_data.fetch("country_code")
-          record.status = "scaffold"
-          record.mapping_payload = { adapter_id: adapter_data.fetch("id") }
-        end
+        registry = program.country_registries.find_or_initialize_by(name: "#{adapter_data.fetch('country_code')} registry mapping")
+        registry.assign_attributes(
+          registry_code: adapter_data.fetch("country_code"),
+          status: "scaffold",
+          mapping_payload: { adapter_id: adapter_data.fetch("id") }
+        )
+        registry.save!
 
         adapter
       end

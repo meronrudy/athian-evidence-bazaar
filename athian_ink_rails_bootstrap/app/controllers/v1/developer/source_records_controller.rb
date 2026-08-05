@@ -13,6 +13,7 @@ module V1
       def create
         record = @project.source_records.create!(source_record_params)
         event = Agevidence::SourceRecordProjection.new(source_record: record).call
+        record_campaign_activation { |recorder| recorder.record_source_record_created(record.reload) }
         render json: source_record_payload(record.reload).merge(
           event_id: event.external_event_id,
           operation_id: event.current_operation&.external_id,

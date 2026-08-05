@@ -13,6 +13,7 @@ module V1
           country_context: project_params[:country_context].presence || {}
         )
         map_project!(project)
+        record_campaign_activation { |recorder| recorder.record_project_created(project) }
         render json: project_payload(project), status: :created
       rescue ActiveRecord::RecordInvalid, KeyError => e
         render_error("DEVELOPER_PROJECT_INVALID", status: :unprocessable_entity, message: e.message)

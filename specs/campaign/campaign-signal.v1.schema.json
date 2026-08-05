@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://athian.example/specs/campaign/campaign-signal.v1.schema.json",
+  "title": "Campaign Signal v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["event_type", "source_system", "campaign_account_id", "occurred_at"],
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "target_account.discovered",
+        "target_account.enriched",
+        "target_contact.discovered",
+        "target_contact.enriched",
+        "outreach.sent",
+        "outreach.replied",
+        "contact.invalid",
+        "contact.unsubscribed",
+        "publication_sent",
+        "guide_sent",
+        "repository_sent",
+        "quickstart_started",
+        "quickstart_completed",
+        "sdk_installed_reported",
+        "cli_replay_completed",
+        "technical_question_received",
+        "sample_payload_received",
+        "artifact_review_requested",
+        "proposal_requested",
+        "unsubscribe_received"
+      ]
+    },
+    "source_system": { "type": "string", "minLength": 2 },
+    "campaign_account_id": { "type": "string", "pattern": "^camp_[a-z0-9_\\-]+$" },
+    "campaign_contact_id": { "type": "string" },
+    "external_reference": { "type": "string" },
+    "repository_sha": { "type": "string", "pattern": "^[a-f0-9]{7,40}$" },
+    "content_reference": { "type": "string" },
+    "occurred_at": { "type": "string", "format": "date-time" },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": {
+        "type": ["string", "number", "boolean", "null", "object", "array"]
+      }
+    }
+  }
+}

@@ -1,0 +1,124 @@
+<% content_for :title, "Campaign Control Plane" %>
+
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Campaign control plane</p>
+    <h1>Activation To Handoff</h1>
+    <p class="lead">Target-account routing tied to Developer OS activation, evidence obligations, qualification snapshots, and bounded Salesforce handoff.</p>
+  </div>
+  <div class="d-flex gap-2 flex-wrap">
+    <%= link_to "Accounts", campaign_accounts_path, class: "btn btn-primary" %>
+    <%= link_to "Developer OS", agevidence_developer_os_path, class: "btn btn-outline-secondary" %>
+  </div>
+</section>
+
+<div class="alert alert-boundary">
+  Campaign state is attribution and routing. AgEvidence remains authoritative for technical activation, evidence state, artifacts, and reliance; Salesforce remains authoritative for opportunity, contract, forecast, and collection.
+</div>
+
+<% phase10 = @snapshot.fetch(:phase10) %>
+<div class="alert alert-boundary">
+  Phase 10 gate:
+  <strong><%= phase10.fetch(:enabled) ? "enabled" : "closed" %></strong>.
+  Proof handoff: <%= phase10.fetch(:proof_handoff_id).presence || "none" %>.
+  <%= phase10.fetch(:requirement) %>
+</div>
+
+<section class="dashboard-grid">
+  <% @snapshot.fetch(:counts).each do |label, value| %>
+    <article class="metric-card">
+      <span class="metric-label"><%= label.to_s.humanize %></span>
+      <strong><%= value %></strong>
+      <small>Campaign projection</small>
+    </article>
+  <% end %>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Recent accounts</p>
+      <h2>Target accounts by priority</h2>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Account</th>
+          <th>Country</th>
+          <th>Status</th>
+          <th>Qualification</th>
+          <th>Developer link</th>
+          <th>External refs</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @snapshot.fetch(:recent_accounts).each do |account| %>
+          <tr>
+            <td>
+              <strong><%= account.name %></strong>
+              <div class="text-muted small"><%= account.domain.presence || account.external_id %></div>
+            </td>
+            <td><%= account.country_code %></td>
+            <td><span class="badge text-bg-secondary"><%= account.status.humanize %></span></td>
+            <td><span class="badge text-bg-info"><%= account.qualification_level.humanize %></span></td>
+            <td><%= account.developer_account&.name || "Unlinked" %></td>
+            <td class="small">
+              SF: <%= account.salesforce_account_id.presence || "none" %><br>
+              Apollo: <%= account.apollo_account_id.presence || "none" %>
+            </td>
+            <td class="text-end"><%= link_to "Open", campaign_account_path(account), class: "btn btn-sm btn-primary" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Activity</p>
+      <h2>Recent activation and qualification state</h2>
+    </div>
+  </div>
+  <div class="row g-3">
+    <div class="col-lg-6">
+      <article class="resource-card h-100">
+        <h3>Activations</h3>
+        <div class="list-group list-group-flush">
+          <% @snapshot.fetch(:recent_activations).each do |activation| %>
+            <%= link_to campaign_account_path(activation.campaign_account), class: "list-group-item list-group-item-action px-0" do %>
+              <div class="d-flex justify-content-between">
+                <strong><%= activation.campaign_account.name %></strong>
+                <span class="badge text-bg-secondary"><%= activation.status.humanize %></span>
+              </div>
+              <small><%= activation.path_type.humanize %> · <%= activation.repository_sha.presence || "no repository SHA" %></small>
+            <% end %>
+          <% end %>
+        </div>
+      </article>
+    </div>
+    <div class="col-lg-6">
+      <article class="resource-card h-100">
+        <h3>Commercial handoffs</h3>
+        <div class="list-group list-group-flush">
+          <% @snapshot.fetch(:recent_handoffs).each do |handoff| %>
+            <%= link_to campaign_account_path(handoff.campaign_account), class: "list-group-item list-group-item-action px-0" do %>
+              <div class="d-flex justify-content-between">
+                <strong><%= handoff.campaign_account.name %></strong>
+                <span class="badge text-bg-warning"><%= handoff.status.humanize %></span>
+              </div>
+              <small>
+                <%= handoff.product_code %> · planning <%= money(handoff.planning_value_cents / 100.0, handoff.currency) %> ·
+                collected <%= money(handoff.cash_collected_cents / 100.0, handoff.currency) %>
+              </small>
+            <% end %>
+          <% end %>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>

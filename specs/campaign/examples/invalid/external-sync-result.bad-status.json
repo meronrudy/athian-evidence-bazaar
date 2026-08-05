@@ -1,0 +1,7 @@
+{
+  "destination": "salesforce",
+  "event_type": "architecture_sprint.qualified",
+  "idempotency_key": "short",
+  "status": "scientifically_approved",
+  "attempt_count": -1
+}

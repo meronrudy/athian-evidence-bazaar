@@ -28,6 +28,7 @@ module Agevidence
         started_on: Date.current
       )
       ArtifactAssembler.new(engagement: @engagement).call if params[:assemble] == "1"
+      record_campaign_activation { |recorder| recorder.record_artifact_assembled(@engagement) } if params[:assemble] == "1"
       redirect_to agevidence_developer_project_artifact_engagement_path(@project, @engagement), notice: "Premium artifact engagement created."
     rescue ActiveRecord::RecordInvalid, KeyError, RuntimeError, InkReceipts::Error => e
       @products = products

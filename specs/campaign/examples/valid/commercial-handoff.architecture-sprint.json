@@ -1,0 +1,12 @@
+{
+  "event_type": "architecture_sprint.qualified",
+  "campaign_account_id": "camp_northstar_au",
+  "developer_project_id": "project-4030-001",
+  "country_code": "AU",
+  "product_code": "evidence_architecture_sprint",
+  "scope_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "planning_value_cents": 2500000,
+  "evidence_gap_count": 7,
+  "named_obligation_code": "scope3_buyer_review",
+  "repository_sha": "f4ec679c2dd6a2c40e3dced61c81e8f59f90a397"
+}

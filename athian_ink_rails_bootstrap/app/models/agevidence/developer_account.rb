@@ -3,6 +3,7 @@ module Agevidence
     STATUSES = %w[active paused archived synthetic_demo].freeze
 
     has_many :developer_projects, class_name: "Agevidence::DeveloperProject", dependent: :destroy
+    has_many :campaign_accounts, class_name: "Campaign::Account", dependent: :nullify
 
     validates :name, presence: true, uniqueness: true
     validates :status, inclusion: { in: STATUSES }

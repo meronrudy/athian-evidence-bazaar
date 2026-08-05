@@ -8,6 +8,7 @@ module V1
           project: @project,
           model_adapter: requested_adapter
         ).call
+        record_campaign_activation { |recorder| recorder.record_model_run_created(run) }
         render json: model_run_payload(run), status: :created
       rescue ActiveRecord::RecordInvalid, KeyError, RuntimeError => e
         render_error("MODEL_RUN_INVALID", status: :unprocessable_entity, message: e.message)

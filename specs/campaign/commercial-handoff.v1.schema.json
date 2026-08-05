@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://athian.example/specs/campaign/commercial-handoff.v1.schema.json",
+  "title": "Commercial Handoff v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event_type",
+    "campaign_account_id",
+    "developer_project_id",
+    "country_code",
+    "product_code",
+    "scope_digest",
+    "planning_value_cents",
+    "evidence_gap_count",
+    "named_obligation_code",
+    "repository_sha"
+  ],
+  "properties": {
+    "event_type": { "const": "architecture_sprint.qualified" },
+    "campaign_account_id": { "type": "string", "pattern": "^camp_[a-z0-9_\\-]+$" },
+    "developer_project_id": { "type": ["string", "integer"] },
+    "country_code": { "type": "string", "pattern": "^[A-Z]{2}$" },
+    "product_code": { "type": "string", "minLength": 2 },
+    "scope_digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "planning_value_cents": { "type": "integer", "minimum": 0 },
+    "evidence_gap_count": { "type": "integer", "minimum": 0 },
+    "named_obligation_code": { "type": "string", "minLength": 2 },
+    "repository_sha": { "type": "string", "pattern": "^[a-f0-9]{40}$" }
+  }
+}

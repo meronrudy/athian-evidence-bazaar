@@ -1,6 +1,6 @@
 module Agevidence
   class CountryProgram < ApplicationRecord
-    STATUSES = %w[scaffold active retired].freeze
+    STATUSES = %w[active pilot scaffold research retired].freeze
 
     has_many :country_methods, class_name: "Agevidence::CountryMethod", dependent: :destroy
     has_many :country_adapters, class_name: "Agevidence::CountryAdapter", dependent: :destroy

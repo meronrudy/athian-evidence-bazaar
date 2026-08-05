@@ -13,6 +13,7 @@ module Agevidence
         currency: quote.currency,
         metadata_json: { source: "browser_developer_os", sandbox: true }
       )
+      record_campaign_activation { |recorder| recorder.record_artifact_order_created(order) }
       redirect_to agevidence_developer_project_artifact_order_path(@project, order), notice: "Sandbox artifact order created."
     rescue ActiveRecord::RecordInvalid, ActionController::ParameterMissing => e
       redirect_to agevidence_developer_project_path(@project), alert: e.message
@@ -32,6 +33,7 @@ module Agevidence
 
     def assemble
       ArtifactOrderFulfillment.new(order: @order).call
+      record_campaign_activation { |recorder| recorder.record_artifact_assembled(@order.reload) }
       redirect_to agevidence_developer_project_artifact_order_path(@project, @order.reload), notice: "Reliance artifact assembled through ink_receipts."
     rescue RuntimeError, KeyError, InkReceipts::Error => e
       redirect_to agevidence_developer_project_artifact_order_path(@project, @order), alert: e.message

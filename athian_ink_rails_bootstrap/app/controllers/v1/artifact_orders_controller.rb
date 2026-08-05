@@ -14,6 +14,7 @@ module V1
           artifact_scope: order_params[:artifact_scope].presence || {}
         }
       )
+      record_campaign_order(order)
       render json: order_payload(order), status: :created
     rescue ActiveRecord::RecordNotFound
       render json: { error: { code: "QUOTE_NOT_FOUND", message: "Quote was not found." } }, status: :not_found
@@ -72,6 +73,12 @@ module V1
         download_url: order.metadata_json["download_url"],
         verification_command: order.metadata_json["verification_command"]
       }
+    end
+
+    def record_campaign_order(order)
+      ::Campaign::ActivationRecorder.from_headers(request.headers).record_artifact_order_created(order)
+    rescue StandardError
+      nil
     end
   end
 end

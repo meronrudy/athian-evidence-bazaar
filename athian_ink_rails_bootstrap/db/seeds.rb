@@ -1,6 +1,18 @@
 puts "Resetting Athian Evidence Bazaar demo data..."
 
 [
+  Campaign::CapabilityAttribution,
+  Campaign::ConnectorOutbox,
+  Campaign::CommercialHandoff,
+  Campaign::TechnicalQualification,
+  Campaign::Touch,
+  Campaign::ActivationPath,
+  Campaign::ContactRef,
+  Campaign::AdapterReadinessAssessment,
+  Campaign::ObligationProfile,
+  Campaign::InstitutionProfile,
+  Campaign::CountryProgram,
+  Campaign::Account,
   Agevidence::SourceRecord,
   IntegrationDelivery,
   IntegrationWebhookEndpoint,
@@ -423,6 +435,16 @@ developer_account = Agevidence::DeveloperAccount.create!(
   status: "synthetic_demo"
 )
 
+riverbend_developer_account = Agevidence::DeveloperAccount.create!(
+  name: "Riverbend Verification Labs",
+  website: "https://synthetic.example/riverbend",
+  funding_stage: "Seed",
+  capital_raised_cents: 700_000_000,
+  primary_segment: "Agricultural verification workflow",
+  headquarters: "Synthetic demonstration entity",
+  status: "synthetic_demo"
+)
+
 country_adapters = Agevidence::CountryAdapterCatalog.sync!
 canada_adapter = country_adapters.detect { |adapter| adapter.adapter_id == "athian-country-ca-beef-v1" }
 australia_adapter = country_adapters.detect { |adapter| adapter.adapter_id == "athian-country-au-livestock-v1" }
@@ -613,6 +635,139 @@ developer_project.artifact_orders.create!(
 )
 developer_project.update!(integration_status: "relied_on", protocol_status: "aligned")
 
+campaign_country_programs = [
+  ["AU", "Oceania", "campaign_ready", "athian-country-au-livestock-v1"],
+  ["CA", "North America", "adapter_scaffold", "athian-country-ca-beef-v1"],
+  ["NZ", "Oceania", "source_inventory", "athian-country-nz-livestock-research-v1"],
+  ["UK", "Europe", "source_inventory", "athian-country-uk-agriculture-research-v1"],
+  ["EU", "Europe", "research_not_started", "athian-country-eu-agriculture-research-v1"]
+].map do |country_code, region_code, status, adapter_identifier|
+  program = Campaign::CountryProgram.create!(
+    country_code: country_code,
+    region_code: region_code,
+    status: status,
+    research_status: status,
+    adapter_status: status,
+    publication_status: status == "campaign_ready" ? "campaign_ready" : "schema_draft",
+    developer_guide_status: status == "campaign_ready" ? "campaign_ready" : "fixture_draft",
+    commercial_readiness: status == "campaign_ready" ? "campaign_ready" : "external_review",
+    canonical_adapter_identifier: adapter_identifier,
+    limitations_json: {
+      scaffold_status: status,
+      unsupported_local_rules: status == "campaign_ready" ? [] : ["Local production rules require external review."],
+      architecture_evaluation_only: status != "production_ready"
+    }
+  )
+  program.institution_profiles.create!(
+    external_id: "inst_#{country_code.downcase}_buyer_review",
+    name: "#{country_code} Buyer Evidence Review",
+    institution_type: "buyer",
+    status: status,
+    requirements_json: { relying_party_type: "buyer" },
+    limitations_json: { external_review_required: status != "production_ready" }
+  )
+  program.obligation_profiles.create!(
+    external_id: "obl_#{country_code.downcase}_scope3_buyer_review",
+    obligation_code: "scope3_buyer_review",
+    name: "#{country_code} Scope 3 buyer review",
+    status: status,
+    required_evidence_json: { evidence_classes: ["evidence.intervention_delivery", "evidence.feed_record"] },
+    limitations_json: { research_only: status != "production_ready" }
+  )
+  program.adapter_readiness_assessments.create!(
+    external_id: "ready_#{country_code.downcase}_#{adapter_identifier.parameterize(separator: '_')}",
+    adapter_identifier: adapter_identifier,
+    status: status,
+    research_only: status != "production_ready",
+    external_review_required: status != "production_ready",
+    unsupported_rules_json: { unsupported_local_rules: status == "campaign_ready" ? [] : ["External rule interpretation pending."] },
+    limitations_json: { artifact_use: status == "production_ready" ? "production" : "architecture_evaluation" },
+    assessed_at: now
+  )
+  program
+end
+
+campaign_accounts = [
+  {
+    external_id: "camp_northstar_au",
+    name: "Northstar Methane Systems AU",
+    domain: "northstar-methane.example",
+    subsector: "Livestock methane-reduction intervention",
+    funding_stage: "Series A",
+    capital_raised_cents: 1_800_000_000,
+    priority_score: 95,
+    developer_account: developer_account,
+    apollo_account_id: "apollo_acct_northstar_au",
+    evidence_obligation_summary: "Buyer-facing Scope 3 review needs controlled source records and evidence gap mapping."
+  },
+  {
+    external_id: "camp_riverbend_au",
+    name: "Riverbend Verification Labs AU",
+    domain: "riverbend-verification.example",
+    subsector: "Verification workflow",
+    funding_stage: "Seed",
+    capital_raised_cents: 700_000_000,
+    priority_score: 84,
+    developer_account: riverbend_developer_account,
+    apollo_account_id: "apollo_acct_riverbend_au",
+    evidence_obligation_summary: "VVB architecture review requires named evidence outcomes and local adapter disclosure."
+  },
+  { external_id: "camp_southern_pastures_au", name: "Southern Pastures Analytics", domain: "southernpastures.example", subsector: "Grazing analytics", priority_score: 76 },
+  { external_id: "camp_coastal_feed_au", name: "Coastal Feed Systems", domain: "coastalfeed.example", subsector: "Feed additive supplier", priority_score: 73 },
+  { external_id: "camp_mallee_measurement_au", name: "Mallee Measurement Co", domain: "malleemeasurement.example", subsector: "Measurement product", priority_score: 70 },
+  { external_id: "camp_wimmera_data_au", name: "Wimmera Data Exchange", domain: "wimmeradata.example", subsector: "Data platform", priority_score: 67 },
+  { external_id: "camp_barossa_supply_au", name: "Barossa Supply Evidence", domain: "barossasupply.example", subsector: "Supply-chain evidence", priority_score: 64 },
+  { external_id: "camp_pilbara_carbon_au", name: "Pilbara Carbon Instruments", domain: "pilbaracarbon.example", subsector: "Measurement hardware", priority_score: 61 },
+  { external_id: "camp_tasman_trace_au", name: "Tasman Traceability", domain: "tasmantrace.example", subsector: "Traceability platform", priority_score: 58 },
+  { external_id: "camp_murray_verification_au", name: "Murray Verification Tools", domain: "murrayverification.example", subsector: "Verification software", priority_score: 55 }
+].map do |attrs|
+  account = Campaign::Account.create!(
+    {
+      country_code: "AU",
+      status: attrs[:developer_account] ? "developer_activated" : "researched",
+      qualification_level: attrs[:developer_account] ? "developer_activated" : "market_qualified",
+      authoritative_system: "campaign_fixture",
+      evidence_obligation_code: "scope3_buyer_review",
+      metadata_json: { synthetic_fixture: true, seeded_at: now.iso8601 }
+    }.merge(attrs)
+  )
+  account.contact_refs.create!(
+    display_name: "Technical Sponsor",
+    role_category: "technical",
+    email_domain: account.domain,
+    apollo_person_id: "apollo_person_#{account.external_id}",
+    technical_authority: true,
+    contactability_status: "contactable",
+    last_enriched_at: now,
+    metadata_json: { synthetic_fixture: true }
+  )
+  account
+end
+
+northstar_campaign = campaign_accounts.first
+northstar_campaign.activation_paths.create!(
+  external_id: "act_northstar_project_4030",
+  path_type: "cli_project_4030",
+  status: "completed",
+  repository_sha: "f4ec679c2dd6a2c40e3dced61c81e8f59f90a397",
+  cli_version: "0.1.0",
+  developer_project_external_id: developer_project.id.to_s,
+  invited_at: now - 2.days,
+  started_at: now - 1.day,
+  completed_at: now,
+  support_minutes: 35,
+  metadata_json: { fixture: "project_4030" }
+)
+northstar_campaign.touches.create!(
+  touch_type: "cli_replay_completed",
+  source_system: "agevidence_cli",
+  external_reference: "act_northstar_project_4030",
+  repository_sha: "f4ec679c2dd6a2c40e3dced61c81e8f59f90a397",
+  content_reference: "examples/integrations/project_4030_beef",
+  occurred_at: now,
+  metadata_json: { fixture: "project_4030" }
+)
+
 canonical_avsa.verification_runs.create!(
   receipt: receipts.first,
   status: "valid",
@@ -686,4 +841,4 @@ secondary_avsa.verification_runs.create!(
   completed_at: now - 2.hours + 1.second
 )
 
-puts "Seeded #{Protocol.count} protocols, #{Avsa.count} AVSAs, #{Receipt.count} receipts, #{EvidenceItem.count} evidence items, #{EvidenceBundle.count} bundle projections, #{Agevidence::SourceRecord.count} source records, #{Agevidence::PricingQuote.count} quote(s), #{Agevidence::ArtifactOrder.count} artifact order(s), #{MethodologyMigration.count} migration(s), and #{Agevidence::DeveloperProject.count} AgEvidence project(s)."
+puts "Seeded #{Protocol.count} protocols, #{Avsa.count} AVSAs, #{Receipt.count} receipts, #{EvidenceItem.count} evidence items, #{EvidenceBundle.count} bundle projections, #{Agevidence::SourceRecord.count} source records, #{Agevidence::PricingQuote.count} quote(s), #{Agevidence::ArtifactOrder.count} artifact order(s), #{MethodologyMigration.count} migration(s), #{Agevidence::DeveloperProject.count} AgEvidence project(s), and #{Campaign::Account.count} campaign account(s)."

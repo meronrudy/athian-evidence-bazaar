@@ -15,6 +15,7 @@ module Agevidence
     def create
       @source_record = @project.source_records.create!(source_record_params)
       Agevidence::SourceRecordProjection.new(source_record: @source_record).call
+      record_campaign_activation { |recorder| recorder.record_source_record_created(@source_record.reload) }
       redirect_to agevidence_developer_project_source_records_path(@project), notice: "Source reference submitted through the append-only inbox."
     rescue ActiveRecord::RecordInvalid => e
       @source_records = @project.source_records.order(:document_id)

@@ -1,6 +1,6 @@
 module Agevidence
   class CountryDataPolicy < ApplicationRecord
-    STATUSES = %w[active superseded retired scaffold].freeze
+    STATUSES = %w[active pilot scaffold research superseded retired].freeze
 
     belongs_to :country_program, class_name: "Agevidence::CountryProgram"
     has_many :country_adapters, class_name: "Agevidence::CountryAdapter", dependent: :restrict_with_error

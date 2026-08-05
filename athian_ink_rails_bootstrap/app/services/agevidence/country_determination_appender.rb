@@ -1,12 +1,19 @@
 module Agevidence
   class CountryDeterminationAppender
-    def initialize(project:, country_adapter:)
+    def initialize(project:, country_adapter:, institution_profile: nil)
       @project = project
       @country_adapter = country_adapter
+      @institution_profile = institution_profile
     end
 
     def call
-      result = CountryEligibilityEvaluator.new(project: project, country_adapter: country_adapter).call
+      prior = latest_prior_determination
+      result = CountryEligibilityEvaluator.new(
+        project: project,
+        country_adapter: country_adapter,
+        institution_profile: institution_profile,
+        supersedes: prior&.result_digest || prior&.receipt&.body_digest
+      ).call
       ensure_adapter_commitment!
       receipt = issue_determination_receipt(result)
 
@@ -14,7 +21,7 @@ module Agevidence
         country_program: country_adapter.country_program,
         country_adapter: country_adapter,
         country_method_version: country_adapter.country_method_version,
-        supersedes: latest_prior_determination,
+        supersedes: prior,
         receipt: receipt,
         status: result.fetch("status"),
         normalized_result: result,
@@ -25,7 +32,7 @@ module Agevidence
 
     private
 
-    attr_reader :project, :country_adapter
+    attr_reader :project, :country_adapter, :institution_profile
 
     def ensure_adapter_commitment!
       return if country_adapter.commitment_receipt

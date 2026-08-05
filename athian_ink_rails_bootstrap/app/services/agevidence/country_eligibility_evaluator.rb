@@ -2,10 +2,12 @@ module Agevidence
   class CountryEligibilityEvaluator
     CONTRACT = "athian.country_determination.v1"
 
-    def initialize(project:, country_adapter:)
+    def initialize(project:, country_adapter:, institution_profile: nil, supersedes: nil)
       @project = project
       @country_adapter = country_adapter
       @manifest = country_adapter.manifest
+      @institution_profile = institution_profile
+      @supersedes = supersedes
     end
 
     def call
@@ -18,6 +20,7 @@ module Agevidence
         "method_id" => country_adapter.country_method_version.method_id,
         "method_version" => country_adapter.country_method_version.version,
         "status" => status,
+        "evidence_graph_root" => project.evidence_graph_root,
         "matched_context" => matched_context,
         "excluded_contexts" => excluded_contexts,
         "required_evidence" => required_evidence,
@@ -26,15 +29,22 @@ module Agevidence
         "authority" => manifest.fetch("method").fetch("authority"),
         "determination_role" => "Athian compatibility assessment only",
         "policy_extensions" => policy_extensions,
+        "policy_stack" => policy_stack.fetch("stack"),
+        "institution_profile" => institution_profile,
+        "identifier_bindings" => identifier_bindings,
+        "external_checks" => external_checks,
+        "source_profile_versions" => source_profile_versions,
+        "supersedes" => supersedes,
         "registry_mapping" => registry_mapping,
         "limitations" => country_adapter.limitations,
+        "findings" => findings,
         "evaluated_at" => Time.current.iso8601
       }
     end
 
     private
 
-    attr_reader :project, :country_adapter, :manifest
+    attr_reader :project, :country_adapter, :manifest, :institution_profile, :supersedes
 
     def status
       return "unassigned" if project.country_context.blank?
@@ -106,6 +116,39 @@ module Agevidence
         "verification_profile" => manifest.fetch("verification_profile").fetch("profile"),
         "data_policy" => manifest.fetch("data_policy").fetch("profile")
       }
+    end
+
+    def policy_stack
+      @policy_stack ||= PolicyStackResolver.new(country_adapter: country_adapter, institution_profile: institution_profile).call
+    end
+
+    def identifier_bindings
+      project.source_documents.flat_map do |document|
+        Array(document[:identifier_bindings] || document["identifier_bindings"])
+      end
+    end
+
+    def external_checks
+      project.source_documents.flat_map do |document|
+        Array(document[:external_checks] || document["external_checks"])
+      end
+    end
+
+    def source_profile_versions
+      {
+        "claim_policy" => manifest.fetch("claim_policy").fetch("profile"),
+        "verification_profile" => manifest.fetch("verification_profile").fetch("profile"),
+        "data_policy" => manifest.fetch("data_policy").fetch("profile")
+      }
+    end
+
+    def findings
+      [
+        {
+          "code" => "review_required",
+          "message" => "Country compatibility remains an Athian assessment and does not confer authority approval."
+        }
+      ]
     end
 
     def registry_mapping
