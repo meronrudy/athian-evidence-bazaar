@@ -16,6 +16,17 @@ The scaffold adds a fixture-backed AgEvidence path across the monorepo:
 
 The existing AVSA Evidence Bazaar demo remains the carbon-domain anchor. AgEvidence extends it with developer projects, model runs, candidate review, country determinations, premium artifacts, reliance events, and revenue scenarios.
 
+For role-based onboarding, start with the internal orientation pack at
+`docs/internal/README.md`. It is the first-read guide for executives, product
+and GTM, engineering, Rails, integrations, trust-layer, model-service,
+country-policy, and operations readers.
+
+For customer, startup developer, and API-user onboarding, start with
+`docs/self-service/README.md`. That pack is the external-safe companion to this
+handoff and routes users through source records, the Evidence Event Inbox,
+Project 4030 replay, SDK examples, sandbox quotes and orders, artifact
+metadata, webhooks, troubleshooting, and local verification.
+
 ## Developer OS scaffold
 
 The Developer OS layer makes the scaffold usable without an enterprise

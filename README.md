@@ -162,6 +162,26 @@ Developer-facing contracts and examples:
 - Project 4030 replay script:
   `examples/integrations/project_4030_beef/replay_project_4030.rb`
 
+## Self-Service Guides
+
+Customer, startup developer, and API user guides live at
+`docs/self-service/README.md`. They provide no-meeting-required quickstarts for
+the source-record path, signed Evidence Event Inbox path, Project 4030 replay,
+SDK examples, sandbox quote/order flow, webhook callbacks, and local
+verification.
+
+The guides are external-safe. Sandbox prices and orders are planning records,
+not booked, collected, or recognized revenue, and model output is candidate
+evidence only.
+
+## Internal Orientation
+
+New Athian stakeholders should start with the role-based internal orientation
+pack at `docs/internal/README.md`. It routes executives, GTM/product,
+engineering, Rails, integrations, trust-layer, model-service, country-policy,
+and operations readers to the right first document without replacing the
+canonical implementation specs.
+
 ## Validation
 
 Rust:
