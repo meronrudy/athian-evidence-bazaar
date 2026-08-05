@@ -61,8 +61,9 @@ New public API surface:
 - `/v1/artifact-orders`
 - `/v1/developer/projects/:project_id/artifacts`
 
-The OpenAPI contract lives at `docs/openapi/agevidence.v1.yaml`. Minimal SDK
-examples live under `examples/sdk/python` and `examples/sdk/typescript`.
+The OpenAPI contract lives at `docs/openapi/agevidence.v1.yaml`. The canonical
+Python SDK and CLI live under `sdks/python`. Minimal usage examples remain
+under `examples/sdk/python` and `examples/sdk/typescript`.
 
 Important boundary notes:
 

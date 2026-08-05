@@ -55,6 +55,13 @@ The API contract is:
 docs/openapi/agevidence.v1.yaml
 ```
 
+Install the canonical Python SDK and CLI:
+
+```bash
+python3 -m pip install -e "sdks/python[test]"
+agevidence --help
+```
+
 Core flow:
 
 ```text
@@ -76,11 +83,12 @@ rate limits, billing, and hardened signing remain backlog items.
 If you want to test the current-business bridge, replay Project 4030:
 
 ```bash
-cd examples/integrations/project_4030_beef
-ruby replay_project_4030.rb
+agevidence replay project-4030
 ```
 
-The script posts signed fixture events to `/v1/integrations/events`.
+The CLI signs the fixture events and posts them to `/v1/integrations/events`.
+The older Ruby replay script remains available in
+`examples/integrations/project_4030_beef`.
 
 ## Trust Boundary
 

@@ -6,6 +6,7 @@ target/
 __pycache__/
 *.py[cod]
 .pytest_cache/
+*.egg-info/
 
 # Rails local state
 athian_ink_rails_bootstrap/.env

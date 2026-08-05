@@ -63,7 +63,8 @@ Production-hardening backlog:
 ## Canonical References
 
 - OpenAPI contract: [docs/openapi/agevidence.v1.yaml](../openapi/agevidence.v1.yaml)
-- Python SDK example: [examples/sdk/python/agevidence_client.py](../../examples/sdk/python/agevidence_client.py)
+- Canonical Python SDK and CLI: [sdks/python](../../sdks/python/README.md)
+- Python usage example: [examples/sdk/python/agevidence_client.py](../../examples/sdk/python/agevidence_client.py)
 - TypeScript SDK example: [examples/sdk/typescript/agevidenceClient.ts](../../examples/sdk/typescript/agevidenceClient.ts)
 - Integration docs: [docs/integrations/overview.md](../integrations/overview.md)
 - Project 4030 fixtures: [examples/integrations/project_4030_beef](../../examples/integrations/project_4030_beef)

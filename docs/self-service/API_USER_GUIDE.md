@@ -147,8 +147,9 @@ completed synchronously.
 
 ## SDK Examples
 
+- Canonical Python SDK and CLI: [sdks/python](../../sdks/python/README.md)
 - [Python SDK Flow](examples/sdk-python-flow.md)
 - [TypeScript SDK Flow](examples/sdk-typescript-flow.md)
 
-The examples mirror the OpenAPI contract. Production SDKs should be generated
-from OpenAPI instead of maintaining independent request types.
+The Python package under `sdks/python` is the canonical scaffold SDK. The
+example files remain thin usage samples that mirror the OpenAPI contract.

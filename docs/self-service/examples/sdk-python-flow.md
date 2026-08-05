@@ -1,8 +1,9 @@
 # Python SDK Flow
 
-This walkthrough uses the minimal Python example client:
+This walkthrough uses the canonical Python SDK and the thin example client:
 
 ```text
+sdks/python
 examples/sdk/python/agevidence_client.py
 ```
 
@@ -14,6 +15,7 @@ collected, or recognized revenue.
 Start Rails, then run:
 
 ```bash
+python3 -m pip install -e "sdks/python[test]"
 python3 examples/sdk/python/agevidence_client.py
 ```
 
@@ -25,20 +27,32 @@ http://localhost:3000
 
 ## Client Methods
 
-The example mirrors the OpenAPI contract and includes:
+The canonical SDK mirrors the OpenAPI contract and includes:
 
 - `create_project`
-- `add_source_record`
-- `create_model_run`
+- `submit_source_record`
+- `run_model`
 - `review_candidate`
 - `create_quote`
 - `create_order`
 - `checkout_order`
-- `request_artifact`
-- `retrieve_operation`
-- `create_event`
+- `build_artifact`
+- `get_artifact`
+- `download_artifact_metadata`
+- `get_operation`
+- `wait_for_operation`
+- `submit_event`
+- `get_event`
+- `replay_event`
 
-Production SDKs should be generated from:
+The package also provides the `agevidence` CLI:
+
+```bash
+agevidence --help
+agevidence replay project-4030 --help
+```
+
+The OpenAPI source remains:
 
 ```text
 docs/openapi/agevidence.v1.yaml

@@ -10,6 +10,7 @@ This repository contains three connected parts:
 
 - `athian_ink_rails_bootstrap/`: a Rails 7.1 clickable demo that feels like GitHub for evidence.
 - `services/agevidence-model/`: a fixture-first Python model-service scaffold for source-linked evidence candidates and gaps.
+- `sdks/python/`: the canonical Python SDK and `agevidence` CLI for the Developer OS `/v1` API.
 - `crates/`: a Rust BAINK workspace with receipt, bundle, canonicalization, crypto, verifier, schema, and CLI crates used as the trust-boundary substrate.
 
 Rails presents workflow state and human review. The `ink_receipts` facade owns receipt-like operations and wraps the Rust CLI where available.
@@ -157,7 +158,8 @@ orders expose metadata plus a local verification command.
 Developer-facing contracts and examples:
 
 - OpenAPI: `docs/openapi/agevidence.v1.yaml`
-- Python SDK example: `examples/sdk/python/agevidence_client.py`
+- Canonical Python SDK and CLI: `sdks/python`
+- Python usage example: `examples/sdk/python/agevidence_client.py`
 - TypeScript SDK example: `examples/sdk/typescript/agevidenceClient.ts`
 - Project 4030 replay script:
   `examples/integrations/project_4030_beef/replay_project_4030.rb`
@@ -196,6 +198,15 @@ Python model service:
 ```bash
 cd services/agevidence-model
 python3 -m pytest
+```
+
+Python SDK and CLI:
+
+```bash
+cd sdks/python
+python3 -m pytest
+python3 -m pip install -e .
+agevidence --help
 ```
 
 Rails, after installing Ruby 3.3.8 and Node/npm:

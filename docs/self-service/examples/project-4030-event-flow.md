@@ -32,15 +32,18 @@ Happy path:
 Start Rails, then run:
 
 ```bash
-cd examples/integrations/project_4030_beef
-ruby replay_project_4030.rb
+python3 -m pip install -e "sdks/python[test]"
+agevidence replay project-4030
 ```
 
-The replay posts signed fixture events to:
+The CLI signs each fixture and posts it to:
 
 ```text
 POST /v1/integrations/events
 ```
+
+The original Ruby replay script remains available at
+`examples/integrations/project_4030_beef/replay_project_4030.rb`.
 
 ## Expected Outcome
 
