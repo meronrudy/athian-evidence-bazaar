@@ -1,0 +1,171 @@
+notice: "Commercial list prices. Quotes remain subject to evidence scope, review burden, data handling, relying-party requirements, and contract approval."
+version: "2026-08-04"
+currency: usd
+products:
+  developer_api_builder:
+    name: Developer API Builder
+    billing_model: monthly
+    base_amount_cents: 50000
+    minimum_amount_cents: 50000
+    unit_name: api_operation
+    included_units: 500
+    overage_amount_cents: 250
+    customer: pre-seed and seed agriculture software teams
+    includes:
+      - fixture and production API access
+      - source-linked evidence extraction
+      - model execution receipts
+      - community support
+    restrictions:
+      - no institutional reliance warranty
+      - no private deployment
+  developer_api_growth:
+    name: Developer API Growth
+    billing_model: monthly
+    base_amount_cents: 250000
+    minimum_amount_cents: 250000
+    unit_name: api_operation
+    included_units: 5000
+    overage_amount_cents: 125
+    customer: funded startups entering pilots or verification
+    includes:
+      - production API and SDK access
+      - ten standard evidence artifacts per month
+      - country adapter evaluations
+      - email support with two-business-day target
+  developer_api_scale:
+    name: Developer API Scale
+    billing_model: monthly
+    base_amount_cents: 1000000
+    minimum_amount_cents: 1000000
+    unit_name: api_operation
+    included_units: 50000
+    overage_amount_cents: 50
+    customer: Series A and later platforms with multiple protocols or markets
+    includes:
+      - fifty standard evidence artifacts per month
+      - managed keys and retention controls
+      - priority support
+      - annual architecture review
+  evidence_architecture_sprint:
+    name: Evidence Architecture Sprint
+    billing_model: one_time
+    base_amount_cents: 2500000
+    minimum_amount_cents: 2500000
+    customer: funded startup preparing protocol, buyer, or verifier diligence
+    dimensions:
+      evidence_class_cents: 150000
+      source_system_cents: 250000
+      review_hour_cents: 35000
+      relying_party_cents: 200000
+      selective_disclosure_profile_cents: 500000
+      country_adapter_cents: 300000
+      rush_percentage: 25
+      migration_event_cents: 0
+  protocol_evidence_implementation:
+    name: Protocol Evidence Implementation
+    billing_model: one_time
+    base_amount_cents: 10000000
+    minimum_amount_cents: 7500000
+    customer: protocol sponsor or startup integrating a complete evidence contract
+    dimensions:
+      evidence_class_cents: 500000
+      source_system_cents: 750000
+      review_hour_cents: 40000
+      relying_party_cents: 300000
+      selective_disclosure_profile_cents: 1000000
+      country_adapter_cents: 750000
+      rush_percentage: 25
+      migration_event_cents: 2500000
+  verification_readiness_cycle:
+    name: Verification Readiness Cycle
+    billing_model: one_time
+    base_amount_cents: 6000000
+    minimum_amount_cents: 5000000
+    customer: startup, producer program, or project approaching VVB review
+    dimensions:
+      evidence_class_cents: 300000
+      source_system_cents: 500000
+      review_hour_cents: 45000
+      relying_party_cents: 200000
+      selective_disclosure_profile_cents: 750000
+      country_adapter_cents: 500000
+      rush_percentage: 30
+      migration_event_cents: 1500000
+  enterprise_reliance_artifact:
+    name: Enterprise Reliance Artifact
+    billing_model: one_time
+    base_amount_cents: 3000000
+    minimum_amount_cents: 3000000
+    customer: buyer, auditor, insurer, lender, registry, or sponsor
+    dimensions:
+      evidence_class_cents: 125000
+      source_system_cents: 200000
+      review_hour_cents: 50000
+      relying_party_cents: 500000
+      selective_disclosure_profile_cents: 750000
+      country_adapter_cents: 400000
+      rush_percentage: 35
+      migration_event_cents: 2000000
+  managed_evidence_plane:
+    name: Managed Evidence Plane
+    billing_model: annual
+    base_amount_cents: 15000000
+    minimum_amount_cents: 15000000
+    customer: funded startup operating recurring evidence workflows
+    dimensions:
+      evidence_class_cents: 500000
+      source_system_cents: 750000
+      review_hour_cents: 0
+      relying_party_cents: 500000
+      selective_disclosure_profile_cents: 1000000
+      country_adapter_cents: 1000000
+      rush_percentage: 0
+      migration_event_cents: 2500000
+  private_deployment_model_registry:
+    name: Private Deployment and Model Registry
+    billing_model: annual
+    base_amount_cents: 30000000
+    minimum_amount_cents: 30000000
+    customer: enterprise or regulated deployment requiring isolated infrastructure
+    dimensions:
+      evidence_class_cents: 500000
+      source_system_cents: 1000000
+      review_hour_cents: 50000
+      relying_party_cents: 500000
+      selective_disclosure_profile_cents: 1500000
+      country_adapter_cents: 1250000
+      rush_percentage: 0
+      migration_event_cents: 2500000
+  sponsor_portfolio_program:
+    name: Sponsor Portfolio Program
+    billing_model: annual
+    base_amount_cents: 20000000
+    minimum_amount_cents: 20000000
+    customer: investor, accelerator, processor, cooperative, or strategic sponsor
+    dimensions:
+      portfolio_company_cents: 1500000
+      evidence_class_cents: 0
+      source_system_cents: 0
+      review_hour_cents: 0
+      relying_party_cents: 500000
+      selective_disclosure_profile_cents: 500000
+      country_adapter_cents: 1000000
+      rush_percentage: 0
+      migration_event_cents: 1500000
+  methodology_migration_dispute_event:
+    name: Methodology Migration or Dispute Event
+    billing_model: one_time
+    base_amount_cents: 25000000
+    minimum_amount_cents: 15000000
+    customer: portfolio owner, buyer, insurer, registry, or counsel
+    dimensions:
+      affected_asset_cents: 25000
+      evidence_class_cents: 500000
+      source_system_cents: 750000
+      review_hour_cents: 60000
+      relying_party_cents: 1000000
+      selective_disclosure_profile_cents: 1000000
+      country_adapter_cents: 1250000
+      rush_percentage: 40
+      migration_event_cents: 5000000
