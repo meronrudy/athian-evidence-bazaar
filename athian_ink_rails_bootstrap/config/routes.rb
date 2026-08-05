@@ -52,4 +52,20 @@ Rails.application.routes.draw do
 
     resource :revenue_model, only: :show
   end
+
+  namespace :api do
+    namespace :v1 do
+      resources :products, only: %i[index show]
+      resources :quotes, only: :create
+      resources :evidence_runs, only: %i[create show]
+      resources :artifact_orders, only: %i[create show] do
+        member do
+          post :checkout
+        end
+      end
+      resources :usage_events, only: %i[index create]
+      resource :billing, only: :show, controller: "billing"
+      post "stripe/webhook", to: "stripe_webhooks#create"
+    end
+  end
 end
