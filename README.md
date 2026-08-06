@@ -1,97 +1,165 @@
-# Athian Evidence Bazaar
+# AgEvidence
 
-Athian Evidence Bazaar is a demonstration workspace for an evidence-first agricultural carbon architecture.
+<p align="center">
+  <img src="docs/assets/agevidence-wordmark.svg" alt="AgEvidence" width="360">
+</p>
+<p align="center">
+  <strong>Portable evidence infrastructure for agricultural climate programs.</strong>
+</p>
+<p align="center">
+  Connect operational farm data, identify evidence gaps, preserve human review,
+  and generate independently verifiable reliance artifacts.
+</p>
+<p align="center">
+  <a href="https://agevidence.com"><strong>Website</strong></a>
+  •
+  <a href="#quickstart"><strong>Quickstart</strong></a>
+  •
+  <a href="#developer-os"><strong>Developer OS</strong></a>
+  •
+  <a href="#architecture"><strong>Architecture</strong></a>
+</p>
 
-It is not a carbon marketplace. It shows Athian as an evidence company: carbon assets are only the visible commercial object; the durable product is the portable, independently verifiable evidence rail underneath every environmental claim.
+<p align="center">
+  <img alt="Rails" src="https://img.shields.io/badge/Rails-7.1-CC0000">
+  <img alt="Rust" src="https://img.shields.io/badge/Rust-trust_boundary-000000">
+  <img alt="Python" src="https://img.shields.io/badge/Python-SDK_&_models-3776AB">
+  <img alt="Architecture" src="https://img.shields.io/badge/architecture-evidence_first-2F6B57">
+  <img alt="Status" src="https://img.shields.io/badge/status-working_prototype-C7D36F">
+</p>
 
-## What Is In This Repo
+<p align="center">
+  <img
+    src="docs/assets/agevidence-workspace.png"
+    alt="AgEvidence workspace showing agricultural evidence status, gaps and artifacts"
+    width="100%"
+  >
+</p>
 
-This repository contains three connected parts:
+## Overview
+AgEvidence is the interoperability and reliance layer beneath agricultural
+climate programs. It does not replace farm management systems, sensors,
+laboratories, model providers or registries. It connects their records into a
+portable evidence graph that institutions can inspect and rely upon.
 
-- `athian_ink_rails_bootstrap/`: a Rails 7.1 clickable demo that feels like GitHub for evidence.
-- `services/agevidence-model/`: a fixture-first Python model-service scaffold for source-linked evidence candidates and gaps.
-- `sdks/python/`: the canonical Python SDK and `agevidence` CLI for the Developer OS `/v1` API.
-- `crates/`: a Rust BAINK workspace with receipt, bundle, canonicalization, crypto, verifier, schema, and CLI crates used as the trust-boundary substrate.
+| Connect | Resolve | Rely |
+|---|---|---|
+| Ingest signed events or controlled source records. | Detect missing evidence and preserve human review. | Generate bounded artifacts for named institutional uses. |
 
-Rails presents workflow state and human review. The `ink_receipts` facade owns receipt-like operations and wraps the Rust CLI where available.
-
-## Product Thesis
-
-Evidence first. Carbon second.
-
-Athian's strategic advantage is not simply issuing more agricultural carbon credits. It is making claims portable, inspectable, and reliable enough for buyers, registries, insurers, auditors, producers, and VVBs to use outside the originating application.
-
-## Strategic Moves
-
-| Demo Surface | Strategic Move |
-|---|---|
-| Bundle Builder | #1 Portable Proof Product |
-| Co-Claim Workbench | #2 Standardize Co-Claim Geometry |
-| VVB Console | #3 First-Class VVB |
-| Producer Ledger | #4 Producer Economics |
-| Methodology Migration | #5 Neutral Trust Waist |
-| Evidence Marketplace | #6 Sell Evidence Acceptance |
-
-## Demo Flow
-
-The seeded Rails demo follows one AVSA through:
-
-1. Practice implementation.
-2. Evidence ingestion.
-3. Model execution.
-4. VVB review and attestation.
-5. AVSA issuance.
-6. Scope 3 claim and retirement.
-7. Producer payment.
-8. Evidence bundle download.
-9. Offline verification path.
-10. Methodology migration from VM0042 v2.2 to VM0042 v3.0.
-
-## Receipt Chain
-
-```text
-Practice Receipt
-  -> Measurement Receipt
-  -> Model Execution Receipt
-  -> Verifier Receipt
-  -> Issuance Receipt
-  -> Claim Receipt
-  -> Producer Payment Receipt
+## How it works
+```mermaid
+flowchart LR
+    A[Farm and program systems] --> B[Evidence Event Inbox]
+    A --> C[Controlled source records]
+    B --> D[Evidence Graph]
+    C --> D
+    D --> E[Evidence Gap Analyzer]
+    E --> F[Human Review Ledger]
+    F --> G[Country and program adapters]
+    G --> H[Reliance Artifacts]
+    H --> I[Independent verification]
 ```
 
-Append-only receipts, such as contribution, retirement, verifier determination, and methodology delta receipts, are displayed outside the seven-node hero chain so history is never overwritten.
+## Product
+| Surface | Purpose |
+|---|---|
+| **AgEvidence Workspace** | Inspect projects, source records, gaps, reviews and outputs. |
+| **Evidence Event Inbox** | Receive append-only signed events from upstream systems. |
+| **Developer OS** | Create projects and integrate through APIs, SDKs and webhooks. |
+| **Country Programs** | Interpret one evidence graph through versioned local adapters. |
+| **Reliance Artifacts** | Produce bounded outputs for buyers, verifiers and program operators. |
+| **Portable Verification** | Verify released artifacts outside the hosted application. |
 
-## Rails App
+## Working demonstration
+### Australian Beef Pilot
+The seeded demonstration follows one agricultural climate project through:
+1. Operational event and source-record intake
+2. Evidence projection
+3. Model execution
+4. Evidence-gap detection
+5. Human review
+6. Reliance artifact generation
+7. Independent verification
+8. Methodology-version comparison
 
-See [athian_ink_rails_bootstrap/README.md](athian_ink_rails_bootstrap/README.md) for the application-level README.
+> The demonstration uses synthetic data. Sandbox prices, orders and model
+> outputs are not represented as booked revenue, certified claims or production
+> determinations.
 
-Key routes:
+## Quickstart
+### Run the workspace
+```bash
+cd athian_ink_rails_bootstrap
+bin/setup
+bin/rails db:migrate db:seed
+npm run build
+bin/dev
 
-- `/`: Evidence Bazaar dashboard.
-- `/evidence`: evidence explorer.
-- `/avsas/:id`: AVSA receipt-chain hero.
-- `/receipts/:id`: technical receipt viewer.
-- `/bundle_exports`: bundle builder.
-- `/verifier`: VVB console.
-- `/producer_payments`: producer ledger.
-- `/methodology_migrations`: methodology migration.
-- `/marketplace`: evidence marketplace.
-- `/agevidence`: funded-startup developer launchpad.
-- `/agevidence/developer-os`: self-service Developer OS start page.
-- `/agevidence/country_programs`: country adapter and method-compatibility projections.
-- `/agevidence/revenue_model`: illustrative C-suite revenue scenario.
-- `/v1/integrations/events`: append-only signed event intake for upstream Athian systems.
-- `/v1/developer/projects`: source-record developer API.
-- `/v1/pricing/products`: machine-readable artifact price book.
-- `/v1/artifact-orders`: sandbox quote-to-order artifact flow.
-- `/integrations/events`: internal inbox inspection, replay, outbox, delivery, and dead-letter views.
+Open:
 
-## Trust Boundary
+http://localhost:3000/agevidence
+<details>
+<summary><strong>Run the Python model service</strong></summary>
+cd services/agevidence-model
+python3 -m pytest
+</details>
+<details>
+<summary><strong>Install the Python SDK and CLI</strong></summary>
+cd sdks/python
+python3 -m pip install -e .
+agevidence --help
+</details>
+<details>
+<summary><strong>Build the verifier</strong></summary>
+cargo test --workspace
+cargo build -p baink-cli
+</details>
+```
 
-Rails must not compute hashes, sign receipts, evaluate cryptographic validity, or assemble canonical bundles directly.
+## Developer OS
+```python
+from agevidence import AgEvidence
+client = AgEvidence(
+    base_url="http://localhost:3000",
+    api_key="agev_test_local"
+)
+project = client.projects.create(
+    name="Australian Beef Pilot",
+    country="AU"
+)
+project.source_records.create(
+    source_type="livestock_activity",
+    uri="s3://example/activity-record.json"
+)
+quote = project.artifacts.quote(
+    product="verification_bundle"
+)
+print(quote.verification_command)
+```
 
-All trust-boundary operations go through:
+## Architecture
+```text
+apps
+• Rails workspace and human review
+services
+• Evidence-model service
+sdks
+• Python and TypeScript developer clients
+specs
+• Evidence contracts and country adapters
+crates
+• Canonicalization, receipts, bundles and verification
 
+Trust boundary
+
+The hosted Rails application presents workflow state and coordinates human
+review. It does not directly perform canonical hashing, signing or independent
+verification.
+
+Those operations remain behind the released receipt and verifier boundary.
+
+<details>
+<summary><strong>Trust-boundary operations</strong></summary>
 ```ruby
 InkReceipts.issue(...)
 InkReceipts.verify(...)
@@ -101,130 +169,51 @@ InkReceipts.export(...)
 InkReceipts.migrate(...)
 InkReceipts.graph(...)
 InkReceipts.verify_bundle(...)
-```
+</details>
 
-The local Ruby facade lives at:
+## Project status
+| Capability | Status |
+|---|---|
+| Rails evidence workspace | Working prototype |
+| Signed event intake | Working |
+| Controlled source records | Working |
+| Evidence-gap projection | Working |
+| Human review ledger | Working |
+| Python SDK and CLI | Working |
+| Model-service integration | Fixture-backed |
+| Artifact ordering | Sandbox |
+| Country adapters | Scaffolded |
+| Production certification | Not complete |
 
-```text
-athian_ink_rails_bootstrap/gems/ink_receipts
-```
+## Roadmap
+- [x] Evidence Event Inbox
+- [x] Controlled source-record path
+- [x] Evidence-gap projections
+- [x] Human review ledger
+- [x] Python SDK and CLI
+- [x] Sandbox artifact orders
+- [ ] Hosted public demonstration
+- [ ] TypeScript SDK package
+- [ ] Australian program adapter validation
+- [ ] External verifier review
+- [ ] Production identity and access controls
 
-The Rust CLI lives at:
+## Contributing
+AgEvidence is being developed as an evidence-infrastructure layer for
+agricultural climate programs. Useful contributions include:
+- agricultural data adapters;
+- methodology test fixtures;
+- schema review;
+- verifier interoperability;
+- SDK improvements;
+- accessibility and interface work;
+- documentation and examples.
 
-```text
-target/debug/baink-cli
-```
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) before opening a pull request.
 
-## Global AgEvidence
+## Security
+Do not report security vulnerabilities through public GitHub issues.
+See [`SECURITY.md`](SECURITY.md).
 
-The repository also scaffolds a global thin-waist architecture:
-
-```text
-one global evidence graph
-many versioned country determinations
-many institution-specific reliance artifacts
-```
-
-Country methodology rules live in YAML adapter packs under `specs/agevidence/country_adapters`, while stable global vocabulary and receipt contracts live under `specs/agevidence`. Rails displays country programs as projections over the same objects; it does not fork the workflow by country.
-
-## Integration Bridge
-
-The append-only Evidence Event Inbox is documented under `docs/integrations`.
-Its versioned contracts live under `specs/integrations`, and the synthetic
-Project 4030 scenario lives under `examples/integrations/project_4030_beef`.
-
-The bridge is intentionally one-way for operational data: existing Athian
-systems publish signed events; Rails preserves them, maps external identifiers,
-creates evidence projections, and writes receipt requests through
-`ReceiptOutbox`.
-
-The Australian executive GTM backlog is documented in
-`docs/strategy/AUSTRALIAN_AGEVIDENCE_GTM_BACKLOG.md`.
-
-## Developer OS
-
-AgEvidence is now scaffolded as a developer operating system, not only an
-enterprise implementation practice. A startup can enter through either:
-
-- signed operational events into `/v1/integrations/events`; or
-- controlled source references into `/v1/developer/projects/:id/source_records`.
-
-Both paths produce Rails evidence projections and async receipt requests while
-the original operating platform or source owner remains authoritative. Fixture
-model runs create review-required candidates and gaps, human decisions are
-append-only, sandbox quotes preserve versioned pricing inputs, and artifact
-orders expose metadata plus a local verification command.
-
-Developer-facing contracts and examples:
-
-- OpenAPI: `docs/openapi/agevidence.v1.yaml`
-- Canonical Python SDK and CLI: `sdks/python`
-- Python usage example: `examples/sdk/python/agevidence_client.py`
-- TypeScript SDK example: `examples/sdk/typescript/agevidenceClient.ts`
-- Project 4030 replay script:
-  `examples/integrations/project_4030_beef/replay_project_4030.rb`
-
-## Self-Service Guides
-
-Customer, startup developer, and API user guides live at
-`docs/self-service/README.md`. They provide no-meeting-required quickstarts for
-the source-record path, signed Evidence Event Inbox path, Project 4030 replay,
-SDK examples, sandbox quote/order flow, webhook callbacks, and local
-verification.
-
-The guides are external-safe. Sandbox prices and orders are planning records,
-not booked, collected, or recognized revenue, and model output is candidate
-evidence only.
-
-## Internal Orientation
-
-New Athian stakeholders should start with the role-based internal orientation
-pack at `docs/internal/README.md`. It routes executives, GTM/product,
-engineering, Rails, integrations, trust-layer, model-service, country-policy,
-and operations readers to the right first document without replacing the
-canonical implementation specs.
-
-## Validation
-
-Rust:
-
-```bash
-cargo test --workspace
-cargo build -p baink-cli
-```
-
-Python model service:
-
-```bash
-cd services/agevidence-model
-python3 -m pytest
-```
-
-Python SDK and CLI:
-
-```bash
-cd sdks/python
-python3 -m pytest
-python3 -m pip install -e .
-agevidence --help
-```
-
-Rails, after installing Ruby 3.3.8 and Node/npm:
-
-```bash
-cd athian_ink_rails_bootstrap
-bin/setup
-bin/rails db:migrate db:seed
-bin/rails test
-npm run build
-bin/dev
-```
-
-Boundary check:
-
-```bash
-cd athian_ink_rails_bootstrap
-rg -n "\\bDigest\\b|\\bOpenSSL\\b|crypto\\.subtle\\.digest|SHA256|SHA-256" app db
-```
-
-That grep should return no matches.
+## License
+See [`LICENSE`](LICENSE).
