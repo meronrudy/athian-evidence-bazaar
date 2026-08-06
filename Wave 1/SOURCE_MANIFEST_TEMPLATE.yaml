@@ -1,0 +1,25 @@
+# Source Manifest Template
+# For companies that prefer controlled source-record path over signed events
+
+manifest:
+  id: [company_identifier]-[system]-export-manifest-v0
+  status: proposed
+  source:
+    system: [system_name]
+    export_type: [export_type]
+    format: [csv/json/other]
+    extraction_method: [method]
+  custody:
+    exported_by: [user_id]
+    exported_at: "[timestamp]"
+    original_filename: "[filename]"
+    sha256: "[hash]"
+    retained_by: [entity]
+  mapping:
+    [field_mapping_1]: [source_field_1]
+    [field_mapping_2]: [source_field_2]
+    [field_mapping_3]: [source_field_3]
+  known_gaps:
+    - [gap_1]
+    - [gap_2]
+    - [gap_3]

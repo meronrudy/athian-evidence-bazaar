@@ -1,0 +1,41 @@
+# Evidence Event Template
+# Replace placeholder values with company-specific data
+
+contract:
+  id: agevidence.[company_code].[product].[flow_name].v0
+  status: proposed
+  reviewed_by_company: false
+  purpose:
+    - [purpose_1]
+    - [purpose_2]
+    - [purpose_3]
+producer:
+  organization_id: [company_identifier]
+  system: [system_name]
+  device_type: [device_type]
+event:
+  type: [event_type]
+  occurred_at: "[timestamp]"
+subject:
+  [subject_field_1]: [subject_value_1]
+  [subject_field_2]: [subject_value_2]
+observation:
+  [observation_field_1]: [observation_value_1]
+  [observation_field_2]: [observation_value_2]
+  [observation_field_3]: [observation_value_3]
+provenance:
+  source_record_uri: fixture://[company_identifier]/[system]/[timestamp].json
+  firmware_version: [version]
+  calibration_record_id: [calibration_id]
+  formulation_batch_id: [batch_id]
+authority:
+  operator_id: [operator_id]
+  organization_id: [organization_id]
+  authority_basis: [authority_basis]
+privacy:
+  contains_personal_information: [true/false]
+  commercial_sensitivity: [public/restricted/confidential]
+limitations:
+  - [limitation_1]
+  - [limitation_2]
+  - [limitation_3]
