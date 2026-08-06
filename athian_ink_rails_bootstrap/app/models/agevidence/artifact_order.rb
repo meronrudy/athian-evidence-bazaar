@@ -24,6 +24,8 @@ module Agevidence
 
     before_validation :assign_external_id, on: :create
 
+    # Deprecated: Use Commercial::Orders::MarkPaid.call(order) instead.
+    # This method is preserved for backward compatibility in sandbox tests.
     def checkout!
       pricing_quote.accept! unless pricing_quote.status == "accepted"
       update!(

@@ -2,12 +2,9 @@ module V1
   class ArtifactOrdersController < ActionController::API
     def create
       quote = Agevidence::PricingQuote.find_by!(external_id: order_params.require(:quote_id))
-      order = quote.developer_project.artifact_orders.create!(
-        pricing_quote: quote,
-        product_code: quote.product_code,
-        status: "quoted",
-        amount_cents: quote.amount_cents,
-        currency: quote.currency,
+      order = Commercial::Orders::Create.call(
+        quote.developer_project,
+        quote,
         metadata_json: {
           source: "v1_api",
           sandbox: true,
@@ -28,7 +25,12 @@ module V1
 
     def checkout
       order = find_order!
-      order.checkout!
+      # Use commercial transition service instead of direct checkout!
+      Commercial::Orders::MarkPaid.call(
+        order,
+        reason: "Sandbox checkout authorized",
+        metadata: { sandbox: true, via: "v1_api" }
+      )
       render json: order_payload(order.reload)
     rescue RuntimeError => e
       render json: { error: { code: "SANDBOX_CHECKOUT_FAILED", message: e.message } }, status: :unprocessable_entity

@@ -1,0 +1,78 @@
+current directory: /Users/mini/BAINK copy 2/athian_ink_rails_bootstrap/vendor/bundle/ruby/2.6.0/gems/sqlite3-1.6.9/ext/sqlite3
+/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/bin/ruby -I /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0 -r ./siteconf20260806-45884-1r2tk9p.rb extconf.rb
+Building sqlite3-ruby using packaged sqlite3.
+Extracting sqlite-autoconf-3440200.tar.gz into tmp/arm64-apple-darwin24.6.0/ports/sqlite3/3.44.2... OK
+Running 'configure' for sqlite3 3.44.2... OK
+Running 'compile' for sqlite3 3.44.2... OK
+Running 'install' for sqlite3 3.44.2... ERROR. Please review logs to see what happened:
+----- contents of '/Users/mini/BAINK copy 2/athian_ink_rails_bootstrap/vendor/bundle/ruby/2.6.0/gems/sqlite3-1.6.9/ext/sqlite3/tmp/arm64-apple-darwin24.6.0/ports/sqlite3/3.44.2/install.log' -----
+ ././install-sh -c -d '/Users/mini/BAINK copy 2/athian_ink_rails_bootstrap/vendor/bundle/ruby/2.6.0/gems/sqlite3-1.6.9/ports/arm64-apple-darwin24.6.0/sqlite3/3.44.2/lib'
+ /bin/sh ./libtool   --mode=install /usr/bin/install -c   libsqlite3.la '/Users/mini/BAINK copy 2/athian_ink_rails_bootstrap/vendor/bundle/ruby/2.6.0/gems/sqlite3-1.6.9/ports/arm64-apple-darwin24.6.0/sqlite3/3.44.2/lib'
+libtool: install: /usr/bin/install -c .libs/libsqlite3.lai /Users/mini/BAINK copy 2/athian_ink_rails_bootstrap/vendor/bundle/ruby/2.6.0/gems/sqlite3-1.6.9/ports/arm64-apple-darwin24.6.0/sqlite3/3.44.2/lib/libsqlite3.la
+install: target directory `2/athian_ink_rails_bootstrap/vendor/bundle/ruby/2.6.0/gems/sqlite3-1.6.9/ports/arm64-apple-darwin24.6.0/sqlite3/3.44.2/lib/libsqlite3.la' does not exist
+usage: install [-bCcpSsUv] [-f flags] [-g group] [-m mode] [-o owner]
+               [-M log] [-D dest] [-h hash] [-T tags]
+               [-B suffix] [-l linkflags] [-N dbdir]
+               file1 file2
+       install [-bCcpSsUv] [-f flags] [-g group] [-m mode] [-o owner]
+               [-M log] [-D dest] [-h hash] [-T tags]
+               [-B suffix] [-l linkflags] [-N dbdir]
+               file1 ... fileN directory
+       install -dU [-vU] [-g group] [-m mode] [-N dbdir] [-o owner]
+               [-M log] [-D dest] [-h hash] [-T tags]
+               directory ...
+make[1]: *** [install-libLTLIBRARIES] Error 64
+make: *** [install-am] Error 2
+----- end of file -----
+*** extconf.rb failed ***
+Could not create Makefile due to some reason, probably lack of necessary
+libraries and/or headers.  Check the mkmf.log file for more details.  You may
+need configuration options.
+
+Provided configuration options:
+	--with-opt-dir
+	--without-opt-dir
+	--with-opt-include
+	--without-opt-include=${opt-dir}/include
+	--with-opt-lib
+	--without-opt-lib=${opt-dir}/lib
+	--with-make-prog
+	--without-make-prog
+	--srcdir=.
+	--curdir
+	--ruby=/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/bin/$(RUBY_BASE_NAME)
+	--help
+	--download-dependencies
+	--with-sqlcipher
+	--without-sqlcipher
+	--with-sqlcipher-dir
+	--without-sqlcipher-dir
+	--with-sqlcipher-include
+	--without-sqlcipher-include
+	--with-sqlcipher-lib
+	--without-sqlcipher-lib
+	--enable-system-libraries
+	--disable-system-libraries
+	--with-sqlcipher
+	--without-sqlcipher
+	--with-sqlcipher-dir
+	--without-sqlcipher-dir
+	--with-sqlcipher-include
+	--without-sqlcipher-include
+	--with-sqlcipher-lib
+	--without-sqlcipher-lib
+	--with-sqlite-source-dir
+	--with-sqlite-cflags
+	--without-sqlite-cflags
+/Users/mini/BAINK copy 2/athian_ink_rails_bootstrap/vendor/bundle/ruby/2.6.0/gems/mini_portile2-2.8.9/lib/mini_portile2/mini_portile.rb:628:in `block in execute': Failed to complete install task (RuntimeError)
+	from /Users/mini/BAINK copy 2/athian_ink_rails_bootstrap/vendor/bundle/ruby/2.6.0/gems/mini_portile2-2.8.9/lib/mini_portile2/mini_portile.rb:594:in `chdir'
+	from /Users/mini/BAINK copy 2/athian_ink_rails_bootstrap/vendor/bundle/ruby/2.6.0/gems/mini_portile2-2.8.9/lib/mini_portile2/mini_portile.rb:594:in `execute'
+	from /Users/mini/BAINK copy 2/athian_ink_rails_bootstrap/vendor/bundle/ruby/2.6.0/gems/mini_portile2-2.8.9/lib/mini_portile2/mini_portile.rb:200:in `install'
+	from /Users/mini/BAINK copy 2/athian_ink_rails_bootstrap/vendor/bundle/ruby/2.6.0/gems/mini_portile2-2.8.9/lib/mini_portile2/mini_portile.rb:239:in `cook'
+	from extconf.rb:71:in `block in configure_packaged_libraries'
+	from extconf.rb:51:in `tap'
+	from extconf.rb:51:in `configure_packaged_libraries'
+	from extconf.rb:17:in `configure'
+	from extconf.rb:285:in `<main>'
+
+extconf failed, exit code 1

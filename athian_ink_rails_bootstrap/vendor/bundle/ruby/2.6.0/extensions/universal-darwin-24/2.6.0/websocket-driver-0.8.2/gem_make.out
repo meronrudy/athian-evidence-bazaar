@@ -1,0 +1,12 @@
+current directory: /Users/mini/BAINK copy 2/athian_ink_rails_bootstrap/vendor/bundle/ruby/2.6.0/gems/websocket-driver-0.8.2/ext/websocket-driver
+/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/bin/ruby -I /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0 -r ./siteconf20260806-45884-tujr3i.rb extconf.rb
+creating Makefile
+
+current directory: /Users/mini/BAINK copy 2/athian_ink_rails_bootstrap/vendor/bundle/ruby/2.6.0/gems/websocket-driver-0.8.2/ext/websocket-driver
+make "DESTDIR=" clean
+
+current directory: /Users/mini/BAINK copy 2/athian_ink_rails_bootstrap/vendor/bundle/ruby/2.6.0/gems/websocket-driver-0.8.2/ext/websocket-driver
+make "DESTDIR="
+make: *** No rule to make target `/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/universal-darwin24/ruby/config.h', needed by `websocket_mask.o'.  Stop.
+
+make failed, exit code 2
