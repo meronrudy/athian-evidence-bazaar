@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "Installing Ruby dependencies..."
+bundle install
+
+echo "Installing Node dependencies..."
+npm ci
+
+echo "Preparing database..."
+bin/rails db:prepare
+
+echo "Setting up Python environment..."
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+echo "Building Rust workspace..."
+cd ../../.. && cargo build --workspace
+
+echo "Running schema validation..."
+scripts/agevidence_manifest_check.py
+
+echo "Setup complete."

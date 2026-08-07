@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Run all acceptance checks in order
+bin/check_runtime
+bin/validate_capabilities
+bin/validate_specs
+bin/validate_wave1
+bin/test
+bin/seed_wave1_company dit_agtech
+bin/generate_wave1_artifact dit_agtech
+bin/verify_wave1_artifact dit_agtech
+bin/investor_milestones

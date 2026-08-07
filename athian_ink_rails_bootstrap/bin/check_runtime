@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Runtime check for Ruby 3.3.12
+if [[ "${RUBY_VERSION:-}" != "3.3.12" ]]; then
+  echo "ERROR: Expected Ruby 3.3.12, found ${RUBY_VERSION:-unset}"
+  exit 1
+fi
+
+echo "OK: Ruby version is 3.3.12"
