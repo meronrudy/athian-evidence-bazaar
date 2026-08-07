@@ -1,5 +1,5 @@
 current directory: /Users/mini/BAINK copy 2/athian_ink_rails_bootstrap/vendor/bundle/ruby/2.6.0/gems/sqlite3-1.6.9/ext/sqlite3
-/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/bin/ruby -I /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0 -r ./siteconf20260806-45884-1r2tk9p.rb extconf.rb
+/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/bin/ruby -I /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0 -r ./siteconf20260806-52546-1sa2mue.rb extconf.rb
 Building sqlite3-ruby using packaged sqlite3.
 Extracting sqlite-autoconf-3440200.tar.gz into tmp/arm64-apple-darwin24.6.0/ports/sqlite3/3.44.2... OK
 Running 'configure' for sqlite3 3.44.2... OK

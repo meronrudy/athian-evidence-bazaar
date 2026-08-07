@@ -1,5 +1,5 @@
 current directory: /Users/mini/BAINK copy 2/athian_ink_rails_bootstrap/vendor/bundle/ruby/2.6.0/gems/date-3.5.1/ext/date
-/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/bin/ruby -I /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0 -r ./siteconf20260806-45884-1dclzcl.rb extconf.rb
+/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/bin/ruby -I /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0 -r ./siteconf20260806-52546-xxd571.rb extconf.rb
 checking for whether -Wno-compound-token-split-by-macro is accepted as CFLAGS... *** extconf.rb failed ***
 Could not create Makefile due to some reason, probably lack of necessary
 libraries and/or headers.  Check the mkmf.log file for more details.  You may

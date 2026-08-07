@@ -1,5 +1,5 @@
 current directory: /Users/mini/BAINK copy 2/athian_ink_rails_bootstrap/vendor/bundle/ruby/2.6.0/gems/nio4r-2.7.5/ext/nio4r
-/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/bin/ruby -I /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0 -r ./siteconf20260806-45884-3i4554.rb extconf.rb
+/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/bin/ruby -I /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0 -r ./siteconf20260806-52546-fz5033.rb extconf.rb
 checking for unistd.h... *** extconf.rb failed ***
 Could not create Makefile due to some reason, probably lack of necessary
 libraries and/or headers.  Check the mkmf.log file for more details.  You may
