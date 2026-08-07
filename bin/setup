@@ -2,23 +2,21 @@
 set -euo pipefail
 
 echo "Installing Ruby dependencies..."
+cd athian_ink_rails_bootstrap
 bundle install
 
-echo "Installing Node dependencies..."
-npm ci
+cd ..
 
 echo "Preparing database..."
+cd athian_ink_rails_bootstrap
 bin/rails db:prepare
 
-echo "Setting up Python environment..."
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+cd ..
 
 echo "Building Rust workspace..."
-cd ../../.. && cargo build --workspace
+cargo build --workspace
 
 echo "Running schema validation..."
-scripts/agevidence_manifest_check.py
+python3 scripts/agevidence_manifest_check.py
 
 echo "Setup complete."
