@@ -1,535 +1,392 @@
 # AgEvidence
 
-<p align="center">
-  <img src="docs/assets/agevidence-wordmark.svg" alt="AgEvidence" width="360">
-</p>
-<p align="center">
-  <strong>Open evidence infrastructure for agricultural climate programs.</strong>
-</p>
-<p align="center">
-  Connect operational agricultural records, identify evidence gaps, preserve
-  human review, and generate portable artifacts that can be verified
-  independently.
-</p>
-<p align="center">
-  <a href="https://agevidence.com"><strong>Website</strong></a>
-  •
-  <a href="#open-source-design-program"><strong>Design Program</strong></a>
-  •
-  <a href="#quickstart"><strong>Quickstart</strong></a>
-  •
-  <a href="#architecture"><strong>Architecture</strong></a>
-  •
-  <a href="#contributing"><strong>Contributing</strong></a>
-</p>
-<p align="center">
-  <img alt="Rails" src="https://img.shields.io/badge/Rails-7.1-CC0000">
-  <img alt="Rust" src="https://img.shields.io/badge/Rust-trust_boundary-000000">
-  <img alt="Python" src="https://img.shields.io/badge/Python-SDK_&_models-3776AB">
-  <img alt="Architecture" src="https://img.shields.io/badge/architecture-evidence_first-2F6B57">
-  <img alt="Governance" src="https://img.shields.io/badge/governance-open_design-C7D36F">
-  <img alt="Status" src="https://img.shields.io/badge/status-working_prototype-C7D36F">
-</p>
-<p align="center">
-  <img
-    src="docs/assets/agevidence-workspace.png"
-    alt="AgEvidence workspace showing evidence status, gaps, reviews and artifacts"
-    width="100%"
-  >
-</p>
+> [!NOTE]
+> ## Tenacious Ventures screening branch
+>
+> This branch is a technical diligence companion for Tenacious Ventures.
+>
+> It is organized to answer five questions:
+>
+> 1. What does AgEvidence actually do?
+> 2. What exists in the repository today?
+> 3. Why is Australia the first adoption market?
+> 4. How does AgEvidence complement rather than duplicate existing agrifood platforms?
+> 5. What does the proposed two-stage investment need to prove?
+>
+> **Recommended review time:** 10–15 minutes.
+>
+> This branch demonstrates architecture and reference workflows.
+> It does **not** claim customer adoption, methodology approval,
+> regulatory acceptance, verified emissions reductions, or revenue
+> unless explicitly stated.
 
-⸻
+## 10-minute Tenacious review path
+If you are reviewing AgEvidence as an investment, follow this path:
+| Review question | What to inspect | What it demonstrates |
+|---|---|---|
+| 1. Is there a real product? | [Working demonstration](#3-walk-one-evidence-flow) | Existing end-to-end architecture |
+| 2. Is this more than another MRV platform? | [System boundary](#2-where-agevidence-sits) | Neutral evidence layer rather than model/project replacement |
+| 3. Why Australia? | [Australian adoption wedge](#5-why-australia-first) | ANZ commercialization and design-advisory strategy |
+| 4. Can this become infrastructure? | [Wave 1 → Wave 2](#6-industry-adoption-strategy) | Cross-company and cross-category reuse |
+| 5. Does it help the Tenacious portfolio? | [Portfolio enablement](#7-tenacious-portfolio-enablement) | Complementarity rather than duplication |
+| 6. What remains unproven? | [Current maturity](#8-what-exists-and-what-does-not) | Claims discipline |
+| 7. Can I inspect it myself? | [Run it](#9-run-the-proof-path-yourself) | Reproducibility |
 
-Overview
+## 1. The problem in one evidence chain
 
-AgEvidence is an open source interoperability and reliance layer for
-agricultural climate programs.
+A methane-reduction product is delivered to a cattle property.
+The technology provider may know:
+  what product was delivered
+  which batch it came from
+  when dosing occurred
+A sensor may know:
+  what was measured
+  when
+  using which calibration
+A model may know:
+  how those observations translate into an estimated outcome
+A verifier may need:
+  source provenance
+  missing-record disclosure
+  model/version information
+  reviewer determinations
+A buyer may ultimately ask:
+  "What exactly am I relying on?"
 
-It does not replace farm-management systems, sensors, laboratories, model
-providers, project developers, registries, verifiers, or assurance platforms.
-It connects records from those systems into portable evidence structures that
-institutions can inspect, review, and verify.
+The problem is not that none of these systems exist.
+The problem is that the evidence has to survive the boundaries between them.
 
-Connect	Resolve	Rely
-Ingest signed events or controlled source records.	Detect missing evidence and preserve human review.	Generate bounded artifacts for named institutional uses.
+## 2. Where AgEvidence sits
 
-AgEvidence separates:
+AgEvidence does not need to become the source system, scientific model, project manager, registry, verifier, marketplace, or settlement platform.
 
-* direct observation from model interpretation;
-* source records from derived claims;
-* automated processing from human determination;
-* evidence preservation from country- or program-specific rules;
-* hosted workflow from independent verification.
-
-⸻
-
-Open source design program
-
-AgEvidence is developed through public specifications, synthetic reference
-cases, working implementations, and open design review.
-
-The project maintains an Open Source Design Advisory Board to help ensure
-that its schemas and workflows reflect real agricultural technology,
-measurement, assurance, and program operations.
-
-The advisory board may include:
-
-* agricultural technology practitioners;
-* scientists and methodology experts;
-* software and data engineers;
-* project developers;
-* assurance and verification professionals;
-* producers and program operators;
-* institutional evidence users;
-* open source contributors.
-
-Participation is advisory and voluntary. Maintainers remain responsible for
-repository decisions, releases, security, and technical direction.
-
-What advisors and contributors review
-
-The design process focuses on:
-
-* operational event contracts;
-* controlled source manifests;
-* identity and authority records;
-* calibration and measurement provenance;
-* evidence-gap taxonomies;
-* human-review semantics;
-* country and program adapters;
-* reliance-artifact boundaries;
-* independent verification;
-* privacy-preserving integration patterns.
-
-Participation does not imply
-
-Participation does not create:
-
-* a customer or vendor relationship;
-* a paid design-partner relationship;
-* an obligation to purchase or deploy AgEvidence;
-* an obligation to provide proprietary or customer data;
-* organizational endorsement;
-* exclusivity;
-* transfer of intellectual property beyond accepted open source contributions.
-
-See:
-
-* Wave 1/CHARTER.md⁠￼
-* Wave 1/PARTICIPATION.md⁠￼
-* Wave 1/REFERENCE_CASE_POLICY.md⁠￼
-* CONTRIBUTING.md⁠￼
-
-⸻
-
-Wave 1 — Event-First Systems Working Group
-
-Wave 1 develops open evidence profiles for agricultural technologies that
-produce operational records through devices, sensors, software platforms,
-measurement systems, or remote-observation systems.
-
-The working group asks:
-
-Can one bounded operational workflow be represented as a portable evidence
-contract without overstating what the underlying system directly proves?
-
-Public reference cases
-
-Wave 1 currently contains public-information reference cases based on:
-
-* Agronomeye
-* Agscent
-* Cibo Labs
-* DIT AgTech
-* MEQ Solutions
-
-These folders are design workspaces, not company dossiers, customer accounts,
-or implementation commitments.
-
-Unless a workspace explicitly states otherwise:
-
-* the organization has not joined the advisory board;
-* the organization has not reviewed the workspace;
-* the organization is not affiliated with AgEvidence;
-* the organization does not endorse AgEvidence;
-* the design case is based on public information;
-* all example records and fixtures are synthetic.
-
-Each organization is invited to correct inaccurate terminology, identify
-invalid assumptions, recommend safer data boundaries, and review how its
-product category is represented.
-
-What each reference case should contain
-
-A complete Wave 1 case includes:
-
-1. a public system hypothesis;
-2. one representative evidence flow;
-3. a draft event contract;
-4. a controlled source-manifest example;
-5. an open-question register;
-6. an evidence-gap taxonomy;
-7. a proposed reliance-artifact specification;
-8. synthetic fixtures;
-9. conformance expectations;
-10. recorded architecture decisions.
-
-Browse the working group:
-
-Wave 1/Cohort A - Event-First⁠￼
-
-Reference-case maturity
-
-Stage	Meaning
-Hypothesis	Public-information draft with no company review
-Community reviewed	Reviewed by independent contributors
-Advisor reviewed	Reviewed by someone with relevant domain expertise
-Specification candidate	Schemas, fixtures and expected outputs are defined
-Reference implementation	The profile runs through AgEvidence end to end
-Adopted profile	Tested by more than one independent implementation
-
-⸻
-
-How AgEvidence works
-
+```mermaid
 flowchart LR
-    A[Farm and program systems] --> B[Evidence Event Inbox]
-    A --> C[Controlled source records]
-    B --> D[Evidence Graph]
-    C --> D
-    D --> E[Evidence Gap Analyzer]
-    E --> F[Human Review Ledger]
-    F --> G[Country and program adapters]
-    G --> H[Reliance Artifacts]
-    H --> I[Independent verification]
+    subgraph SourceSystems[SOURCE SYSTEMS]
+        direction TB
+        A[Telemetry] --> B[Sensors]
+        B --> C[Labs]
+        C --> D[Farm Software]
+        D --> E[MRV Models]
+        E --> F[Project Systems]
+        F --> G[Transactions]
+    end
+    subgraph AgEvidence[AgEvidence]
+        direction TB
+        H[Evidence] --> I[Provenance]
+        I --> J[Review]
+        J --> K[Portability]
+    end
+    subgraph RelyingSystems[RELYING SYSTEMS]
+        direction TB
+        L[Buyers] --> M[VVBs]
+        M --> N[Programs]
+        N --> O[Finance]
+        O --> P[Audit]
+    end
+    SourceSystems --> AgEvidence
+    AgEvidence --> RelyingSystems
+```
 
-Core design principle
+### What AgEvidence does
+- Connects signed events and controlled source records
+- Identifies missing evidence and preserves human review
+- Generates bounded artifacts for institutional use
 
-AgEvidence preserves a stable evidence layer beneath changing methodologies,
-program rules, country requirements, and institutional interpretations.
+### What AgEvidence explicitly does not do
+- Replace farm-management systems, sensors, laboratories, model providers
+- Act as a project developer, registry, verifier, or assurance platform
+- Create scientific models or make efficacy claims
+- Handle financial settlement or marketplace transactions
 
-The same underlying evidence graph can therefore be evaluated through
-different versioned adapters without rewriting or duplicating the original
-records.
+## 3. Walk one evidence flow
 
-⸻
+### 3.1 Source event
+**What happens:** An operational record arrives from a source system (e.g., a supplement dosing event from a farm management system).
+**Why it matters:** AgEvidence begins with evidence generated by another authoritative system; it does not invent the source observation.
+**Where to look:** 
+- `athian_ink_rails_bootstrap/app/models/agevidence/evidence_candidates/`
+- `specs/agevidence/examples/`
+- Synthetic fixtures in `athian_ink_rails_bootstrap/test/fixtures/`
 
-Product surfaces
+### 3.2 Evidence contract
+**What happens:** The source event is transformed into a standardized evidence event.
+**Why it matters:** Creates a machine-readable boundary between source systems and the evidence layer.
+**Example:**
+```json
+{
+  "event_type": "supplement.dosing.observed",
+  "occurred_at": "2024-01-15T10:30:00Z",
+  "subject": "cow_12345",
+  "source_system": "farm_management_v2",
+  "evidence_type": "direct_observation"
+}
+```
+**Where to look:** `specs/agevidence/contracts/`
 
-Surface	Purpose
-AgEvidence Workspace	Inspect projects, source records, gaps, reviews and outputs
-Evidence Event Inbox	Receive append-only signed events from upstream systems
-Controlled Source Records	Register files and exports when native event integration is unavailable
-Evidence Gap Analyzer	Identify missing, conflicting or unsupported evidence
-Human Review Ledger	Preserve determinations, exceptions, overrides and unresolved questions
-Developer OS	Create projects and integrate through APIs, SDKs and webhooks
-Country Programs	Interpret one evidence graph through versioned local adapters
-Reliance Artifacts	Produce bounded outputs for buyers, verifiers and program operators
-Portable Verification	Verify released artifacts outside the hosted application
+### 3.3 Evidence is projected
+**What happens:** The evidence event is appended to an immutable evidence graph.
+**Why it matters:** Enables gap detection by making missing evidence visible.
+**Where to look:** 
+- `athian_ink_rails_bootstrap/app/services/agevidence/projection_service.rb`
+- `athian_ink_rails_bootstrap/app/models/agevidence/evidence_graph.rb`
 
-⸻
+### 3.4 Missing evidence remains visible
+**What happens:** The system identifies expected evidence that is absent.
+**Why it matters:** Makes evidence gaps explicit rather than hiding them.
+**Example:**
+```
+��✓ dosing event
+��✓ device identity
+��✓ source timestamp
+? calibration evidence
+? animal/cohort association
+```
+**Where to look:** `athian_ink_rails_bootstrap/app/services/agevidence/gap_analyzer.rb`
 
-Working demonstration
+### 3.5 Human review remains separate
+**What happens:** Machines flag gaps; humans make determinations.
+**Why it matters:** Preserves the distinction between automated processing and human judgment.
+**Machine:** calibration record missing
+**Reviewer:** accepted for demonstration only; not sufficient for production reliance
+**Where to look:** 
+- `athian_ink_rails_bootstrap/app/models/agevidence/review_ledger.rb`
+- `athian_ink_rails_bootstrap/app/views/agevidence/evidence_gaps/`
 
-Australian Beef Pilot
+### 3.6 Country/program interpretation is applied
+**What happens:** Versioned adapters map evidence to local rules without altering core evidence.
+**Why it matters:** The same evidence graph can be evaluated under different jurisdictional interpretations.
+**Where to look:** `specs/agevidence/country_adapters/`
 
-The seeded demonstration follows one synthetic agricultural climate project
-through:
+### 3.7 A bounded artifact is released
+**What happens:** A portable reliance artifact is generated, asserting specific claims about the evidence.
+**Why it matters:** Creates a verifiable unit that can travel outside the hosted application.
+**Where to look:** 
+- `athian_ink_rails_bootstrap/app/services/agevidence/artifact_service.rb`
+- `crates/baink-bundle/`
 
-1. operational event and source-record intake;
-2. evidence projection;
-3. model execution;
-4. evidence-gap detection;
-5. human review;
-6. reliance-artifact generation;
-7. independent verification;
-8. methodology-version comparison.
+### 3.8 Verification happens outside Rails
+**What happens:** The artifact's integrity and claims are checked by an independent verifier.
+**Why it matters:** Establishes a trust boundary between hosted workflow and external verification.
+**Where to look:** 
+- `crates/baink-verify/`
+- `scripts/agevidence_manifest_check.py`
 
-The demonstration uses synthetic data. Sandbox prices, orders, model outputs,
-reference companies, and example artifacts are not represented as booked
-revenue, certified claims, production determinations, endorsements, or
-operational partnerships.
+**What this demonstration proves:** the software architecture can preserve and transport a bounded evidence chain.
+**What it does not prove:** efficacy, methodology eligibility, verification acceptance, customer adoption, regulatory acceptance, or commercial reliance.
 
-⸻
+## 4. Show me the implementation
 
-Quickstart
+### Repository evidence map
+| Concept | Repository surface | What reviewer should learn |
+|---|---|---|
+| Evidence contracts | `specs/agevidence/contracts/` | Stable machine-readable boundary |
+| Event intake | `athian_ink_rails_bootstrap/app/models/agevidence/evidence_candidate.rb`<br>`athian_ink_rails_bootstrap/app/services/agevidence/event_intake_service.rb` | Source events enter workflow |
+| Gap projection | `athian_ink_rails_bootstrap/app/services/agevidence/gap_analyzer.rb`<br>`athian_ink_rails_bootstrap/app/models/agevidence/evidence_gap.rb` | Missing evidence stays explicit |
+| Human review | `athian_ink_rails_bootstrap/app/models/agevidence/review_ledger.rb`<br>`athian_ink_rails_bootstrap/app/views/agevidence/review_ledgers/` | Human determinations are preserved |
+| Country adapters | `specs/agevidence/country_adapters/`<br>`sdks/python/src/agevidence/countries/` | Program rules do not rewrite evidence |
+| Python SDK | `sdks/python/src/agevidence/` | External developers can integrate |
+| Model service | `services/agevidence-model/` | Derived calculations remain separable |
+| Canonical verification | `crates/baink-verify/`<br>`crates/baink-cli/` | Trust boundary is outside Rails |
+| Wave 1 | `Wave 1/` | Open design methodology |
+| Wave 2 | `Wave 2/` | Cross-category portability hypothesis |
 
-Run the workspace
+### Product surfaces
+| Surface | Purpose |
+|---|---|
+| AgEvidence Workspace | Inspect projects, source records, gaps, reviews and outputs |
+| Evidence Event Inbox | Receive append-only signed events from upstream systems |
+| Controlled Source Records | Register files and exports when native event integration is unavailable |
+| Evidence Gap Analyzer | Identify missing, conflicting or unsupported evidence |
+| Human Review Ledger | Preserve determinations, exceptions, overrides and unresolved questions |
+| Developer OS | Create projects and integrate through APIs, SDKs and webhooks |
+| Country Programs | Interpret one evidence graph through versioned local adapters |
+| Reliance Artifacts | Produce bounded outputs for buyers, verifiers and program operators |
+| Portable Verification | Verify released artifacts outside the hosted application |
 
+### Trust boundary
+The hosted Rails application presents workflow state and coordinates human review. It does not directly perform canonical hashing, signing, bundling, or independent verification. Those operations remain behind the released receipt and verifier boundary.
+
+## 5. Why Australia first
+
+Australia is not being used merely as a geographic sales territory.
+It is the first standard-formation environment.
+
+### Stable core vs jurisdiction adapters
+- **Stable core:** event, source, authority, observation, derivation, review, artifact
+- **Australian adapter:** method, program, assurance, institution, jurisdiction
+
+### Initial livestock/Scope 3 wedge
+Livestock climate interventions
++
+Remote/extensive production
++
+Operational telemetry
++
+Biological/source-record evidence
++
+Scope 3 demand
++
+Assurance requirements
+=
+high-value interoperability test
+
+## 6. Industry adoption strategy
+
+The purpose of the design program is to determine whether the same evidence primitives survive contact with increasingly different real-world systems.
+
+### Wave 1 — prove reuse within operational systems
+Current branch:
+* DIT AgTech (dosing telemetry)
+* MEQ Solutions (measurement + larger payloads)
+* Agscent (sensor/calibration/model boundary)
+* Cibo Labs (remote observation)
+* Agronomeye (geospatial provenance)
+
+| Case | What it stress-tests |
+|---|---|
+| DIT | dosing telemetry |
+| MEQ | measurement + larger payloads |
+| Agscent | sensor/calibration/model boundary |
+| Cibo | remote observation |
+| Agronomeye | geospatial provenance |
+
+### Wave 2 — prove reuse across evidence categories
+Source-record-first / biological / more heterogeneous systems.
+
+**Wave 1 asks:** Can several event-producing systems share evidence primitives?
+**Wave 2 asks:** Do those primitives survive when the underlying evidence class changes?
+
+### Cross-Category Market Threshold
+Publishing schemas is not adoption.
+The working threshold is:
+- ≥3 conformant technology providers
+- across ≥2 evidence domains
+- + 1 independent verifier / assurance participant
+- + 1 active buyer or program
+At that point the evidence language begins to have utility independent of any single implementation.
+
+### Adoption flywheel
+First integration
+    � ↓
+creates reusable primitive
+    � ↓
+second integration reuses it
+    � ↓
+second evidence class tests portability
+    � ↓
+reviewer learns one evidence grammar
+    � ↓
+buyer consumes multiple technologies
+    � ↓
+next integration becomes cheaper
+
+## 7. Tenacious portfolio enablement
+
+AgEvidence becomes more valuable when these systems coexist; it does not require them to collapse into one platform.
+
+| Portfolio layer | Example | AgEvidence role |
+|---|---|---|
+| Project management | Cecil | portable evidence export |
+| MRV/modeling | Regrow | preserve input/method/output lineage |
+| Autonomous operations | SwarmFarm | operational event evidence |
+| Robotics | Agovor | standardized task/activity records |
+| Intervention hardware | Azaneo | treatment/activity evidence |
+| Transaction/provenance | Geora-type systems | consume authoritative transaction records |
+
+## 8. Current maturity
+
+| Capability | Current branch | Next proof |
+|---|---|---|
+| Signed event intake | Working | real design-advisor mapping |
+| Source manifests | Working | biological reference profile |
+| Gap projection | Working | external reviewer semantics |
+| Human review | Working | verifier workflow review |
+| Python SDK / CLI | Working | external implementation |
+| Independent verifier | Prototype | reconstruction by third party |
+| Model execution | Fixture-backed | bounded real model workflow |
+| AU adapters | Scaffolded | expert/institution review |
+| Customer adoption | Not established | paid bounded implementation |
+| Revenue | Not established | collected commercial payment |
+| Regulatory acceptance | Not established | appropriate external recognition |
+
+## 9. What the staged investment is intended to prove
+
+**Stage 1 — US$750k**
+Wave 1 + Australian operating nexus
+PROVE:
+multiple operational systems
+        � ↓
+reusable evidence primitives
+        � ↓
+independently reconstructable artifact
+        � ↓
+named downstream reliance question
+        � ↓
+first commercial deployment signal
+
+**Stage 2 — +US$375k**
+Cross-category adoption
+PROVE:
+event-first + source-record-first
+        � ↓
+cross-company reuse
+        � ↓
+verifier recognition
+        � ↓
+buyer/program recognition
+        � ↓
+paid deployment
+
+## 10. Run the proof path yourself
+
+### Rails
+```bash
 cd athian_ink_rails_bootstrap
 bin/setup
 bin/rails db:migrate db:seed
 npm run build
 bin/dev
+```
+Then visit: http://localhost:3000/agevidence
 
-Open:
-
-http://localhost:3000/agevidence
-<details>
-<summary><strong>Run the Python model service</strong></summary>
+### Python
+```bash
 cd services/agevidence-model
 python3 -m pytest
-</details>
-<details>
-<summary><strong>Install the Python SDK and CLI</strong></summary>
 cd sdks/python
 python3 -m pip install -e .
 agevidence --help
-</details>
-<details>
-<summary><strong>Build the verifier</strong></summary>
+```
+
+### Rust verifier
+```bash
 cargo test --workspace
 cargo build -p baink-cli
-</details>
+```
 
-⸻
+### One-command verification target
+```bash
+# After running the Rails workspace and generating an artifact:
+python3 scripts/agevidence_manifest_check.py
+```
 
-Developer OS
+## 11. Open design governance
 
-from agevidence import AgEvidence
-client = AgEvidence(
-    base_url="http://localhost:3000",
-    api_key="agev_test_local",
-)
-project = client.projects.create(
-    name="Australian Beef Pilot",
-    country="AU",
-)
-project.source_records.create(
-    source_type="livestock_activity",
-    uri="s3://example/activity-record.json",
-)
-quote = project.artifacts.quote(
-    product="verification_bundle",
-)
-print(quote.verification_command)
+### Participation
+AgEvidence is developed through public specifications, synthetic reference cases, working implementations, and open design review.
 
-⸻
+### Reference-case policy
+Participation is advisory and voluntary. Maintainers remain responsible for repository decisions, releases, security, and technical direction.
 
-Architecture
+### Claims discipline
+The project maintains an Open Source Design Advisory Board to help ensure that its schemas and workflows reflect real agricultural technology, measurement, assurance, and program operations.
 
-apps
-• Rails workspace and human review
-services
-• Evidence-model service
-sdks
-• Python and TypeScript developer clients
-specs
-• Evidence contracts, reference profiles and country adapters
-crates
-• Canonicalization, receipts, bundles and verification
-Wave 1
-• Public design cases, synthetic fixtures and open specifications
+## 12. Architecture reference
+See the [implementation map](./athian_ink_rails_bootstrap/docs/implementation-map.md) for detailed component relationships.
 
-Trust boundary
+## 13. Contributing
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed contribution guidelines.
 
-The hosted Rails application presents workflow state and coordinates human
-review. It does not directly perform canonical hashing, signing, bundling, or
-independent verification.
-
-Those operations remain behind the released receipt and verifier boundary.
-
-<details>
-<summary><strong>Trust-boundary operations</strong></summary>
-InkReceipts.issue(...)
-InkReceipts.verify(...)
-InkReceipts.bundle(...)
-InkReceipts.attest(...)
-InkReceipts.export(...)
-InkReceipts.migrate(...)
-InkReceipts.graph(...)
-InkReceipts.verify_bundle(...)
-</details>
-
-⸻
-
-Open specifications
-
-AgEvidence specifications should be:
-
-* implementation-neutral where practical;
-* explicit about direct observations and derived interpretations;
-* bounded in the claims they support;
-* versioned;
-* testable with synthetic fixtures;
-* independently verifiable;
-* reusable across companies and jurisdictions.
-
-Useful specification contributions include:
-
-* event-contract schemas;
-* source-manifest formats;
-* authority and identity records;
-* calibration and provenance records;
-* gap classifications;
-* review and override semantics;
-* reliance-artifact profiles;
-* country and methodology adapters;
-* conformance fixtures.
-
-⸻
-
-Design decisions
-
-Material architecture decisions should be documented through issues, pull
-requests, and architecture decision records.
-
-A design decision should record:
-
-* the problem being addressed;
-* relevant reference cases;
-* alternatives considered;
-* advisor and contributor input;
-* the selected approach;
-* known limitations;
-* implementation consequences.
-
-Advisory feedback informs decisions but does not replace maintainer
-responsibility.
-
-⸻
-
-Project status
-
-Capability	Status
-Rails evidence workspace	Working prototype
-Signed event intake	Working
-Controlled source-record path	Working
-Evidence-gap projection	Working
-Human review ledger	Working
-Python SDK and CLI	Working
-Model-service integration	Fixture-backed
-Artifact ordering	Sandbox
-Country adapters	Scaffolded
-Wave 1 reference cases	Initial hypotheses
-Open advisory governance	In development
-Production certification	Not complete
-
-⸻
-
-Roadmap
-
-Product
-
-* Evidence Event Inbox
-* Controlled source-record path
-* Evidence-gap projections
-* Human review ledger
-* Python SDK and CLI
-* Sandbox artifact orders
-* Hosted public demonstration
-* TypeScript SDK package
-* Australian program-adapter validation
-* External verifier review
-* Production identity and access controls
-
-Open design program
-
-* Publish advisory-board charter
-* Publish reference-case and attribution policies
-* Complete the Wave 1 shared event taxonomy
-* Build one canonical event-first reference profile
-* Add synthetic fixtures and conformance tests
-* Record architecture decisions
-* Invite independent domain reviewers
-* Advance the first case to specification-candidate status
-* Implement the first profile end to end
-* Test one profile across multiple independent systems
-
-⸻
-
-Contributing
-
-AgEvidence welcomes contributions from developers, agricultural practitioners,
-scientists, program operators, assurance professionals, and institutional
-evidence users.
-
-You do not need to join the advisory board to contribute.
-
-Ways to participate
-
-Review a reference case
-
-* correct terminology;
-* identify an invalid assumption;
-* answer an open design question;
-* identify a missing evidence record;
-* recommend a safer data boundary.
-
-Contribute technical work
-
-* propose or review a schema;
-* add synthetic fixtures;
-* implement an adapter;
-* add conformance tests;
-* improve SDKs or documentation;
-* review portable verification behavior.
-
-Participate as a design advisor
-
-Design advisors may participate as individuals or, with explicit permission, as
-representatives of an organization.
-
-Advisors can:
-
-* review product-category assumptions;
-* participate in asynchronous design discussions;
-* review specification candidates;
-* contribute domain requirements;
-* help evaluate interoperability tradeoffs.
-
-Listing as a contributor or advisor indicates participation only. It does not
-imply endorsement, adoption, certification, or commercial affiliation.
-
-See CONTRIBUTING.md⁠￼ before opening a pull request.
-
-⸻
-
-Reference-case corrections
-
-AgEvidence aims to represent public reference organizations accurately and
-fairly.
-
-An organization or individual may open an issue or submit a pull request to:
-
-* correct inaccurate public information;
-* request changes to terminology;
-* clarify a system boundary;
-* identify an unsupported inference;
-* request attribution changes;
-* request removal of an inaccurate representation.
-
-Corrections should be documented transparently whenever possible.
-
-⸻
-
-Security
-
-Do not report security vulnerabilities through public GitHub issues.
-
-See SECURITY.md⁠￼.
-
-Do not submit:
-
-* credentials;
-* proprietary customer records;
-* personal information;
-* production datasets;
-* confidential system details;
-* restricted methodology materials.
-
-Use synthetic, redacted, or structurally representative examples for public
-design work.
-
-⸻
-
-License
-
-See LICENSE⁠￼.
-
-Open source licensing applies to repository content according to the applicable
-license. Participation in design review does not automatically transfer
-ownership of pre-existing company technology, proprietary models, confidential
-information, trademarks, or data.
-
-The most important edits are the new Open source design program, Wave 1 working group, reference-case disclaimer, maturity model, and the separation between advisory participation and organizational endorsement.
+## 14. Security and license
+See [SECURITY.md](./SECURITY.md) and [LICENSE](./LICENSE).
