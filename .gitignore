@@ -12,4 +12,6 @@ app/assets/builds/*
 !.env.example
 target/
 __pycache__/
-pytest_cache/
+.pytest_cache/
+ruby_install.log
+.DS_Store
