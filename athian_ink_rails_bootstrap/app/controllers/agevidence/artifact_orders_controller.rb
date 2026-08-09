@@ -5,12 +5,9 @@ module Agevidence
 
     def create
       quote = @project.pricing_quotes.find(params.require(:pricing_quote_id))
-      order = @project.artifact_orders.create!(
-        pricing_quote: quote,
-        product_code: quote.product_code,
-        status: "quoted",
-        amount_cents: quote.amount_cents,
-        currency: quote.currency,
+      order = Commercial::Orders::Create.call(
+        @project,
+        quote,
         metadata_json: { source: "browser_developer_os", sandbox: true }
       )
       record_campaign_activation { |recorder| recorder.record_artifact_order_created(order) }
@@ -25,14 +22,19 @@ module Agevidence
     end
 
     def checkout
-      @order.checkout!
+      Commercial::Orders::MarkPaid.call(
+        @order,
+        reason: "Sandbox checkout authorized",
+        metadata: { sandbox: true, via: "browser" }
+      )
       redirect_to agevidence_developer_project_artifact_order_path(@project, @order), notice: "Sandbox checkout completed. No payment was collected."
     rescue RuntimeError => e
       redirect_to agevidence_developer_project_artifact_order_path(@project, @order), alert: e.message
     end
 
     def assemble
-      ArtifactOrderFulfillment.new(order: @order).call
+      Commercial::Orders::BeginFulfillment.call(@order)
+      Commercial::Orders::Fulfill.call(@order)
       record_campaign_activation { |recorder| recorder.record_artifact_assembled(@order.reload) }
       redirect_to agevidence_developer_project_artifact_order_path(@project, @order.reload), notice: "Reliance artifact assembled through ink_receipts."
     rescue RuntimeError, KeyError, InkReceipts::Error => e

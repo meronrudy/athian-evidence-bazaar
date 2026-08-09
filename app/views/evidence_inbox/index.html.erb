@@ -1,0 +1,79 @@
+<h1>Evidence Inbox</h1>
+
+<p class="lead">Review and triage evidence gaps that need attention.</p>
+
+<div class="mb-4">
+  <div class="btn-group" role="group" aria-label="Filter gaps">
+    <button type="button" class="btn btn-outline-primary active" data-filter="all">
+      All Gaps
+    </button>
+    <button type="button" class="btn btn-outline-primary" data-filter="needs-attention">
+      Needs Attention
+    </button>
+    <button type="button" class="btn btn-outline-primary" data-filter="accepted">
+      Accepted
+    </button>
+    <button type="button" class="btn btn-outline-primary" data-filter="rejected">
+      Rejected
+    </button>
+  </div>
+</div>
+
+<div class="table-responsive">
+  <table class="table table-hover align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Severity</th>
+        <th>Status</th>
+        <th>Source Record</th>
+        <th>Event</th>
+        <th>Candidate</th>
+        <th>Created</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @gaps.each do |gap| %>
+        <tr class="<%= gap.severity.downcase %>">
+          <td><%= gap.id %></td>
+          <td><%= gap.title %></td>
+          <td>
+            <span class="badge bg-<%= gap.severity.downcase == 'high' ? 'danger' : gap.severity.downcase == 'medium' ? 'warning' : 'info' %>">
+              <%= gap.severity.upcase %>
+            </span>
+          </td>
+          <td>
+            <span class="badge bg-<%= gap.status.downcase == 'open' ? 'secondary' : gap.status.downcase == 'in_progress' ? 'info' : gap.status.downcase == 'resolved' ? 'success' : 'warning' %>">
+              <%= gap.status.humanize %>
+            </span>
+          </td>
+          <td><%= gap.source_record&.identifier || '-' %></td>
+          <td><%= gap.event&.name || '-' %></td>
+          <td><%= gap.candidate&.name || '-' %></td>
+          <td><%= gap.created_at.strftime('%b %d, %Y') %></td>
+          <td>
+            <div class="btn-group btn-group-sm" role="group">
+              <button type="button" class="btn btn-outline-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="View Details">
+                <i class="bi bi-eye"></i>
+              </button>
+              <button type="button" class="btn btn-outline-success" data-bs-toggle="tooltip" data-bs-placement="top" title="Mark as Resolved">
+                <i class="bi bi-check-circle"></i>
+              </button>
+              <button type="button" class="btn btn-outline-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Reject">
+                <i class="bi bi-x-circle"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<% if @gaps.empty? %>
+  <div class="alert alert-info">
+    No gaps found matching the current filters.
+  </div>
+<% end %>

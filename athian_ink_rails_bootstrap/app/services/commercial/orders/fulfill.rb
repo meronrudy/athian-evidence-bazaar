@@ -4,10 +4,24 @@ module Commercial
       def self.call(order, actor: nil, reason: nil, metadata: {})
         return order if order.status == "fulfilled"
 
+        unless order.status == "assembling"
+          raise "Artifact order must be assembling before fulfillment"
+        end
+
         previous_status = order.status
 
         order.transaction do
-          order.update!(status: "fulfilled")
+          # Ensure artifact engagement exists
+          engagement = order.artifact_engagement || raise("Missing artifact engagement")
+          bundle = ArtifactAssembler.new(engagement: engagement).call
+
+          order.update!(status: "fulfilled", assembled_at: Time.current)
+          project = order.developer_project
+          order.metadata_json = order.metadata_json.merge(
+            "receipt_root" => project.evidence_graph_root,
+            "verification_command" => "ink verify-bundle #{bundle.artifact_filename}"
+          )
+          order.save!
 
           Commercial::OrderEvent.record_transition!(
             order,

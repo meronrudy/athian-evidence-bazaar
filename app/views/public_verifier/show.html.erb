@@ -1,0 +1,90 @@
+<h1>Public Verifier</h1>
+
+<p class="lead">Verify evidence integrity and authenticity using the AgEvidence verification system.</p>
+
+<div class="row">
+  <div class="col-md-6">
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5>Verify by Receipt ID</h5>
+      </div>
+      <div class="card-body">
+        <form action="/verify" method="get" class="mb-3">
+          <div class="mb-3">
+            <label for="receipt_id" class="form-label">Receipt ID</label>
+            <input type="text" class="form-control" id="receipt_id" name="id" placeholder="Enter receipt ID">
+          </div>
+          <button type="submit" class="btn btn-primary">Verify</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5>Verify by URL Lookup</h5>
+      </div>
+      <div class="card-body">
+        <form action="/verify/lookup_by_url" method="get" class="mb-3">
+          <div class="mb-3">
+            <label for="lookup_url" class="form-label">Source URL</label>
+            <input type="url" class="form-control" id="lookup_url" name="lookup_url" placeholder="https://example.com/evidence/123">
+          </div>
+          <button type="submit" class="btn btn-primary">Lookup</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5>Upload Receipt for Verification</h5>
+      </div>
+      <div class="card-body">
+        <form action="/verify" method="post" enctype="multipart/form-data" class="mb-3">
+          <div class="mb-3">
+            <label for="receipt_file" class="form-label">Receipt File (JSON)</label>
+            <input type="file" class="form-control" id="receipt_file" name="receipt_file" accept=".json">
+          </div>
+          <button type="submit" class="btn btn-primary">Upload & Verify</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <% if @verification.present? %>
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5>Verification Result</h5>
+        </div>
+        <div class="card-body">
+          <div class="alert alert-<%= @verification.verified? ? 'success' : 'danger' %>">
+            <strong><%= @verification.verified? ? 'Verified' : 'Verification Failed' %></strong>
+          </div>
+          <dl class="row">
+            <dt class="col-sm-4">Verification ID</dt>
+            <dd class="col-sm-8"><%= @verification.id %></dd>
+            <dt class="col-sm-4">Receipt ID</dt>
+            <dd class="col-sm-8"><%= @verification.receipt_id %></dd>
+            <dt class="col-sm-4">Method</dt>
+            <dd class="col-sm-8"><%= @verification.verification_method %></dd>
+            <dt class="col-sm-4">Verified At</dt>
+            <dd class="col-sm-8"><%= @verification.verified_at&.strftime('%B %d, %Y %I:%M %p') %></dd>
+            <dt class="col-sm-4">Integrity Hash</dt>
+            <dd class="col-sm-8"><code><%= @verification.integrity_hash %></code></dd>
+          </dl>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @receipt.present? %>
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5>Receipt Details</h5>
+        </div>
+        <div class="card-body">
+          <pre class="bg-light p-3"><%= JSON.pretty_generate(@receipt.to_h) %></pre>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -36,6 +36,15 @@ module V1
       render json: { error: { code: "SANDBOX_CHECKOUT_FAILED", message: e.message } }, status: :unprocessable_entity
     end
 
+    def assemble
+      order = find_order!
+      Commercial::Orders::BeginFulfillment.call(order)
+      Commercial::Orders::Fulfill.call(order)
+      render json: order_payload(order.reload)
+    rescue RuntimeError, KeyError, InkReceipts::Error => e
+      render json: { error: { code: "ASSEMBLY_FAILED", message: e.message } }, status: :unprocessable_entity
+    end
+
     private
 
     def order_params

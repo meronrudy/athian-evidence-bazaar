@@ -1,0 +1,21 @@
+<%= render AppShellComponent.new do %>
+  <div class="container py-4">
+    <h1>Projects</h1>
+    <div class="row">
+      <% @projects.each do |project| %>
+        <div class="col-md-4 mb-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title"><%= link_to project.name, project_path(project) %></h5>
+              <p class="card-text"><%= truncate(project.description, length: 100) %></p>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="badge bg-primary">Readiness: <%= project.evidence_readiness_percentage %>%</span>
+                <span class="badge bg-secondary"><%= project.status %></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>
