@@ -36,8 +36,13 @@ module Campaign
     attr_reader :campaign_account, :qualification, :product_code, :planning_value_cents, :scope, :currency
 
     def scope_digest
-      canonical = JSON.generate(canonical_value(scope))
-      "sha256:#{Digest::SHA256.hexdigest(canonical)}"
+      value = InkReceipts.issue(
+        payload: { campaign_scope: canonical_value(scope) },
+        issuer: "Athian Campaign",
+        receipt_type: "campaign_scope_commitment",
+        schema: "athian.campaign.scope_commitment.v1"
+      ).fetch(:body_digest)
+      value.to_s.start_with?("sha256:") ? value : "sha256:#{value}"
     end
 
     def canonical_value(value)

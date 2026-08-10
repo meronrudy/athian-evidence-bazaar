@@ -19,8 +19,8 @@ class EvidenceBazaarFlowTest < ActionDispatch::IntegrationTest
     get root_path
 
     assert_response :success
-    assert_select "h1", /Evidence first/
-    assert_select "td", text: /Portable Proof Product/
+    assert_select "h1", /Evidence control surface/
+    assert_select ".ei-system-chain"
   end
 
   test "avsa chain renders seven core receipt nodes" do

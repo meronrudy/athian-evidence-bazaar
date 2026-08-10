@@ -41,7 +41,7 @@ module V1
         Agevidence::DeveloperAccount.find_or_create_by!(name: name) do |account|
           account.website = account_params[:website]
           account.funding_stage = account_params[:funding_stage].presence || "sandbox"
-          account.capital_raised_cents = account_params[:capital_raised_cents]
+          account.capital_raised_cents = account_params[:capital_raised_cents].presence || 0
           account.primary_segment = account_params[:primary_segment].presence || "self_service_developer"
           account.headquarters = account_params[:headquarters]
           account.status = "active"

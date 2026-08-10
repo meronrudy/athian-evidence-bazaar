@@ -1,0 +1,78 @@
+/* Design Tokens for AgEvidence */
+
+:root {
+  --primary: #007bff; /* AgEvidence brand green */
+  --secondary: #6c757d; /* Neutral gray */
+  --success: #28a745; /* Restrained green */
+  --warning: #ffc107; /* Amber */
+  --error: #dc3545; /* Red */
+  --info: #0dcaf0; /* Blue */
+  --background: #f8f9fa; /* Near-white */
+  --text: #212529; /* Charcoal */
+  --font-family: 'Helvetica Neue', sans-serif;
+}
+
+/* Component-specific overrides */
+.evidence-status { color: var(--success); }
+.gap-severity-high { color: var(--error); }
+.reliance-status-ready { background: var(--success); }
+
+/* Typography */
+body { font-family: var(--font-family); }
+
+/* Layout */
+.app-shell { background: var(--background); }
+.app-navbar { background: var(--secondary); }
+.app-sidebar { background: var(--secondary); }
+
+/* Buttons */
+.btn-primary { background-color: var(--primary); }
+.btn-success { background-color: var(--success); }
+.btn-warning { background-color: var(--warning); }
+.btn-danger { background-color: var(--error); }
+
+/* Badges */
+.badge-success { background-color: var(--success); }
+.badge-warning { background-color: var(--warning); }
+.badge-danger { background-color: var(--error); }
+/*
+
+ */
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f6f7f9;
+  color: #17202a;
+}
+
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.app-main {
+  flex: 1;
+  padding: 32px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0 24px;
+  background: #fff;
+}
+
+th,
+td {
+  border: 1px solid #d8dee4;
+  padding: 8px 10px;
+  text-align: left;
+}
+
+input,
+textarea,
+button {
+  margin: 4px;
+  padding: 8px 10px;
+}

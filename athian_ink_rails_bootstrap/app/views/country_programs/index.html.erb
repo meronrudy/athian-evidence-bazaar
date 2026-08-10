@@ -1,0 +1,10 @@
+<div class="country-programs-index">
+  <h1>Country Program Engine</h1>
+  
+  <div class="browser-container">
+    <%= render CountryProgramBrowserComponent.new(
+      country_programs: @country_programs,
+      filters: @filters
+    ) %>
+  </div>
+</div>

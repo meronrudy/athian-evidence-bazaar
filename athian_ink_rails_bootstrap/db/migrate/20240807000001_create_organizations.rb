@@ -20,13 +20,21 @@ class CreateOrganizations < ActiveRecord::Migration[6.1]
       t.index :organization_type
     end
 
-    # Add organization_id to existing Agevidence records (Phase 1 batch 1)
-    add_reference :agevidence_developer_projects, :organization, foreign_key: true, index: true
-    add_reference :agevidence_source_records, :organization, foreign_key: true, index: true
-    add_reference :agevidence_model_runs, :organization, foreign_key: true, index: true
-    add_reference :agevidence_pricing_quotes, :organization, foreign_key: true, index: true
-    add_reference :agevidence_artifact_orders, :organization, foreign_key: true, index: true
-    add_reference :agevidence_artifact_engagements, :organization, foreign_key: true, index: true
-    add_reference :agevidence_reliance_events, :organization, foreign_key: true, index: true
+    # Add organization_id to existing Agevidence records when those tables
+    # already exist. Fresh SQLite installs create the Agevidence tables later.
+    %i[
+      agevidence_developer_projects
+      agevidence_source_records
+      agevidence_model_runs
+      agevidence_pricing_quotes
+      agevidence_artifact_orders
+      agevidence_artifact_engagements
+      agevidence_reliance_events
+    ].each do |table_name|
+      next unless table_exists?(table_name)
+      next if column_exists?(table_name, :organization_id)
+
+      add_reference table_name, :organization, foreign_key: true, index: true
+    end
   end
 end

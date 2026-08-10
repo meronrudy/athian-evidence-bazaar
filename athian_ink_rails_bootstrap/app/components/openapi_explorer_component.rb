@@ -1,4 +1,4 @@
-class OpenAPIExplorerComponent < ViewComponent::Base
+class OpenapiExplorerComponent < ViewComponent::Base
   def initialize(schemas:)
     @schemas = schemas
   end
@@ -10,7 +10,7 @@ class OpenAPIExplorerComponent < ViewComponent::Base
     content << '<h4>Available Schemas</h4>'
     content << '<ul>'
     @schemas.each do |schema|
-      content << "<li>#{schema.name} (v#{schema.version})</li>'
+      content << "<li>#{schema.name} (v#{schema.version})</li>"
     end
     content << '</ul>'
     content << '</div>'
@@ -18,15 +18,20 @@ class OpenAPIExplorerComponent < ViewComponent::Base
     # Schema details section
     content << '<div class="schema-details">'
     content << '<h4>Selected Schema Details</h4>'
-    content << '<pre>{
-      "name": "#{@schemas.first.name}",
-      "version": "#{@schemas.first.version}",
-      "type": "#{@schemas.first.type}",
+    if @schemas.any?
+      schema = @schemas.first
+      content << %(<pre>{
+      "name": "#{schema.name}",
+      "version": "#{schema.version}",
+      "type": "#{schema.type}",
       "endpoints": [
-        {"method": "GET", "path": "/api/v1/schemas/#{@schemas.first.name}/#{@schemas.first.version}", "description": "Retrieve schema details"},
+        {"method": "GET", "path": "/api/v1/schemas/#{schema.name}/#{schema.version}", "description": "Retrieve schema details"},
         {"method": "POST", "path": "/api/v1/schemas", "description": "Create new schema"}
       ]
-    }</pre>'
+    }</pre>)
+    else
+      content << '<p>No schemas yet.</p>'
+    end
     content << '</div>'
 
     # Schema creation form

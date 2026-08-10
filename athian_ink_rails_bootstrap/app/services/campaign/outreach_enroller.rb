@@ -22,7 +22,7 @@ module Campaign
         event_type: "outreach.sent",
         aggregate_type: contact.class.name,
         aggregate_id: contact.id,
-        idempotency_key: "apollo-outreach:#{contact.external_id}:#{Digest::SHA256.hexdigest(content_reference)}",
+        idempotency_key: "apollo-outreach:#{contact.external_id}:#{content_reference_commitment}",
         payload_json: {
           campaign_account_id: account.external_id,
           campaign_contact_id: contact.external_id,
@@ -46,5 +46,14 @@ module Campaign
     private
 
     attr_reader :contact, :account, :content_reference, :technical_hypothesis, :connector
+
+    def content_reference_commitment
+      InkReceipts.issue(
+        payload: { content_reference: content_reference },
+        issuer: "Athian Campaign",
+        receipt_type: "campaign_content_reference_commitment",
+        schema: "athian.campaign.content_reference_commitment.v1"
+      ).fetch(:body_digest)
+    end
   end
 end

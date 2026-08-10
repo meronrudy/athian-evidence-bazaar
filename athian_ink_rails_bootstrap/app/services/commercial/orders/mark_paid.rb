@@ -5,6 +5,7 @@ module Commercial
         return order if order.status == "paid"
 
         previous_status = order.status
+        order.previous_status = previous_status
 
         order.transaction do
           order.update!(

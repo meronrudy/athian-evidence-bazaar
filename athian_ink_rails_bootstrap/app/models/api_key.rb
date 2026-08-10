@@ -2,7 +2,7 @@ class ApiKey < ApplicationRecord
   belongs_to :user
   belongs_to :project, optional: true
 
-  before_create :generate_key
+  before_validation :generate_key, on: :create
 
   scope :active, -> { where(revoked_at: nil) }
   scope :revoked, -> { where.not(revoked_at: nil) }
@@ -25,6 +25,6 @@ class ApiKey < ApplicationRecord
   private
 
   def generate_key
-    self.key = SecureRandom.hex(32)
+    self.key ||= SecureRandom.hex(32)
   end
 end

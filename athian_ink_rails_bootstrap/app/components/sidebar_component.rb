@@ -16,19 +16,24 @@ This UI orchestrates and explains. The receipt and released verifier remain auth
       [
         ["Overview", root_path, "01"],
         ["EVIDENCE", nil, "02"],
-        ["Projects", projects_path, "02-01"],
-        ["Evidence", nil, "02-02"],
-        ["Reviews", nil, "02-03"],
-        ["Artifacts", nil, "02-04"],
-        ["PROGRAMS", nil, "03"],
+        ["AgEvidence Launchpad", agevidence_root_path, "02-01"],
+        ["Projects", agevidence_developer_projects_path, "02-02"],
+        ["Evidence Explorer", evidence_index_path, "02-03"],
+        ["Integration Inbox", integrations_events_path, "02-04"],
+        ["POLICY", nil, "03"],
         ["Country Programs", agevidence_country_programs_path, "03-01"],
-        ["Methodologies", nil, "03-02"],
-        ["DEVELOPER", nil, "04"],
-        ["Integrations", integrations_events_path, "04-01"],
-        ["API & Webhooks", nil, "04-02"],
-        ["Developer Console", agevidence_developer_os_path, "04-03"],
-        ["VERIFY", nil, "05"],
-        ["Verification", verifier_console_path, "05-01"]
+        ["Protocols", protocols_path, "03-02"],
+        ["Methodology Migration", methodology_migrations_path, "03-03"],
+        ["RELIANCE", nil, "04"],
+        ["Determinations", agevidence_determinations_path, "04-01"],
+        ["Bundle Builder", bundle_exports_path, "04-02"],
+        ["VVB Console", verifier_console_path, "04-03"],
+        ["Public Verification", public_verifier_path, "04-04"],
+        ["SYSTEM", nil, "05"],
+        ["Developer OS", agevidence_developer_os_path, "05-01"],
+        ["API & Webhooks", developer_dashboard_index_path, "05-02"],
+        ["Producer Ledger", producer_payments_path, "05-03"],
+        ["Evidence Marketplace", evidence_marketplace_index_path, "05-04"]
       ]
     end
 
@@ -44,5 +49,4 @@ This UI orchestrates and explains. The receipt and released verifier remain auth
         end
       end
     end
-  end
 end

@@ -60,4 +60,37 @@ class ActiveSupport::TestCase
       integrity_status: integrity_status
     )
   end
+
+  def agevidence_developer_accounts(_fixture_name)
+    @agevidence_developer_account ||= Agevidence::DeveloperAccount.create!(
+      name: "Fixture Developer #{SecureRandom.alphanumeric(8)}",
+      funding_stage: "Seed",
+      capital_raised_cents: 1_000_000,
+      primary_segment: "Livestock methane",
+      status: "active"
+    )
+  end
+
+  def agevidence_developer_projects(_fixture_name)
+    @agevidence_developer_project ||= agevidence_developer_accounts(:one).developer_projects.create!(
+      name: "Fixture Evidence Project #{SecureRandom.alphanumeric(8)}",
+      project_type: "intervention",
+      target_claim: "The intervention reduces enteric methane.",
+      protocol_status: "mapping",
+      integration_status: "source_registered"
+    )
+  end
+
+  def agevidence_pricing_quotes(_fixture_name)
+    @agevidence_pricing_quote ||= agevidence_developer_projects(:one).pricing_quotes.create!(
+      product_code: "verification_readiness_cycle",
+      pricing_version: Agevidence::PricingQuote::PRICING_VERSION,
+      currency: "USD",
+      amount_cents: 2_500_000,
+      input_json: { fixture: true },
+      breakdown_json: [],
+      status: "quoted",
+      expires_at: 30.days.from_now
+    )
+  end
 end

@@ -1,0 +1,37 @@
+<% content_for :title, "Country Determinations" %>
+
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Reliance</p>
+    <h1>Determinations</h1>
+    <p class="lead">Append-only local interpretations produced from reusable evidence graphs and country adapter policy.</p>
+  </div>
+</section>
+
+<section class="content-section">
+  <div class="vstack gap-2">
+    <% @determinations.each do |determination| %>
+      <%= render "shared/evidence_instrument/evidence_plate",
+        eyebrow: "Country determination",
+        title: determination.developer_project.name,
+        identifier: "DET-#{determination.id}",
+        status: determination.status,
+        meta: [
+          ["Country", determination.country_program.country_code, true],
+          ["Adapter", determination.country_adapter.adapter_id, true],
+          ["Method", determination.country_method_version.method_id, true],
+          ["Missing evidence", determination.missing_evidence.size, true],
+          ["Result digest", determination.result_digest, true],
+          ["Evaluated", determination.evaluated_at&.utc&.strftime("%d %b %Y %H:%M UTC"), true]
+        ],
+        basis_url: agevidence_determination_path(determination) %>
+    <% end %>
+  </div>
+
+  <% if @determinations.empty? %>
+    <%= render "shared/evidence_instrument/field_empty",
+      title: "No determinations",
+      detail: "No country adapter has appended a determination yet.",
+      kicker: "Reliance" %>
+  <% end %>
+</section>

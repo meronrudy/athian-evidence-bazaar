@@ -12,6 +12,14 @@
 <%= render "agevidence/country_programs/shared/eligibility_boundary", country_program: @country_program %>
 
 <section class="content-section">
+  <%= render "shared/evidence_instrument/profile_stack",
+    title: "#{@country_program.country_code} / #{@country_program.name}",
+    identifier: @latest_adapter&.adapter_id || "adapter.pending",
+    layers: ei_country_profile_stack_layers(@country_program, @country_adapters),
+    kicker: "Executable country adapter stack" %>
+</section>
+
+<section class="content-section">
   <div class="section-heading">
     <div>
       <p class="eyebrow">Adapter versions</p>

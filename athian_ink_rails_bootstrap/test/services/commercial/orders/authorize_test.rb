@@ -37,6 +37,7 @@ class Commercial::Orders::AuthorizeTest < ActiveSupport::TestCase
   end
 
   test "does not authorize from assembling status" do
+    Commercial::Orders::MarkPaid.call(@order)
     Commercial::Orders::BeginFulfillment.call(@order)
     assert_raises(RuntimeError) do
       Commercial::Orders::Authorize.call(@order)

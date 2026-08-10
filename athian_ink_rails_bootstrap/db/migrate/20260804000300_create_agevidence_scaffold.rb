@@ -1,6 +1,7 @@
 class CreateAgevidenceScaffold < ActiveRecord::Migration[7.1]
   def change
     create_table :agevidence_developer_accounts do |t|
+      t.references :organization, foreign_key: true
       t.string :name, null: false
       t.string :website
       t.string :funding_stage
@@ -13,6 +14,7 @@ class CreateAgevidenceScaffold < ActiveRecord::Migration[7.1]
     add_index :agevidence_developer_accounts, :name, unique: true
 
     create_table :agevidence_developer_projects do |t|
+      t.references :organization, foreign_key: true
       t.references :developer_account, null: false, foreign_key: { to_table: :agevidence_developer_accounts }
       t.references :protocol, foreign_key: true
       t.references :avsa, foreign_key: true
@@ -41,6 +43,7 @@ class CreateAgevidenceScaffold < ActiveRecord::Migration[7.1]
     add_index :agevidence_model_adapters, :adapter_id, unique: true
 
     create_table :agevidence_model_runs do |t|
+      t.references :organization, foreign_key: true
       t.references :developer_project, null: false, foreign_key: { to_table: :agevidence_developer_projects }
       t.references :model_adapter, null: false, foreign_key: { to_table: :agevidence_model_adapters }
       t.references :receipt, foreign_key: true
@@ -96,6 +99,7 @@ class CreateAgevidenceScaffold < ActiveRecord::Migration[7.1]
     end
 
     create_table :agevidence_artifact_engagements do |t|
+      t.references :organization, foreign_key: true
       t.references :developer_project, null: false, foreign_key: { to_table: :agevidence_developer_projects }
       t.references :evidence_bundle, foreign_key: true
       t.string :product_code, null: false
@@ -111,6 +115,7 @@ class CreateAgevidenceScaffold < ActiveRecord::Migration[7.1]
     end
 
     create_table :agevidence_reliance_events do |t|
+      t.references :organization, foreign_key: true
       t.references :artifact_engagement, null: false, foreign_key: { to_table: :agevidence_artifact_engagements }
       t.references :evidence_bundle, null: false, foreign_key: true
       t.string :relying_party_name, null: false

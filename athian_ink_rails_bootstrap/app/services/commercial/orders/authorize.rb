@@ -3,8 +3,10 @@ module Commercial
     class Authorize
       def self.call(order, actor: nil, reason: nil, metadata: {})
         return order if order.status == "checkout_pending"
+        raise "Artifact order cannot be authorized from #{order.status}" unless order.status == "quoted"
 
         previous_status = order.status
+        order.previous_status = previous_status
 
         order.transaction do
           order.update!(status: "checkout_pending")

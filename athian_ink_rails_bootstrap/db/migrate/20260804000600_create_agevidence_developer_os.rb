@@ -1,6 +1,7 @@
 class CreateAgevidenceDeveloperOs < ActiveRecord::Migration[7.1]
   def change
     create_table :agevidence_source_records do |t|
+      t.references :organization, foreign_key: true
       t.references :developer_project, null: false, foreign_key: { to_table: :agevidence_developer_projects }
       t.references :source_event, foreign_key: { to_table: :integration_events }
       t.references :evidence_projection, foreign_key: true
@@ -21,6 +22,7 @@ class CreateAgevidenceDeveloperOs < ActiveRecord::Migration[7.1]
     add_index :agevidence_source_records, :status
 
     create_table :agevidence_pricing_quotes do |t|
+      t.references :organization, foreign_key: true
       t.references :developer_project, null: false, foreign_key: { to_table: :agevidence_developer_projects }
       t.string :external_id, null: false
       t.string :product_code, null: false
@@ -38,6 +40,7 @@ class CreateAgevidenceDeveloperOs < ActiveRecord::Migration[7.1]
     add_index :agevidence_pricing_quotes, %i[developer_project_id product_code status], name: "idx_agev_pricing_quotes_project"
 
     create_table :agevidence_artifact_orders do |t|
+      t.references :organization, foreign_key: true
       t.references :developer_project, null: false, foreign_key: { to_table: :agevidence_developer_projects }
       t.references :pricing_quote, null: false, foreign_key: { to_table: :agevidence_pricing_quotes }
       t.references :artifact_engagement, foreign_key: { to_table: :agevidence_artifact_engagements }

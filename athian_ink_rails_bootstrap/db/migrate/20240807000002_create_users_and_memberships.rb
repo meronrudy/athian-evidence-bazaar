@@ -40,7 +40,10 @@ class CreateUsersAndMemberships < ActiveRecord::Migration[6.1]
       t.index :email
     end
 
-    # Add temporary compatibility column
-    add_reference :agevidence_developer_accounts, :organization, foreign_key: true, index: true
+    # Add temporary compatibility column when the table already exists. Fresh
+    # SQLite installs create the Agevidence table later with this reference.
+    if table_exists?(:agevidence_developer_accounts) && !column_exists?(:agevidence_developer_accounts, :organization_id)
+      add_reference :agevidence_developer_accounts, :organization, foreign_key: true, index: true
+    end
   end
 end

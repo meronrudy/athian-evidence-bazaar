@@ -1,42 +1,49 @@
-<% links = [
-  ["Dashboard", root_path, "01"],
-  ["AgEvidence Launchpad", agevidence_root_path, "02"],
-  ["Developer OS", agevidence_developer_os_path, "03"],
-  ["Campaign Control", campaign_root_path, "04"],
-  ["Country Programs", agevidence_country_programs_path, "05"],
-  ["Integration Inbox", integrations_events_path, "06"],
-  ["Evidence Explorer", evidence_index_path(avsa_id: canonical_avsa&.id), "07"],
-  ["Receipt Chain", canonical_avsa ? avsa_path(canonical_avsa) : root_path, "08"],
-  ["Bundle Builder", bundle_exports_path, "09"],
-  ["Co-Claim Workbench", canonical_avsa&.claim_group ? avsa_co_claim_group_path(canonical_avsa) : root_path, "10"],
-  ["VVB Console", verifier_console_path(avsa_id: canonical_avsa&.id), "11"],
-  ["Producer Ledger", producer_payments_path, "12"],
-  ["Methodology Migration", methodology_migrations_path, "13"],
-  ["Evidence Marketplace", evidence_marketplace_index_path, "14"],
-  ["Protocols", protocols_path, "15"]
+<% grouped_links = [
+  ["Evidence", [
+    ["Overview", root_path, "01"],
+    ["AgEvidence Launchpad", agevidence_root_path, "02"],
+    ["Projects", agevidence_developer_projects_path, "03"],
+    ["Evidence Explorer", evidence_index_path(avsa_id: canonical_avsa&.id), "04"],
+    ["Integration Inbox", integrations_events_path, "05"]
+  ]],
+  ["Policy", [
+    ["Country Programs", agevidence_country_programs_path, "06"],
+    ["Protocols", protocols_path, "07"],
+    ["Methodology Migration", methodology_migrations_path, "08"]
+  ]],
+  ["Reliance", [
+    ["Determinations", agevidence_determinations_path, "09"],
+    ["Receipt Chain", canonical_avsa ? avsa_path(canonical_avsa) : root_path, "10"],
+    ["Bundle Builder", bundle_exports_path, "11"],
+    ["VVB Console", verifier_console_path(avsa_id: canonical_avsa&.id), "12"],
+    ["Public Verification", public_verifier_path, "13"]
+  ]],
+  ["System", [
+    ["Developer OS", agevidence_developer_os_path, "14"],
+    ["API & Webhooks", developer_dashboard_index_path, "15"],
+    ["Producer Ledger", producer_payments_path, "16"],
+    ["Evidence Marketplace", evidence_marketplace_index_path, "17"],
+    ["Campaign Control", campaign_root_path, "18"]
+  ]]
 ] %>
 
 <aside class="app-sidebar d-none d-lg-flex flex-column">
-  <div class="sidebar-kicker">Evidence bazaar</div>
+  <div class="sidebar-kicker">Evidence instrument</div>
   <nav class="nav nav-pills flex-column gap-1" aria-label="Application sections">
-    <% links.each do |label, path, index| %>
-      <%= link_to path, class: "nav-link #{'active' if current_page?(path)}" do %>
-        <span class="nav-index"><%= index %></span>
-        <span><%= label %></span>
+    <% grouped_links.each do |heading, links| %>
+      <div class="nav-header"><%= heading %></div>
+      <% links.each do |label, path, index| %>
+        <%= link_to path, class: "nav-link #{'active' if current_page?(path)}" do %>
+          <span class="nav-index"><%= index %></span>
+          <span><%= label %></span>
+        <% end %>
       <% end %>
     <% end %>
   </nav>
 
   <div class="sidebar-note mt-auto">
     <strong>Truth boundary</strong>
-    <p class="mb-0">This UI orchestrates and explains. The receipt and released verifier remain authoritative.</p>
-  </div>
-
-  <div class="sidebar-note mt-3">
-    <strong>Strategic map</strong>
-    <% strategic_moves.each do |index, move, feature| %>
-      <p class="mb-1"><span class="nav-index"><%= index %></span> <%= feature %>: <%= move %></p>
-    <% end %>
+    <p class="mb-0">Rails orchestrates and explains. Receipts, bundles, and released verifier output remain authoritative.</p>
   </div>
 </aside>
 
@@ -47,20 +54,18 @@
   </div>
   <div class="offcanvas-body">
     <nav class="nav nav-pills flex-column gap-2">
-      <% links.each do |label, path, index| %>
-        <%= link_to path, class: "nav-link", data: { bs_dismiss: "offcanvas" } do %>
-          <span class="nav-index"><%= index %></span>
-          <span><%= label %></span>
+      <% grouped_links.each do |heading, links| %>
+        <div class="nav-header"><%= heading %></div>
+        <% links.each do |label, path, index| %>
+          <%= link_to path, class: "nav-link", data: { bs_dismiss: "offcanvas" } do %>
+            <span class="nav-index"><%= index %></span>
+            <span><%= label %></span>
+          <% end %>
         <% end %>
       <% end %>
     </nav>
     <div class="alert alert-secondary mt-4 mb-0 small">
       Hosted state is a projection. Portable receipts and independent verification are the trust boundary.
-    </div>
-    <div class="alert alert-boundary mt-3 mb-0 small">
-      <% strategic_moves.each do |index, move, feature| %>
-        <div><span class="nav-index"><%= index %></span> <%= feature %>: <%= move %></div>
-      <% end %>
     </div>
   </div>
 </div>

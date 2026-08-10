@@ -18,8 +18,24 @@
   </div>
 </header>
 
+<%= render "shared/evidence_instrument/provenance_rail", nodes: ei_avsa_provenance_nodes(@avsa) %>
+
 <div class="row g-4">
   <div class="col-xl-8">
+    <%= render "shared/evidence_instrument/verifier_result",
+      title: @receipt.title,
+      status: @receipt.integrity_status,
+      checks: ei_receipt_checks(@receipt),
+      meta: [
+        ["Receipt ID", @receipt.id, true],
+        ["Schema", @receipt.schema_id, true],
+        ["Signer", @receipt.signer_key_id, true],
+        ["Evidence commitment", @receipt.evidence_commitment, true],
+        ["Policy commitment", @receipt.policy_commitment, true],
+        ["Trace commitment", @receipt.trace_commitment, true]
+      ],
+      kicker: "Athian INK / Receipt verify" %>
+
     <section class="card mb-4">
       <div class="card-header">
         <div class="eyebrow">Canonical receipt fields</div>

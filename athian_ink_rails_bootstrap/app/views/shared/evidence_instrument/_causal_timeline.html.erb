@@ -1,0 +1,14 @@
+<ol class="ei-causal">
+  <% items.each do |item| %>
+    <% occurred_at = item.respond_to?(:occurred_at) ? item.occurred_at : item.try(:created_at) %>
+    <li>
+      <time><%= occurred_at&.utc&.strftime("%d %b %Y %H:%M UTC") %></time>
+      <strong><%= item.respond_to?(:title) ? item.title : item.class.name.demodulize.titleize %></strong>
+      <span><%= item.respond_to?(:message) ? item.message : item.try(:status)&.humanize %></span>
+      <% identifier = item.respond_to?(:external_id) ? item.external_id : item.try(:id) %>
+      <% if identifier.present? %>
+        <code><%= identifier %></code>
+      <% end %>
+    </li>
+  <% end %>
+</ol>

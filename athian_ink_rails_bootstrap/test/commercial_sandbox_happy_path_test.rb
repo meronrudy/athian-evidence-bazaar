@@ -9,28 +9,47 @@ class CommercialSandboxHappyPathTest < ActionDispatch::IntegrationTest
     # For now, use existing developer account as compatibility layer
     developer_account = agevidence_developer_accounts(:one)
     project = developer_account.developer_projects.create!(
-      external_id: "proj_#{SecureRandom.hex(8)}",
-      name: "Commercial Sandbox Test Project"
+      name: "Commercial Sandbox Test Project",
+      project_type: "intervention",
+      target_claim: "The intervention reduces enteric methane.",
+      protocol_status: "mapping",
+      integration_status: "source_registered"
     )
 
     # 2. Register source record
     source_record = project.source_records.create!(
       document_id: "doc_#{SecureRandom.hex(8)}",
       source_system: "test_system",
-      raw_data: { "type" => "test_evidence" }
+      evidence_type: "evidence.feed_record",
+      evidence_class: "source_record",
+      controlled_uri: "evidence://commercial-sandbox-test",
+      commitment: "source:commercial-sandbox-test",
+      disclosure_status: "restricted",
+      metadata_json: { "type" => "test_evidence" }
     )
 
     # 3. Model run and review (existing flow)
-    model_run = project.model_runs.create!(status: "completed")
+    model_adapter = Agevidence::ModelAdapter.create!(
+      adapter_id: "commercial-sandbox-#{SecureRandom.alphanumeric(8).downcase}",
+      base_model_id: "fixture/commercial-sandbox",
+      status: "reference"
+    )
+    model_run = project.model_runs.create!(
+      model_adapter: model_adapter,
+      task: "commercial_sandbox_evaluation",
+      status: "completed"
+    )
     # Simulate review decisions...
 
     # 4. Quote generation (will use Commercial::Quoting in Phase 3)
     quote = Agevidence::PricingQuote.create!(
       developer_project: project,
-      product_code: "verification_readiness",
+      product_code: "verification_readiness_cycle",
+      pricing_version: Agevidence::PricingQuote::PRICING_VERSION,
       amount_cents: 2500000,
       currency: "USD",
-      status: "quoted"
+      status: "quoted",
+      expires_at: 30.days.from_now
     )
 
     # 5. Order creation via Commercial service (Phase 0)

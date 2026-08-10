@@ -1,16 +1,71 @@
-<h1>Developer Dashboard</h1>
+<% content_for :title, "Athian Evidence Instrument" %>
 
-<h2>API Keys</h2>
-<%= render "api_key_manager" %>
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Athian INK evidence plane</p>
+    <h1>Evidence control surface</h1>
+    <p class="lead">Inspect source evidence, country-program basis, receipt verification, and external reliance before operating the developer tools.</p>
+  </div>
+  <div class="page-actions">
+    <%= link_to "AgEvidence Launchpad", agevidence_root_path, class: "btn btn-primary" %>
+    <%= link_to "Public verifier", public_verifier_path, class: "btn btn-outline-primary" %>
+  </div>
+</section>
 
-<h2>API Logs</h2>
-<%= render "api_log_manager" %>
+<section class="ei-system-chain" aria-label="Active institutional chain">
+  <% @system_chain.each_with_index do |node, index| %>
+    <%= render "shared/evidence_instrument/evidence_plate",
+      eyebrow: node.fetch(:eyebrow),
+      title: node.fetch(:title),
+      identifier: node.fetch(:identifier),
+      status: node.fetch(:status),
+      meta: node.fetch(:meta),
+      basis_url: node.fetch(:basis_url) %>
+    <% if index < @system_chain.length - 1 %>
+      <div class="ei-chain-operator" aria-hidden="true">-&gt;</div>
+    <% end %>
+  <% end %>
+</section>
 
-<h2>Webhooks</h2>
-<%= render "webhook_manager" %>
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Verification basis</p>
+      <h2>Recent local verifier runs</h2>
+    </div>
+  </div>
+  <div class="vstack gap-2">
+    <% @recent_runs.each do |run| %>
+      <%= render "shared/evidence_instrument/basis_row",
+        kicker: run.receipt&.receipt_type_label || "AVSA verification",
+        title: run.receipt&.title || run.avsa.external_id,
+        detail: run.message,
+        status: run.status,
+        url: verifier_console_path(avsa_id: run.avsa.id, receipt_id: run.receipt_id) %>
+    <% end %>
+  </div>
+</section>
 
-<h2>Schemas</h2>
-<%= render "schema_browser" %>
+<section class="content-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">System</p>
+      <h2>API and webhook workbench</h2>
+    </div>
+  </div>
 
-<h2>OpenAPI Explorer</h2>
-<%= render "openapi_explorer" %>
+  <h3 class="h5">API Keys</h3>
+  <%= render "api_key_manager" %>
+
+  <h3 class="h5 mt-4">API Logs</h3>
+  <%= render "api_log_manager" %>
+
+  <h3 class="h5 mt-4">Webhooks</h3>
+  <%= render "webhook_manager" %>
+
+  <h3 class="h5 mt-4">Schemas</h3>
+  <%= render "schema_browser" %>
+
+  <h3 class="h5 mt-4">OpenAPI Explorer</h3>
+  <%= render "openapi_explorer" %>
+</section>

@@ -16,14 +16,14 @@ class ApiKeyManagerComponent < ViewComponent::Base
 
     # Create new API key form
     html << "<h4>Create New API Key</h4>"
-    html << "<form data-action="api_keys#create" data-method="post">"
-    html << "  <input type="text" name="api_key[name]" placeholder="Key name">"
-    html << "  <button type="submit">Create</button>"
+    html << %(<form data-action="api_keys#create" data-method="post">)
+    html << %(  <input type="text" name="api_key[name]" placeholder="Key name">)
+    html << %(  <button type="submit">Create</button>)
     html << "</form>"
 
     # Revoke API key buttons
     @api_keys.each do |api_key|
-      html << "<button data-action="api_keys#revoke" data-method="delete" data-id="#{api_key.id}">Revoke #{api_key.masked_key}</button>"
+      html << %(<button data-action="api_keys#revoke" data-method="delete" data-id="#{api_key.id}">Revoke #{api_key.masked_key}</button>)
     end
     html << "</form>"
     html

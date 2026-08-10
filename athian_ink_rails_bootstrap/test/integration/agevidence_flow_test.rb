@@ -46,8 +46,9 @@ class AgevidenceFlowTest < ActionDispatch::IntegrationTest
     get agevidence_root_path
 
     assert_response :success
-    assert_select "h1", /Developer Launchpad/
-    assert_select "td", text: /Enterprise Dairy Pilot/
+    assert_select "h1", /Evidence launchpad/
+    assert_select ".ei-plate", /Enterprise Dairy Pilot/
+    assert_select ".ei-system-chain"
   end
 
   test "model run can be created from fixture adapter" do
@@ -84,6 +85,25 @@ class AgevidenceFlowTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to agevidence_country_program_path(@country_adapter.country_program)
     assert_equal "country_compatibility_determination_receipt", Agevidence::CountryDetermination.last.receipt.receipt_type
+  end
+
+  test "determination pages expose appended country reasoning" do
+    determination = Agevidence::CountryDeterminationAppender.new(project: @project, country_adapter: @country_adapter).call
+
+    get agevidence_determinations_path
+    assert_response :success
+    assert_select "h1", /Determinations/
+    assert_select ".ei-plate", /DET-#{determination.id}/
+
+    get agevidence_determination_path(determination)
+    assert_response :success
+    assert_select ".ei-rail"
+    assert_select ".ei-plate", /#{determination.status.humanize}/
+  end
+
+  test "unknown determination returns 404" do
+    get agevidence_determination_path(999_999)
+    assert_response :not_found
   end
 
   test "v1 country adapter API lists and validates manifests" do

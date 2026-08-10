@@ -1,0 +1,67 @@
+<% content_for :title, "DET-#{@determination.id}" %>
+
+<section class="page-header">
+  <div>
+    <p class="eyebrow"><%= link_to "Determinations", agevidence_determinations_path %> / DET-<%= @determination.id %></p>
+    <h1><%= @determination.developer_project.name %></h1>
+    <p class="lead">Country-specific institutional conclusion from a global evidence graph.</p>
+  </div>
+  <div class="page-actions">
+    <%= link_to "Project map", agevidence_developer_project_path(@project), class: "btn btn-outline-primary" %>
+    <%= link_to "Country program", agevidence_country_program_path(@determination.country_program), class: "btn btn-primary" %>
+  </div>
+</section>
+
+<%= render "shared/evidence_instrument/provenance_rail", nodes: ei_project_provenance_nodes(@project) %>
+
+<div class="row g-4">
+  <div class="col-xl-8">
+    <%= render "shared/evidence_instrument/evidence_plate",
+      eyebrow: "Determination",
+      title: @determination.status.humanize,
+      identifier: "DET-#{@determination.id}",
+      status: @determination.status,
+      meta: [
+        ["Project", @project.name, false],
+        ["Country", @determination.country_program.country_code, true],
+        ["Adapter", @determination.country_adapter.adapter_id, true],
+        ["Method", @determination.country_method_version.method_id, true],
+        ["Result digest", @determination.result_digest, true],
+        ["Evaluated", @determination.evaluated_at&.utc&.strftime("%d %b %Y %H:%M UTC"), true]
+      ],
+      basis_url: agevidence_country_program_path(@determination.country_program) %>
+
+    <section class="card mt-4">
+      <div class="card-header">
+        <div class="eyebrow">Normalized result</div>
+        <h2 class="h5 mb-0">Machine-readable determination basis</h2>
+      </div>
+      <div class="card-body">
+        <pre class="code-panel"><%= JSON.pretty_generate(@determination.normalized_result || {}) %></pre>
+      </div>
+    </section>
+  </div>
+
+  <div class="col-xl-4">
+    <div class="vstack gap-3">
+      <%= render "shared/evidence_instrument/basis_row",
+        kicker: "Evaluation",
+        title: @model_run ? "RUN-#{@model_run.id}" : "No model run",
+        detail: @model_run&.status&.humanize,
+        status: @model_run&.status || "draft",
+        url: @model_run ? agevidence_model_run_path(@model_run) : new_agevidence_developer_project_model_run_path(@project) %>
+      <%= render "shared/evidence_instrument/basis_row",
+        kicker: "Receipt",
+        title: @determination.receipt ? @determination.receipt.title : "Receipt pending",
+        detail: @determination.receipt ? compact_digest(@determination.receipt.body_digest) : "No receipt was emitted for this determination.",
+        status: @determination.receipt&.lifecycle_state || "draft",
+        url: @determination.receipt ? receipt_path(@determination.receipt) : agevidence_developer_project_path(@project) %>
+      <%= render "shared/evidence_instrument/basis_row",
+        kicker: "Artifact",
+        title: @artifact_order&.evidence_bundle ? @artifact_order.evidence_bundle.name : "Artifact pending",
+        detail: @artifact_order&.evidence_bundle&.evidence_bundle_digest,
+        status: @artifact_order&.evidence_bundle&.verification_status || "draft",
+        url: @artifact_order ? agevidence_developer_project_artifact_order_path(@project, @artifact_order) : new_agevidence_developer_project_pricing_quote_path(@project) %>
+    </div>
+  </div>
+</div>

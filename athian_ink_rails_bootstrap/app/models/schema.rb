@@ -1,4 +1,6 @@
 class Schema < ApplicationRecord
+  self.inheritance_column = :_type_disabled
+
   belongs_to :project, optional: true
 
   scope :recent, -> { order(updated_at: :desc) }

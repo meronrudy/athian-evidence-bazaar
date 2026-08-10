@@ -8,7 +8,7 @@ class CreateCommercialOrderEvents < ActiveRecord::Migration[6.1]
       t.string :actor_type
       t.integer :actor_id
       t.text :reason
-      t.jsonb :metadata_json, default: {}
+      t.json :metadata_json, default: {}
       t.datetime :occurred_at, null: false, default: -> { 'CURRENT_TIMESTAMP' }
 
       t.timestamps

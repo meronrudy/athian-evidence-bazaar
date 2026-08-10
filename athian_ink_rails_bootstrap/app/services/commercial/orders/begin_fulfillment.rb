@@ -9,6 +9,7 @@ module Commercial
         end
 
         previous_status = order.status
+        order.previous_status = previous_status
 
         order.transaction do
           # Ensure lightweight AVSA scaffold exists
@@ -17,7 +18,7 @@ module Commercial
           # Ensure artifact engagement exists
           engagement = ensure_engagement!(order)
 
-          order.update!(status: "assembling")
+          order.update!(status: "assembling", artifact_engagement: engagement)
 
           Commercial::OrderEvent.record_transition!(
             order,
@@ -65,7 +66,7 @@ module Commercial
       def self.ensure_engagement!(order)
         return order.artifact_engagement if order.artifact_engagement
 
-        product = ProductCatalog.fetch(order.product_code)
+        product = Agevidence::ProductCatalog.fetch(order.product_code)
         order.developer_project.artifact_engagements.create!(
           product_code: order.product_code,
           pipeline_stage: "scoped",

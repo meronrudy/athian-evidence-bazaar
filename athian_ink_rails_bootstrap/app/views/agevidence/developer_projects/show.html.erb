@@ -16,6 +16,8 @@
 
 <div class="alert alert-boundary">Claim -> source -> model run -> candidate -> human review -> receipt -> artifact. Confidence is never displayed as scientific validity.</div>
 
+<%= render "shared/evidence_instrument/provenance_rail", nodes: ei_project_provenance_nodes(@project) %>
+
 <section class="content-section">
   <div class="section-heading">
     <div>
@@ -25,20 +27,22 @@
   </div>
   <div class="row g-3">
     <div class="col-lg-6">
-      <article class="resource-card h-100">
-        <span class="badge text-bg-dark">Event Inbox Path</span>
-        <h3 class="mt-3">Operational event bridge</h3>
-        <p>Existing Athian systems publish signed business events. Rails preserves them, projects evidence state, and sends receipt work through the outbox.</p>
-        <%= link_to "Open inbox", integrations_events_path, class: "btn btn-sm btn-outline-primary" %>
-      </article>
+      <%= render "shared/evidence_instrument/evidence_plate",
+        eyebrow: "Event inbox path",
+        title: "Operational event bridge",
+        identifier: "integration.events",
+        status: "valid",
+        body: tag.p("Existing Athian systems publish signed business events. Rails preserves them, projects evidence state, and sends receipt work through the outbox."),
+        basis_url: integrations_events_path %>
     </div>
     <div class="col-lg-6">
-      <article class="resource-card h-100">
-        <span class="badge text-bg-success">Source Records Path</span>
-        <h3 class="mt-3">Self-service references</h3>
-        <p>Start from controlled source references, then run fixture-backed extraction, append review decisions, and assemble a priced artifact.</p>
-        <%= link_to "Manage sources", agevidence_developer_project_source_records_path(@project), class: "btn btn-sm btn-primary" %>
-      </article>
+      <%= render "shared/evidence_instrument/evidence_plate",
+        eyebrow: "Source records path",
+        title: "Self-service references",
+        identifier: "source.records",
+        status: @source_records.any? ? "valid" : "draft",
+        body: tag.p("Start from controlled source references, then run fixture-backed extraction, append review decisions, and assemble a priced artifact."),
+        basis_url: agevidence_developer_project_source_records_path(@project) %>
     </div>
   </div>
 </section>
@@ -90,11 +94,17 @@
     <div class="row g-2 mb-3">
       <% @source_records.first(4).each do |record| %>
         <div class="col-md-6 col-xl-3">
-          <div class="resource-card h-100">
-            <span class="badge text-bg-info"><%= record.status.humanize %></span>
-            <strong class="d-block mt-2"><%= record.document_id %></strong>
-            <small><%= record.evidence_type %></small>
-          </div>
+          <%= render "shared/evidence_instrument/evidence_plate",
+            eyebrow: "Source manifest",
+            title: record.document_id,
+            identifier: record.controlled_uri,
+            status: record.status,
+            meta: [
+              ["Evidence type", record.evidence_type, true],
+              ["Source", record.source_system, false],
+              ["Commitment", compact_digest(record.commitment), true]
+            ],
+            basis_url: agevidence_developer_project_source_records_path(@project) %>
         </div>
       <% end %>
     </div>
@@ -131,12 +141,17 @@
   <div class="row g-3">
     <% @country_determinations.each do |determination| %>
       <div class="col-md-6">
-        <article class="resource-card h-100">
-          <span class="badge text-bg-warning"><%= determination.status.humanize %></span>
-          <h3 class="mt-3"><%= determination.country_program.country_code %> · <%= determination.country_adapter.adapter_id %></h3>
-          <p>Missing evidence: <%= determination.missing_evidence.size %></p>
-          <p class="mb-0">Receipt: <%= determination.receipt ? compact_digest(determination.receipt.body_digest) : "Pending" %></p>
-        </article>
+        <%= render "shared/evidence_instrument/evidence_plate",
+          eyebrow: "Country determination",
+          title: "#{determination.country_program.country_code} / #{determination.status.humanize}",
+          identifier: "DET-#{determination.id}",
+          status: determination.status,
+          meta: [
+            ["Adapter", determination.country_adapter.adapter_id, true],
+            ["Missing evidence", determination.missing_evidence.size, true],
+            ["Receipt", determination.receipt ? compact_digest(determination.receipt.body_digest) : "Pending", true]
+          ],
+          basis_url: agevidence_determination_path(determination) %>
       </div>
     <% end %>
     <% if @country_determinations.empty? %>

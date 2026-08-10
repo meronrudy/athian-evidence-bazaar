@@ -1,5 +1,7 @@
 module Agevidence
   class ArtifactOrder < ApplicationRecord
+    attr_accessor :previous_status
+
     STATUSES = %w[
       quoted
       checkout_pending

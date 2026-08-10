@@ -1,0 +1,40 @@
+<section class="ei-verifier">
+  <header>
+    <div>
+      <div class="ei-kicker"><%= local_assigns.fetch(:kicker, "Athian INK / Verify") %></div>
+      <h1 class="font-monospace"><%= title %></h1>
+    </div>
+    <%= ei_status(local_assigns.fetch(:status, "unverified")) %>
+  </header>
+
+  <% if local_assigns[:checks].present? %>
+    <div class="ei-verifier-checks">
+      <% checks.each do |label, value, ok| %>
+        <div>
+          <span><%= label %></span>
+          <strong class="font-monospace"><%= value %></strong>
+          <%= ei_status(ok ? "valid" : "unverified") %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% if local_assigns[:meta].present? %>
+    <dl class="ei-plate-meta ei-verifier-meta">
+      <% meta.each do |label, value, mono| %>
+        <div><dt><%= label %></dt><dd class="<%= 'font-monospace' if mono %>"><%= value %></dd></div>
+      <% end %>
+    </dl>
+  <% end %>
+
+  <div class="ei-verifier-boundary">
+    <div>
+      <div class="ei-kicker">This verifies</div>
+      <p>Integrity, canonical digest, policy commitment, receipt chain, and provenance of the inspected object.</p>
+    </div>
+    <div>
+      <div class="ei-kicker">This does not assert</div>
+      <p>Independent truth of underlying physical events outside the committed evidence and review boundary.</p>
+    </div>
+  </div>
+</section>

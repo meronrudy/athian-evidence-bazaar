@@ -9,6 +9,7 @@ module Commercial
         end
 
         previous_status = order.status
+        order.previous_status = previous_status
 
         order.transaction do
           order.update!(status: "canceled")
