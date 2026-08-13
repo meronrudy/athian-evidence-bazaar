@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import re
 import sys
 import tomllib
 from pathlib import Path
@@ -13,6 +14,7 @@ SDK_ROOT = REPO_ROOT / "sdks" / "python"
 PYPROJECT = SDK_ROOT / "pyproject.toml"
 PACKAGE_ROOT = SDK_ROOT / "src" / "agevidence"
 RELEASE_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "sdk-python-release.yml"
+SDK_DOCS = SDK_ROOT / "docs"
 
 REQUIRED_GOLDEN_FIXTURES = {
     "demo_bundle.json",
@@ -52,6 +54,8 @@ def main() -> int:
     errors.extend(_check_metadata(project))
     errors.extend(_check_packaged_files())
     errors.extend(_check_release_workflow())
+    errors.extend(_check_public_exports_and_cli())
+    errors.extend(_check_docs_links())
     errors.extend(_check_local_first_constraints())
     errors.extend(_check_verifier_contract())
     errors.extend(_check_fixtures())
@@ -96,6 +100,11 @@ def _check_metadata(project: dict) -> list[str]:
     missing = required_keys - set(project)
     for key in sorted(missing):
         errors.append(f"missing project metadata: {key}")
+    classifiers = set(project.get("classifiers", []))
+    if "Development Status :: 5 - Production/Stable" not in classifiers:
+        errors.append("v1 release metadata must use Production/Stable classifier")
+    if "Development Status :: 3 - Alpha" in classifiers:
+        errors.append("v1 release metadata must not use Alpha classifier")
     return errors
 
 
@@ -137,6 +146,67 @@ def _check_release_workflow() -> list[str]:
     if "password:" in text or "api-token" in text.lower():
         errors.append("release workflow must not use long-lived PyPI API tokens")
     return errors
+
+
+def _check_public_exports_and_cli() -> list[str]:
+    errors = []
+    sys.path.insert(0, str(SDK_ROOT / "src"))
+    try:
+        from typer.testing import CliRunner
+
+        from agevidence.adapters import Adapter, AdapterTestReport, load_source_adapter, test_source_adapter
+        from agevidence.cli import app
+    except Exception as exc:  # noqa: BLE001 - readiness reports import failures.
+        return [f"source adapter public exports or CLI failed to import: {exc}"]
+
+    expected_exports = {
+        "Adapter": Adapter,
+        "AdapterTestReport": AdapterTestReport,
+        "load_source_adapter": load_source_adapter,
+        "test_source_adapter": test_source_adapter,
+    }
+    for name, value in expected_exports.items():
+        if value is None:
+            errors.append(f"missing source adapter export: {name}")
+
+    runner = CliRunner()
+    for command in (["adapter", "--help"], ["adapter", "test", "--help"], ["ingest", "--help"], ["explain", "--help"]):
+        result = runner.invoke(app, command)
+        if result.exit_code != 0:
+            errors.append(f"CLI command failed readiness check: agevidence {' '.join(command)}")
+    return errors
+
+
+def _check_docs_links() -> list[str]:
+    errors = []
+    for path in sorted(SDK_DOCS.rglob("*.md")):
+        text = _strip_fenced_code(path.read_text(encoding="utf-8"))
+        for target in re.findall(r"!?\[[^\]]*\]\(([^)]+)\)", text):
+            if not target or _is_external_link(target):
+                continue
+            clean = target.strip()
+            if clean.startswith("<") and clean.endswith(">"):
+                clean = clean[1:-1]
+            clean = clean.split("#", 1)[0]
+            if not clean:
+                continue
+            resolved = (path.parent / clean).resolve()
+            try:
+                resolved.relative_to(REPO_ROOT.resolve())
+            except ValueError:
+                errors.append(f"{path.relative_to(REPO_ROOT)} links outside repo: {target}")
+                continue
+            if not resolved.exists():
+                errors.append(f"{path.relative_to(REPO_ROOT)} has broken link: {target}")
+    return errors
+
+
+def _strip_fenced_code(text: str) -> str:
+    return re.sub(r"```.*?```", "", text, flags=re.DOTALL)
+
+
+def _is_external_link(target: str) -> bool:
+    return target.startswith(("http://", "https://", "mailto:", "#"))
 
 
 def _check_local_first_constraints() -> list[str]:

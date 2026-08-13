@@ -93,7 +93,7 @@ Observation
 
 Do not collapse package and semantic versions:
 
-- Python SDK package version, for example `agevidence==0.2.0a1`
+- Python SDK package version, for example `agevidence==1.0.0`
 - Canonical Evidence Contract version
 - Primitive schema identifiers, for example `athian.agevidence.observation.v1`
 - Country/program/profile versions, for example `au-livestock-2026.3`

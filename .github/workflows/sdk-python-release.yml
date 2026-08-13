@@ -57,6 +57,37 @@ jobs:
           agevidence --help
           agevidence demo
           agevidence doctor
+          agevidence fixture write livestock-weight --out "$tmpdir/fixture.json"
+          agevidence ingest "$tmpdir/fixture.json" --format table
+          agevidence explain "$tmpdir/fixture.json" --format table
+          python - <<'PY'
+          from importlib import resources
+          import agevidence
+
+          assert agevidence.__version__ == "1.0.0"
+          assert resources.files("agevidence").joinpath("py.typed").is_file()
+          assert resources.files("agevidence.fixtures").joinpath("data/livestock-weight.json").is_file()
+          assert resources.files("agevidence.schemas").joinpath("athian.agevidence.observation.v1.json").is_file()
+          PY
+          cat > "$tmpdir/my_adapter.py" <<'PY'
+          from agevidence.adapters import Adapter
+          from agevidence.primitives import Observation
+
+          class MyAdapter(Adapter):
+              def map(self, record):
+                  return Observation(
+                      subject=f"animal:{record['eid']}",
+                      observable="methane",
+                      value=record["ppm"],
+                      unit="ppm",
+                      observed_at=record["timestamp"],
+                  )
+          PY
+          mkdir -p "$tmpdir/adapter-fixtures"
+          cat > "$tmpdir/adapter-fixtures/one.json" <<'JSON'
+          {"eid":"A-1","ppm":18.7,"timestamp":"2026-08-12T15:10:00Z"}
+          JSON
+          agevidence adapter test "$tmpdir/my_adapter.py" "$tmpdir/adapter-fixtures"
 
       - name: Upload distribution artifact
         uses: actions/upload-artifact@v4

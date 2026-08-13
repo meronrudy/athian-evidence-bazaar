@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import inspect
+import os
+import subprocess
+import sys
 from pathlib import Path
 
 import agevidence
@@ -79,7 +82,7 @@ def test_client_method_inventory_matches_openapi_paths():
 def test_v1_public_exports_and_typed_marker():
     repo_root = Path(__file__).resolve().parents[3]
 
-    assert agevidence.__version__ == "0.2.0a1"
+    assert agevidence.__version__ == "1.0.0"
     assert AsyncClient is not None
     assert RetryPolicy(max_attempts=1).max_attempts == 1
     assert (repo_root / "sdks" / "python" / "src" / "agevidence" / "py.typed").exists()
@@ -103,3 +106,22 @@ def test_australian_plugins_are_executable_but_not_certifications():
     assert plugins["au_lpa"].country_code == "AU"
     assert plugins["au_mla"].status == "placeholder"
     assert "pending a concrete source contract" in plugins["au_mla"].description.lower()
+
+
+def test_plugin_and_adapter_import_order_is_stable():
+    commands = [
+        "import agevidence.plugins; import agevidence.adapters; print('plugins-first')",
+        "import agevidence.adapters; import agevidence.plugins; print('adapters-first')",
+    ]
+
+    for code in commands:
+        completed = subprocess.run(
+            [sys.executable, "-c", code],
+            cwd=Path(__file__).resolve().parents[1],
+            env={**os.environ, "PYTHONPATH": str(Path(__file__).resolve().parents[1] / "src")},
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+        assert completed.returncode == 0, completed.stderr

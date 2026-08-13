@@ -1,0 +1,80 @@
+{
+  "package": "agevidence",
+  "version": "1.0.0",
+  "stable": {
+    "python": [
+      "agevidence.primitives.SourceRecord",
+      "agevidence.primitives.Observation",
+      "agevidence.primitives.SpatialObservation",
+      "agevidence.primitives.InterventionEvent",
+      "agevidence.primitives.OperationalEvent",
+      "agevidence.primitives.ModelRun",
+      "agevidence.provenance.check",
+      "agevidence.testing.assert_evidence_valid",
+      "agevidence.testing.assert_provenance_complete",
+      "agevidence.testing.assert_rust_conformant"
+    ],
+    "cli": [
+      "agevidence demo",
+      "agevidence doctor",
+      "agevidence fixture",
+      "agevidence ingest",
+      "agevidence explain",
+      "agevidence verify"
+    ],
+    "schemas": [
+      "athian.agevidence.source_record.v1",
+      "athian.agevidence.observation.v1",
+      "athian.agevidence.spatial_observation.v1",
+      "athian.agevidence.intervention_event.v1",
+      "athian.agevidence.operational_event.v1",
+      "athian.agevidence.model_run.v1"
+    ]
+  },
+  "experimental": {
+    "python": [
+      "agevidence.ingest",
+      "agevidence.adapters.Adapter",
+      "agevidence.adapters.test_source_adapter",
+      "agevidence.adapters.load_source_adapter"
+    ],
+    "cli": [
+      "agevidence adapter test"
+    ]
+  },
+  "profile_specific": {
+    "python": [
+      "agevidence.adapters.CountryAdapter",
+      "agevidence.countries.*"
+    ],
+    "cli": [
+      "agevidence adapters",
+      "agevidence identifiers",
+      "agevidence sources",
+      "agevidence country",
+      "agevidence fixtures"
+    ]
+  },
+  "hosted_only": {
+    "python": [
+      "agevidence.Client",
+      "agevidence.AsyncClient"
+    ],
+    "cli": [
+      "agevidence login",
+      "agevidence project",
+      "agevidence source",
+      "agevidence model",
+      "agevidence review",
+      "agevidence pricing",
+      "agevidence quote",
+      "agevidence order",
+      "agevidence artifact",
+      "agevidence event",
+      "agevidence replay",
+      "agevidence campaign"
+    ]
+  },
+  "authority_boundary": "Local SDK PASS means structure, provenance, lineage, deterministic representation, or contract compatibility. It does not establish regulatory eligibility, scientific validity, carbon-credit issuance, third-party verification, claim ownership, or institutional reliance."
+}
+

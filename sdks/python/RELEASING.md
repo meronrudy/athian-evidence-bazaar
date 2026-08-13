@@ -15,11 +15,14 @@ The Python SDK version is defined in `sdks/python/pyproject.toml` and must match
 `agevidence.__version__`. It is intentionally independent from Rust crate,
 Rails, schema, and country-adapter versions.
 
-Alpha tags use:
+Release tags use:
 
 ```text
-sdk-python-v0.2.0a1
+sdk-python-v1.0.0
 ```
+
+Pre-release tags may append the Python version suffix, for example
+`sdk-python-v1.0.1rc1`.
 
 ## Build
 
@@ -79,6 +82,47 @@ agevidence demo
 agevidence doctor
 ```
 
+## Adapter Smoke Test
+
+Run this against an installed wheel before publishing:
+
+```bash
+tmpdir="$(mktemp -d)"
+cat > "$tmpdir/my_adapter.py" <<'PY'
+from agevidence.adapters import Adapter
+from agevidence.primitives import Observation
+
+class MyAdapter(Adapter):
+    def map(self, record):
+        return Observation(
+            subject=f"animal:{record['eid']}",
+            observable="methane",
+            value=record["ppm"],
+            unit="ppm",
+            observed_at=record["timestamp"],
+        )
+PY
+mkdir -p "$tmpdir/fixtures"
+printf '{"eid":"A-1","ppm":18.7,"timestamp":"2026-08-12T15:10:00Z"}\n' > "$tmpdir/fixtures/one.json"
+agevidence adapter test "$tmpdir/my_adapter.py" "$tmpdir/fixtures"
+```
+
+## TestPyPI Rehearsal
+
+Use TestPyPI for release-process rehearsal when changing the release workflow:
+
+1. Create a temporary pre-release version, for example `1.0.1rc1`.
+2. Build wheel and sdist from `sdks/python`.
+3. Publish to TestPyPI using trusted publishing or a short-lived manual token.
+4. Install with:
+
+```bash
+python -m pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple agevidence==1.0.1rc1
+```
+
+5. Run the wheel smoke and adapter smoke checks.
+6. Do not reuse the rehearsal version for production PyPI.
+
 ## Trusted Publisher
 
 Publishing uses GitHub OIDC through the PyPI trusted-publisher flow. Do not add
@@ -102,6 +146,11 @@ environment: pypi
 5. Push a tag named `sdk-python-v<version>`.
 6. Confirm the GitHub Actions release workflow creates a draft release and
    publishes to PyPI from the `pypi` environment.
+
+## Post-publish Verification
+
+After PyPI publish, follow
+`../../docs/releases/v1.0.0/POST_PUBLISH_CHECKLIST.md` from a fresh environment.
 
 ## Rollback
 

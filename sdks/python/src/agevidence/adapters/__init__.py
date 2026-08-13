@@ -7,7 +7,6 @@ from agevidence.adapters.errors import AdapterAmbiguousError, AdapterError, Adap
 from agevidence.adapters.findings import Finding, FindingCode
 from agevidence.adapters.registry import AdapterRegistry, default_registry
 from agevidence.adapters.source import Adapter, AdapterFixtureResult, AdapterTestReport, load_source_adapter, test_source_adapter
-from agevidence.plugins import PluginMetadata, PluginRegistry, registry
 
 __all__ = [
     "Adapter",
@@ -23,10 +22,7 @@ __all__ = [
     "CountryAdapter",
     "Finding",
     "FindingCode",
-    "PluginMetadata",
-    "PluginRegistry",
     "default_registry",
     "load_source_adapter",
-    "registry",
     "test_source_adapter",
 ]

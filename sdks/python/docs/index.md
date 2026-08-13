@@ -38,6 +38,7 @@ Provenance and verification:
 - [Check provenance](guides/check-provenance.md)
 - [Verify locally](guides/verify-locally.md)
 - [Use in CI](guides/use-in-ci.md)
+- [Package a third-party adapter](guides/package-third-party-adapter.md)
 
 Reference:
 
@@ -45,7 +46,11 @@ Reference:
 - [CLI](reference/cli.md)
 - [Schemas](reference/schemas.md)
 - [Compatibility](reference/compatibility.md)
+- [Compatibility manifest](reference/compatibility-manifest.json)
 - [Conformance](reference/conformance.md)
+- [PyPI v1 roadmap](roadmap/pypi-v1-implementation-plan.md)
+- [v1.1 feature track](roadmap/v1.1-feature-track.md)
+- [v1.0.0 release notes](../../../docs/releases/v1.0.0/RELEASE_NOTES.md)
 
 Optional hosted services:
 
@@ -62,4 +67,3 @@ institutional reliance.
 
 It checks the structure, provenance, lineage, deterministic representation, and
 Agevidence contract compatibility of evidence.
-

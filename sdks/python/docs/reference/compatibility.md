@@ -1,6 +1,7 @@
 # Compatibility
 
-Agevidence is currently alpha. Treat API surfaces by their boundary.
+Agevidence `1.0.0` defines a stable local primitive and provenance surface for
+PyPI users. Treat API surfaces by their boundary.
 
 ## Stable Contract Candidates
 
@@ -49,4 +50,3 @@ adapter tests, fixtures, and demos do not require hosted services.
 Compatibility does not mean approval. Local checks do not establish regulatory
 eligibility, scientific validity, carbon-credit issuance, third-party
 verification, claim ownership, or institutional reliance.
-

@@ -19,18 +19,19 @@ def test_public_package_contract():
     project = data["project"]
 
     assert project["name"] == "agevidence"
-    assert project["version"] == "0.2.0a1"
+    assert project["version"] == "1.0.0"
     assert data["project"]["scripts"]["agevidence"] == "agevidence.cli:app"
     assert project["requires-python"] == ">=3.11"
     assert project["readme"]["file"] == "docs/pypi.md"
-    assert project["description"] == "Open-source evidence primitives and verification tooling for agricultural software"
+    assert project["description"] == "Portable evidence primitives and verification tooling for agricultural software"
 
 
 def test_release_metadata_is_pypi_ready():
     project = project_metadata()["project"]
 
     assert "Typing :: Typed" in project["classifiers"]
-    assert "Development Status :: 3 - Alpha" in project["classifiers"]
+    assert "Development Status :: 5 - Production/Stable" in project["classifiers"]
+    assert "Development Status :: 3 - Alpha" not in project["classifiers"]
     assert set(["agtech", "agriculture", "evidence", "provenance", "verification", "mrv"]).issubset(project["keywords"])
     assert project["urls"]["Repository"] == "https://github.com/meronrudy/athian-evidence-bazaar"
     assert project["urls"]["Documentation"].endswith("/tree/main/sdks/python")
