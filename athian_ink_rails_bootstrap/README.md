@@ -238,8 +238,8 @@ If no CLI is configured, the facade emits deterministic demo projections from in
 
 ## Stack
 
-- Ruby 3.3.8
-- Rails 7.1
+- Ruby 3.3.12
+- Rails `~> 7.1` (locked to 7.2.3 in `Gemfile.lock`)
 - SQLite
 - Bootstrap 5.3
 - Turbo and Stimulus
@@ -249,12 +249,29 @@ If no CLI is configured, the facade emits deterministic demo projections from in
 
 ## Local Setup
 
+Use normal Bundler installation from a clean checkout:
+
 ```bash
 cp .env.example .env
-bin/setup
-bin/rails db:migrate db:seed
+bundle install
+npm install
+npm run build
+bin/rails db:prepare db:seed
 bin/dev
 ```
+
+`bin/setup` is a shortcut for `bundle check || bundle install`, `npm install`,
+`bin/rails db:prepare`, and `npm run build`. If you want Bundler to install gems
+inside the Rails app instead of the system/user gem path, configure it locally
+before installing:
+
+```bash
+bundle config set --local path vendor/bundle
+bundle install
+```
+
+The local `.bundle/` and `vendor/bundle/` directories are intentionally ignored
+and should not be committed.
 
 Open:
 
@@ -265,7 +282,7 @@ http://localhost:3000
 Optional facade configuration:
 
 ```bash
-INK_RECEIPTS_COMMAND=/Users/mini/BAINK\ copy\ 2/target/debug/baink-cli
+INK_RECEIPTS_COMMAND=/absolute/path/to/target/debug/baink-cli
 ```
 
 ## Validation
@@ -302,7 +319,8 @@ That grep should return no matches. National methodology details belong in adapt
 
 ## Current Environment Note
 
-In the current workspace, Rust validation passes. Rails runtime validation requires Ruby 3.3.8 under rbenv and Node/npm on PATH.
+In the current workspace, Rust validation passes. Rails runtime validation
+requires Ruby 3.3.12 and Node/npm on PATH.
 
 ## Production Gaps
 
