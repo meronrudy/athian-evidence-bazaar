@@ -22,3 +22,8 @@ def test_country_loc_accounting_excludes_campaign_by_default():
     assert not loc.include_path("specs/campaign/events.yml")
     assert loc.include_path("specs/campaign/events.yml", include_all=True)
 
+
+def test_sdk_release_readiness_script_passes():
+    readiness = load_script_module("check_sdk_release_readiness", "scripts/check_sdk_release_readiness.py")
+
+    assert readiness.main() == 0

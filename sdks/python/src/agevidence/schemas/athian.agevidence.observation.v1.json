@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "athian.agevidence.observation.v1",
+  "title": "Athian AgEvidence Observation Primitive",
+  "type": "object",
+  "required": [
+    "subject",
+    "observable",
+    "value",
+    "unit",
+    "observed_at"
+  ],
+  "properties": {
+    "schema_id": { "const": "athian.agevidence.observation.v1" },
+    "primitive_type": { "const": "Observation" },
+    "subject": { "type": "string", "minLength": 1 },
+    "observable": { "type": "string", "minLength": 1 },
+    "value": {},
+    "unit": { "type": "string", "minLength": 1 },
+    "observed_at": { "type": "string", "minLength": 1 },
+    "instrument": { "type": "object" },
+    "method": { "type": "string" },
+    "source_records": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "metadata": { "type": "object" },
+    "limitations": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": true
+}

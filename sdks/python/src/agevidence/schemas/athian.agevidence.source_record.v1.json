@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "athian.agevidence.source_record.v1",
+  "title": "Athian AgEvidence Source Record Primitive",
+  "type": "object",
+  "required": [
+    "source_system",
+    "record_id",
+    "observed_at"
+  ],
+  "properties": {
+    "schema_id": { "const": "athian.agevidence.source_record.v1" },
+    "primitive_type": { "const": "SourceRecord" },
+    "source_system": { "type": "string", "minLength": 1 },
+    "record_id": { "type": "string", "minLength": 1 },
+    "observed_at": { "type": "string", "minLength": 1 },
+    "controlled_uri": { "type": "string" },
+    "commitment": { "type": "string" },
+    "metadata": { "type": "object" },
+    "limitations": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": true
+}

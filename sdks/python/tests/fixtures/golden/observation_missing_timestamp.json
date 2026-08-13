@@ -1,0 +1,10 @@
+{
+  "schema": "observation",
+  "valid": false,
+  "payload": {
+    "subject": "animal:982000001234",
+    "observable": "liveweight",
+    "value": 481.4,
+    "unit": "kg"
+  }
+}

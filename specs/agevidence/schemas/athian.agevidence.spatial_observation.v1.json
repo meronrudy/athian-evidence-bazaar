@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "athian.agevidence.spatial_observation.v1",
+  "title": "Athian AgEvidence Spatial Observation Primitive",
+  "type": "object",
+  "required": [
+    "geometry",
+    "observable",
+    "value",
+    "unit",
+    "observed_at",
+    "crs"
+  ],
+  "properties": {
+    "schema_id": { "const": "athian.agevidence.spatial_observation.v1" },
+    "primitive_type": { "const": "SpatialObservation" },
+    "subject": { "type": "string" },
+    "geometry": { "type": "object" },
+    "observable": { "type": "string", "minLength": 1 },
+    "value": {},
+    "unit": { "type": "string", "minLength": 1 },
+    "observed_at": { "type": "string", "minLength": 1 },
+    "crs": { "type": "string", "minLength": 1 },
+    "source_records": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "metadata": { "type": "object" },
+    "limitations": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": true
+}

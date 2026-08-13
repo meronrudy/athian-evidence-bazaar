@@ -1,0 +1,25 @@
+{
+  "name": "methane-observation",
+  "primitive_type": "Observation",
+  "description": "Synthetic enteric methane sensor observation.",
+  "payload": {
+    "subject": "animal:982000009999",
+    "observable": "enteric_methane",
+    "value": 18.2,
+    "unit": "g_ch4_min",
+    "observed_at": "2026-08-12T15:10:00Z",
+    "instrument": {
+      "id": "breath-sensor:demo-2",
+      "calibration_reference": "evidence://calibration/breath-sensor-demo-2"
+    },
+    "source_records": [
+      {
+        "source_system": "synthetic-breath-sensor",
+        "record_id": "methane-0001",
+        "observed_at": "2026-08-12T15:10:00Z",
+        "controlled_uri": "evidence://source/methane-0001",
+        "commitment": "sha256:fixture-methane"
+      }
+    ]
+  }
+}

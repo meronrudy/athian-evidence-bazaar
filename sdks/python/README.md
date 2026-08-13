@@ -1,18 +1,55 @@
-# AgEvidence Python SDK and CLI
+# Agevidence
 
-This is the canonical Python package for the AgEvidence Developer OS.
+Portable evidence primitives for agricultural software.
 
-It wraps the Rails `/v1` API for projects, source records, model runs,
-candidate review, quotes, artifact orders, artifacts, integration events,
-webhooks, and operations. Receipt issuance and cryptographic verification stay
-behind `ink_receipts` and the Rust trust boundary.
+Agevidence helps developers convert operational records into structured,
+provenance-bearing evidence that can be inspected, verified locally, replayed,
+and interpreted by multiple downstream systems.
 
-Sandbox pricing and orders are illustrative planning records. They are not
-booked, collected, or recognized revenue.
+```bash
+pip install agevidence
+agevidence demo
+```
+
+No account required for local use.
+
+## Architectural Promise
+
+Agevidence separates evidence from interpretation. A measurement,
+intervention, source record, machine operation, or model execution is preserved
+independently from the program, methodology, claim, verifier, or institution
+that later interprets it.
+
+Updating a methodology or program profile should not mutate historical
+evidence. The same evidence bundle can be inspected by a model, a verifier,
+internal analytics, or a hosted institutional workflow without turning those
+downstream decisions into the evidence itself.
+
+## What Local PASS Means
+
+Local validation checks structure, provenance, lineage, deterministic
+representation, and compatibility with Agevidence contracts.
+
+It does not establish:
+
+- regulatory eligibility;
+- scientific validity;
+- carbon-credit issuance;
+- third-party verification;
+- claim ownership;
+- institutional reliance.
+
+That boundary applies anywhere the SDK reports `PASS`.
 
 ## Install
 
-From the repository root:
+From PyPI:
+
+```bash
+pip install agevidence
+```
+
+From the repository root for local development:
 
 ```bash
 python3 -m pip install -e "sdks/python[test]"
@@ -22,239 +59,169 @@ Check the CLI:
 
 ```bash
 agevidence --help
-agevidence replay project-4030 --help
+agevidence demo
+agevidence doctor
 ```
 
-## Configure
+## Local First
+
+Core SDK operations work without a Rails app, Agevidence account, API key, or
+network request:
 
 ```bash
-agevidence login --base-url http://localhost:3000
+agevidence demo
+agevidence doctor
+agevidence fixture list
+agevidence fixture write livestock-weight --out ./livestock-weight.json
+agevidence ingest ./livestock-weight.json --format table
+agevidence explain ./livestock-weight.json --format table
 ```
 
-Configuration is loaded from explicit client arguments, environment variables,
-or `~/.config/agevidence/config.json`.
-
-Environment variables:
-
-```text
-AGEVIDENCE_BASE_URL
-AGEVIDENCE_API_TOKEN
-AGEVIDENCE_INTEGRATION_SOURCE
-AGEVIDENCE_INTEGRATION_SECRET
-AGEVIDENCE_VERIFIER_COMMAND
-```
-
-`AGEVIDENCE_API_TOKEN` is sent as a bearer token when configured.
-
-## SDK Quickstart
+## Core Primitives
 
 ```python
-from agevidence import Client
+from agevidence.primitives import Observation
 
-client = Client(base_url="http://localhost:3000")
-
-project = client.create_project(
-    account_name="Northstar Methane Systems Sandbox",
-    project_name="Enterprise dairy pilot",
-    target_claim="The intervention reduces enteric methane.",
+observation = Observation(
+    subject="animal:982000001234",
+    observable="liveweight",
+    value=481.4,
+    unit="kg",
+    observed_at="2026-08-12T14:05:11Z",
 )
-
-source = client.submit_source_record(
-    project_id=project.id,
-    document_id="trial-report-001",
-    evidence_type="evidence.trial_report",
-    controlled_uri="evidence://trial-report-001",
-    commitment="sha256:demo",
-)
-
-run = client.run_model(project_id=project.id)
-candidate = run.candidates[0]
-
-client.review_candidate(
-    candidate_id=candidate.id,
-    decision="accepted",
-    reason="Source reference supports this candidate.",
-)
-
-quote = client.create_quote(
-    project_id=project.id,
-    product_code="verification_readiness_cycle",
-    scope={"evidence_classes": 4, "source_systems": 2, "countries": 1},
-)
-
-order = client.create_order(quote_id=quote.quote_id)
-paid = client.checkout_order(order_id=order.order_id)
-artifact = client.build_artifact(project_id=project.id, order_id=paid.order_id)
-
-print(artifact.artifact.verification_command)
 ```
 
-Model output is candidate evidence only. It cannot approve methods, certify
-reductions, determine claim ownership, or create institutional reliance.
+This object says what was observed. It does not say whether the observation
+satisfies a carbon methodology, financing requirement, assurance standard, or
+regulatory program.
 
-The v1 client also exposes resource namespaces. Existing top-level methods are
-kept as compatibility aliases:
+The local primitive surface is:
+
+- `SourceRecord`
+- `Observation`
+- `SpatialObservation`
+- `InterventionEvent`
+- `OperationalEvent`
+- `ModelRun`
+
+## Bring Your Own Record
+
+```json
+{
+  "animal_id": "animal:982000001234",
+  "observable": "liveweight",
+  "value": 481.4,
+  "unit": "kg",
+  "observed_at": "2026-08-12T14:05:11Z"
+}
+```
+
+```bash
+agevidence ingest weight.json --format table
+agevidence explain weight.json --format table
+```
+
+Python:
 
 ```python
-from agevidence import Client
+from agevidence import ingest
 
-with Client(base_url="http://localhost:3000", api_token="token") as client:
-    adapters = client.country.list_adapters()
-    project = client.projects.create(
-        account_name="Northstar Methane Systems Sandbox",
-        project_name="Enterprise dairy pilot",
-        target_claim="The intervention reduces enteric methane.",
-    )
+result = ingest({
+    "animal_id": "animal:982000001234",
+    "observable": "liveweight",
+    "value": 481.4,
+    "unit": "kg",
+    "observed_at": "2026-08-12T14:05:11Z",
+})
+
+print(result.primitive_type)
+print(result.provenance.provenance_completeness)
 ```
 
-Mutating requests accept idempotency keys on resource methods when retrying a
-POST, PATCH or checkout operation is intended.
+## Build a Source Adapter
 
-## Async Client
-
-HTTP SDK calls are also available through `AsyncClient`:
+Source adapters map native records at the edge into clean Agevidence
+primitives:
 
 ```python
-from agevidence import AsyncClient
+from agevidence.adapters import Adapter
+from agevidence.primitives import Observation
 
-async with AsyncClient(base_url="http://localhost:3000") as client:
-    adapters = await client.country.list_adapters()
+
+class MySensorAdapter(Adapter):
+    def map(self, record):
+        return Observation(
+            subject=f"animal:{record['eid']}",
+            observable="methane_concentration",
+            value=record["ppm"],
+            unit="ppm",
+            observed_at=record["timestamp"],
+        )
 ```
 
-The async client mirrors the sync resource namespaces. Verifier delegation stays
-sync-only and still shells out to the configured Rust verifier.
-
-## CLI Quickstart
+Test it with local fixtures:
 
 ```bash
-agevidence project create \
-  --account-name "Northstar Methane Systems Sandbox" \
-  --name "Enterprise dairy pilot" \
-  --target-claim "The intervention reduces enteric methane."
+agevidence adapter test my_adapter.py fixtures/
 ```
+
+`agevidence adapter test` is for source-system mapping adapters. The existing
+plural `agevidence adapters ...` command group is for country/profile adapters.
+
+## Local Verification
+
+Bundle verification is delegated to the configured Rust verifier:
 
 ```bash
-agevidence source add \
-  --project-id PROJECT_ID \
-  --document-id trial-report-001 \
-  --evidence-type evidence.trial_report \
-  --controlled-uri evidence://trial-report-001 \
-  --commitment sha256:demo
+agevidence verify bundle.json
 ```
 
-```bash
-agevidence model run --project-id PROJECT_ID
-agevidence review --candidate-id CANDIDATE_ID --decision accepted --reason "Source reference supports this candidate."
-agevidence quote create --project-id PROJECT_ID --product-code verification_readiness_cycle
-agevidence order create --quote-id QUOTE_ID
-agevidence order checkout --order-id ORDER_ID
-agevidence artifact build --project-id PROJECT_ID --order-id ORDER_ID
+The Python SDK does not implement receipt signing, receipt commitments, dCBOR,
+or bundle verification internally. Trust operations stay behind the Rust trust
+boundary.
+
+## CI Helpers
+
+```python
+from agevidence.testing import (
+    assert_evidence_valid,
+    assert_provenance_complete,
+    assert_rust_conformant,
+)
+
+
+def test_measurement_is_evidence_ready():
+    result = ingest(make_measurement_record())
+    assert_evidence_valid(result.primitive)
+    assert_provenance_complete(result.primitive)
 ```
 
-## Project 4030 Replay
+Use `assert_rust_conformant(...)` when the local Rust CLI is available and the
+test should cross-check the Python normalized payload against
+`baink-agevidence`.
 
-Project 4030 is the synthetic Australian beef-style integration fixture.
+## Optional Hosted Services
 
-```bash
-AGEVIDENCE_INTEGRATION_SOURCE=athian_salesforce_production \
-AGEVIDENCE_INTEGRATION_SECRET=demo-integration-secret \
-agevidence replay project-4030
+The open SDK can be used independently.
+
+For organizations that need managed infrastructure, `Client` and `AsyncClient`
+connect to hosted Agevidence capabilities for private evidence graphs,
+program/profile workflows, review workflows, retention, audit, and
+institutional APIs.
+
+```python
+from agevidence import Client, AsyncClient
 ```
 
-The CLI signs each event with HMAC-SHA256 for integration authentication and
-submits it to `/v1/integrations/events`.
+Hosted workflows are optional. They should not be the first step for a
+developer who only needs local evidence primitives.
 
-Integration event signing is not receipt signing. The SDK does not issue or
-sign receipts.
+## Documentation
 
-## Local Verification Delegation
+Start with:
 
-Configure the Rust verifier command:
-
-```bash
-agevidence login --base-url http://localhost:3000 --verifier-command "target/debug/baink-cli"
-```
-
-Then delegate verification:
-
-```bash
-agevidence verify --bundle bundle.zip
-```
-
-If the verifier command is missing, the CLI returns a setup error instead of
-trying to implement bundle verification in Python.
-
-## SDK Organization
-
-The SDK is organized around capabilities, not separate industry SDKs:
-
-```text
-agevidence
-  core
-  evidence
-  source_records
-  events
-  receipts
-  verification
-  adapters
-  identifiers
-  sources
-  policies
-  countries
-  authorities
-  exports
-  models
-  client_resources
-  async_client
-  cli
-  country_cli
-  campaign_cli
-  plugins
-  livestock
-```
-
-Country adapters are executable Python runtime classes backed by packaged
-manifest snapshots for adapter identity, method metadata, requirements and
-limitations. YAML files never load arbitrary Python code. Entry-point adapters
-must be installed through the `agevidence.country_adapters` Python entry-point
-group, and local development adapters must be explicitly loaded as
-`module:object`.
-
-Current country facts:
-
-* AU and CA are active executable adapters.
-* NZ remains scaffold.
-* UK and EU remain research.
-* `au_mla` remains a placeholder until a concrete source contract exists.
-
-Adapter output does not claim certification, endorsement, conformance,
-government approval, production integration or receipt validity.
-
-## Campaign Namespace
-
-Campaign Control Plane methods live under `client.campaign` and the
-`agevidence campaign ...` CLI group. Campaign headers are sent separately from
-event payloads:
-
-```text
-X-AgEvidence-Campaign-Account
-X-AgEvidence-Activation
-X-AgEvidence-Repository-SHA
-X-AgEvidence-SDK-Version
-```
-
-Sandbox campaign handoff values are planning signals only. They are not booked,
-collected or recognized revenue.
-
-## Package Contract
-
-The package ships a `py.typed` marker for Python 3.11+ type consumers. Request
-models are strict about unknown fields; response models remain additive so the
-Rails `/v1` scaffold can add compatible fields without breaking SDK consumers.
-
-## Test
-
-```bash
-cd sdks/python
-python3 -m pytest
-```
+- [SDK docs](docs/index.md)
+- [Quickstart](docs/quickstart.md)
+- [Evidence vs. Interpretation](docs/concepts/evidence-vs-interpretation.md)
+- [Build a Source Adapter](docs/guides/build-source-adapter.md)
+- [Compatibility](docs/reference/compatibility.md)

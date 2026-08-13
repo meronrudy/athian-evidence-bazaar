@@ -1,0 +1,14 @@
+{
+  "schema": "intervention_event",
+  "valid": true,
+  "payload": {
+    "schema_id": "athian.agevidence.intervention_event.v1",
+    "primitive_type": "InterventionEvent",
+    "target": "herd:H321",
+    "intervention": "product:seafeed",
+    "quantity": 2.4,
+    "unit": "kg",
+    "occurred_at": "2026-08-12T16:00:00Z",
+    "batch": "SF-90231"
+  }
+}

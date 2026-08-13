@@ -1,0 +1,123 @@
+name: SDK Python CI
+
+on:
+  pull_request:
+    paths:
+      - "sdks/python/**"
+      - "specs/agevidence/**"
+      - "crates/baink-agevidence/**"
+      - "crates/baink-canonical/**"
+      - "crates/baink-verify/**"
+      - "crates/baink-cli/**"
+      - "crates/baink-core/**"
+      - "crates/baink-bundle/**"
+      - "crates/baink-crypto/**"
+      - ".github/workflows/sdk-python-ci.yml"
+      - "scripts/check_sdk_release_readiness.py"
+      - "scripts/agevidence_constitution_check.py"
+  push:
+    branches:
+      - main
+    paths:
+      - "sdks/python/**"
+      - "specs/agevidence/**"
+      - "crates/baink-agevidence/**"
+      - "crates/baink-canonical/**"
+      - "crates/baink-verify/**"
+      - "crates/baink-cli/**"
+      - "crates/baink-core/**"
+      - "crates/baink-bundle/**"
+      - "crates/baink-crypto/**"
+      - ".github/workflows/sdk-python-ci.yml"
+      - "scripts/check_sdk_release_readiness.py"
+      - "scripts/agevidence_constitution_check.py"
+  workflow_dispatch:
+
+jobs:
+  sdk-python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Install SDK test tooling
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e "sdks/python[test]"
+          python -m pip install build twine
+
+      - name: Python SDK tests
+        run: python -m pytest sdks/python
+
+      - name: Rust trust boundary tests
+        run: cargo test --workspace
+
+      - name: AgEvidence repository checks
+        run: bash scripts/agevidence_check_all.sh
+
+      - name: Release readiness
+        run: python scripts/check_sdk_release_readiness.py
+
+      - name: Build wheel and sdist
+        working-directory: sdks/python
+        run: python -m build
+
+      - name: Validate distribution metadata
+        working-directory: sdks/python
+        run: python -m twine check dist/*
+
+      - name: Clean wheel smoke test
+        run: |
+          tmpdir="$(mktemp -d)"
+          python -m venv "$tmpdir/venv"
+          . "$tmpdir/venv/bin/activate"
+          python -m pip install --upgrade pip
+          python -m pip install sdks/python/dist/*.whl
+          python - <<'PY'
+          import agevidence
+          print(agevidence.__version__)
+          PY
+          agevidence --help
+          agevidence demo
+          agevidence doctor
+
+  protocol-independence:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Build SDK wheel
+        working-directory: sdks/python
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install build
+          python -m build
+
+      - name: Local protocol use without hosted services
+        env:
+          AGEVIDENCE_BASE_URL: ""
+          AGEVIDENCE_API_TOKEN: ""
+          AGEVIDENCE_VERIFIER_COMMAND: "cargo run --quiet -p baink-cli --"
+        run: |
+          tmpdir="$(mktemp -d)"
+          python -m venv "$tmpdir/venv"
+          . "$tmpdir/venv/bin/activate"
+          python -m pip install --upgrade pip
+          python -m pip install sdks/python/dist/*.whl
+          agevidence demo --format json
+          agevidence fixture write livestock-weight --out "$tmpdir/fixture.json"
+          agevidence ingest "$tmpdir/fixture.json"
+          agevidence explain "$tmpdir/fixture.json"
+          agevidence export "$tmpdir/fixture.json"
+          agevidence verify sdks/python/tests/fixtures/golden/demo_bundle.json

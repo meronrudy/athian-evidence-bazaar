@@ -1,0 +1,17 @@
+{
+  "schema": "observation",
+  "valid": true,
+  "payload": {
+    "schema_id": "athian.agevidence.observation.v1",
+    "primitive_type": "Observation",
+    "subject": "animal:982000001234",
+    "observable": "liveweight",
+    "value": 481.4,
+    "unit": "kg",
+    "observed_at": "2026-08-12T14:05:11Z",
+    "instrument": {
+      "id": "scale:demo-1",
+      "calibration_reference": "evidence://calibration/scale-demo-1"
+    }
+  }
+}

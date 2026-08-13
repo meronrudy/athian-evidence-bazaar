@@ -8,14 +8,23 @@ from pathlib import Path
 import typer
 
 from .campaign_cli import register_campaign_cli
+from .adapters import test_source_adapter
 from .cli_support import client_factory as _client
 from .cli_support import console, emit as _emit, handle_error as _handle_error
 from .config import SDKConfig
 from .country_cli import register_country_cli
+from .demo import run_demo
+from .doctor import doctor as _doctor
 from .events import load_event, project_4030_event_files, sign_hmac_event
+from .explain import explain as _explain
+from .exports import export_evidence as _export_evidence
+from .fixtures import fixture_names, load_fixture, write_fixture
+from .ingest import ingest as _ingest
 from .verification import Verifier
 
 app = typer.Typer(help="AgEvidence Developer OS CLI")
+source_adapter_app = typer.Typer(help="Source adapter commands")
+fixture_app = typer.Typer(help="Local synthetic fixture commands")
 project_app = typer.Typer(help="Project commands")
 source_app = typer.Typer(help="Source-record commands")
 model_app = typer.Typer(help="Model-run commands")
@@ -27,6 +36,8 @@ operation_app = typer.Typer(help="Operation commands")
 event_app = typer.Typer(help="Evidence Event Inbox commands")
 replay_app = typer.Typer(help="Replay fixture scenarios")
 
+app.add_typer(source_adapter_app, name="adapter")
+app.add_typer(fixture_app, name="fixture")
 app.add_typer(project_app, name="project")
 app.add_typer(source_app, name="source")
 app.add_typer(model_app, name="model")
@@ -39,6 +50,148 @@ app.add_typer(event_app, name="event")
 app.add_typer(replay_app, name="replay")
 register_country_cli(app)
 register_campaign_cli(app)
+
+
+@app.command("demo")
+def demo(name: str = typer.Option("livestock-weight", "--fixture"), output: str = typer.Option("table", "--format")) -> None:
+    """Run a local no-account deterministic evidence demo."""
+
+    try:
+        result = run_demo(name)
+        if output == "table":
+            console.print("Agevidence Developer Demo")
+            console.print(f"Loaded: {result.fixture}")
+            console.print(f"Mapped: {result.primitive_type}")
+            console.print(f"Structural validity: {result.structural_validity.upper()}")
+            console.print(f"Provenance completeness: {result.provenance_completeness.upper()} ({result.provenance_score}%)")
+            console.print(f"Rust validation: {result.rust_validation.upper()}")
+            console.print("No account used. No API key used. No network request used.")
+            return
+        _emit(result, output)
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@app.command("doctor")
+def doctor_command(output: str = typer.Option("table", "--format")) -> None:
+    """Check local SDK readiness without requiring hosted services."""
+
+    try:
+        report = _doctor()
+        if output == "json":
+            _emit(report, "json")
+        else:
+            console.print("Agevidence SDK")
+            for check in report.checks:
+                status = check.status.upper()
+                console.print(f"{check.name:<28} {status}")
+                if check.detail:
+                    console.print(f"{'':<28} {check.detail}")
+            console.print("READY FOR LOCAL DEVELOPMENT" if report.ready else "LOCAL DEVELOPMENT BLOCKED")
+        if not report.ready:
+            raise typer.Exit(code=1)
+    except typer.Exit:
+        raise
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@app.command("ingest")
+def ingest_command(
+    record: Path = typer.Argument(..., exists=True),
+    primitive: str = typer.Option("auto", "--primitive"),
+    output: str = typer.Option("json", "--format"),
+) -> None:
+    """Infer a local evidence primitive from native JSON."""
+
+    try:
+        result = _ingest(record, primitive=primitive)
+        if output == "table":
+            _print_ingest_table(result)
+            return
+        _emit(result, output)
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@app.command("explain")
+def explain_command(record: Path = typer.Argument(..., exists=True), output: str = typer.Option("json", "--format")) -> None:
+    """Explain local evidence readiness and missing provenance."""
+
+    try:
+        report = _explain(record)
+        if output == "table":
+            _print_explain_table(report)
+            return
+        _emit(report, output)
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@app.command("export")
+def export_command(
+    record: Path = typer.Argument(..., exists=True),
+    primitive: str = typer.Option("auto", "--primitive"),
+    output: str = typer.Option("json", "--format"),
+) -> None:
+    """Export a portable local evidence envelope."""
+
+    try:
+        _emit(_export_evidence(record, primitive=primitive), output)
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@source_adapter_app.command("test")
+def source_adapter_test(
+    adapter: str = typer.Argument(..., help="Adapter spec: path.py, path.py:ObjectName, or module:ObjectName."),
+    fixtures: Path = typer.Argument(..., exists=False, help="JSON fixture file or directory."),
+    output: str = typer.Option("table", "--format"),
+) -> None:
+    """Test a source-system adapter against native JSON fixtures."""
+
+    try:
+        report = test_source_adapter(adapter, fixtures)
+        if output == "table":
+            _print_source_adapter_report(report)
+        else:
+            _emit(report, output)
+        if not report.passed:
+            raise typer.Exit(code=1)
+    except typer.Exit:
+        raise
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@fixture_app.command("list")
+def fixture_list(output: str = typer.Option("json", "--format")) -> None:
+    """List local synthetic fixtures."""
+
+    try:
+        _emit({"fixtures": fixture_names()}, output)
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@fixture_app.command("show")
+def fixture_show(name: str = typer.Argument(...), output: str = typer.Option("json", "--format")) -> None:
+    """Show a local synthetic fixture payload."""
+
+    try:
+        _emit(load_fixture(name), output)
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@fixture_app.command("write")
+def fixture_write(name: str = typer.Argument(...), out: Path = typer.Option(...), output: str = typer.Option("json", "--format")) -> None:
+    """Write a local synthetic fixture payload to a JSON file."""
+
+    try:
+        _emit({"path": str(write_fixture(name, out))}, output)
+    except Exception as exc:
+        _handle_error(exc)
 
 
 @app.command()
@@ -268,13 +421,90 @@ def replay_project_4030(
 
 
 @app.command()
-def verify(bundle: Path = typer.Option(..., exists=False)) -> None:
+def verify(
+    bundle: Path | None = typer.Argument(None, exists=False),
+    bundle_option: Path | None = typer.Option(None, "--bundle", exists=False, help="Bundle JSON path. Kept for v0.1 CLI compatibility."),
+    output: str = typer.Option("text", "--format"),
+) -> None:
     """Delegate bundle verification to the configured Rust verifier."""
 
     try:
-        _emit(Verifier().verify_bundle(bundle), "json")
+        selected = bundle or bundle_option
+        if selected is None:
+            raise typer.BadParameter("Provide a bundle path.")
+        result = Verifier().verify_bundle(selected)
+        if output == "json":
+            _emit(result, "json")
+            return
+        status = _verification_status(result.stdout)
+        console.print(f"Verification {status}")
     except Exception as exc:
         _handle_error(exc)
+
+
+def _verification_status(stdout: str) -> str:
+    try:
+        payload = json.loads(stdout)
+    except json.JSONDecodeError:
+        return "DELEGATED"
+    return str(payload.get("status") or "DELEGATED")
+
+
+def _status(value: str) -> str:
+    return value.upper()
+
+
+def _print_ingest_table(result) -> None:
+    console.print("Agevidence Ingest")
+    console.print(f"Candidate primitive: {result.primitive_type}")
+    console.print(f"Confidence: {result.confidence}")
+    if result.candidates:
+        console.print(f"Mapped fields: {', '.join(result.candidates[0].matched_fields)}")
+    console.print(f"Structural validity: {_status(result.provenance.structural_validity)}")
+    console.print(f"Provenance completeness: {_status(result.provenance.provenance_completeness)} ({result.provenance.score}%)")
+    console.print(f"Local digest: {result.local_digest}")
+    console.print(result.provenance.authority_boundary)
+
+
+def _print_explain_table(report) -> None:
+    console.print("Agevidence Explain")
+    console.print(f"Primitive: {report.primitive_type}")
+    console.print(f"Summary: {report.summary}")
+    console.print(f"Structural validity: {_status(report.provenance.structural_validity)}")
+    console.print(f"Provenance completeness: {_status(report.provenance.provenance_completeness)} ({report.provenance.score}%)")
+    if report.missing:
+        console.print("Missing:")
+        for item in report.missing:
+            console.print(f"  {item}")
+    if report.warnings:
+        console.print("Warnings:")
+        for item in report.warnings:
+            console.print(f"  {item}")
+    console.print("Does not establish:")
+    for item in report.does_not_establish:
+        console.print(f"  {item}")
+    console.print(report.provenance.authority_boundary)
+
+
+def _print_source_adapter_report(report) -> None:
+    console.print("Agevidence Source Adapter Test")
+    console.print(f"Adapter: {report.adapter}")
+    console.print(f"Fixtures: {report.fixture_count}")
+    console.print(f"Mapped: {report.mapped_count}")
+    console.print(f"Structurally valid: {report.structurally_valid}")
+    console.print(f"Provenance complete: {report.provenance_complete}")
+    console.print(f"Provenance partial: {report.provenance_partial}")
+    console.print(f"Provenance incomplete: {report.provenance_incomplete}")
+    console.print(
+        "No canonical schema extensions required."
+        if report.no_canonical_schema_extensions_required
+        else "Canonical schema extensions required."
+    )
+    if report.failures:
+        console.print("Failures:")
+        for failure in report.failures:
+            console.print(f"  {failure}")
+    console.print(report.authority_boundary)
 
 
 if __name__ == "__main__":

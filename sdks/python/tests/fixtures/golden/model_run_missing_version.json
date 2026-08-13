@@ -1,0 +1,8 @@
+{
+  "schema": "model_execution",
+  "valid": false,
+  "payload": {
+    "base_model_id": "pasturekey",
+    "weights_digest": "sha256:weights-demo"
+  }
+}

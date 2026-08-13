@@ -1,0 +1,215 @@
+[
+  {
+    "company": "MEQ",
+    "primitive_type": "Observation",
+    "payload": {
+      "subject": "animal:meq-001",
+      "observable": "liveweight",
+      "value": 481.4,
+      "unit": "kg",
+      "observed_at": "2026-08-12T00:00:00Z",
+      "source_records": [
+        {
+          "source_system": "meq-native-export",
+          "record_id": "meq-weight-001",
+          "observed_at": "2026-08-12T00:00:00Z",
+          "commitment": "sha256:meq-weight-001"
+        }
+      ]
+    }
+  },
+  {
+    "company": "Agscent",
+    "primitive_type": "Observation",
+    "payload": {
+      "subject": "animal:agscent-001",
+      "observable": "enteric_methane",
+      "value": 138.2,
+      "unit": "g_day",
+      "observed_at": "2026-08-12T00:00:00Z",
+      "instrument": {
+        "id": "instrument:portable-sniffer-001",
+        "calibration_reference": "sha256:agscent-calibration-001"
+      },
+      "source_records": [
+        {
+          "source_system": "agscent-native-export",
+          "record_id": "agscent-measurement-001",
+          "observed_at": "2026-08-12T00:00:00Z",
+          "commitment": "sha256:agscent-measurement-001"
+        }
+      ]
+    }
+  },
+  {
+    "company": "DIT",
+    "primitive_type": "InterventionEvent",
+    "payload": {
+      "target": "water_line:dit-001",
+      "intervention": "water_treatment",
+      "quantity": 12.5,
+      "unit": "l",
+      "occurred_at": "2026-08-12T00:00:00Z",
+      "batch": "dit-batch-001",
+      "source_records": [
+        {
+          "source_system": "dit-telemetry",
+          "record_id": "dit-dose-001",
+          "observed_at": "2026-08-12T00:00:00Z",
+          "commitment": "sha256:dit-dose-001"
+        }
+      ]
+    }
+  },
+  {
+    "company": "Sea Forest",
+    "primitive_type": "InterventionEvent",
+    "payload": {
+      "target": "herd:sea-forest-001",
+      "intervention": "feed_additive",
+      "quantity": 2.4,
+      "unit": "kg",
+      "occurred_at": "2026-08-12T00:00:00Z",
+      "batch": "sea-forest-lot-001",
+      "source_records": [
+        {
+          "source_system": "sea-forest-batch-ledger",
+          "record_id": "sea-forest-dose-001",
+          "observed_at": "2026-08-12T00:00:00Z",
+          "commitment": "sha256:sea-forest-dose-001"
+        }
+      ]
+    }
+  },
+  {
+    "company": "Rumin8",
+    "primitive_type": "InterventionEvent",
+    "payload": {
+      "target": "herd:rumin8-001",
+      "intervention": "feed_additive",
+      "quantity": 1.8,
+      "unit": "kg",
+      "occurred_at": "2026-08-12T00:00:00Z",
+      "batch": "rumin8-lot-001",
+      "source_records": [
+        {
+          "source_system": "rumin8-delivery-log",
+          "record_id": "rumin8-dose-001",
+          "observed_at": "2026-08-12T00:00:00Z",
+          "commitment": "sha256:rumin8-dose-001"
+        }
+      ]
+    }
+  },
+  {
+    "company": "Cibo Labs",
+    "primitive_type": "SpatialObservation",
+    "payload": {
+      "subject": "paddock:cibo-001",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [151.2, -33.8]
+      },
+      "observable": "ground_cover",
+      "value": 0.82,
+      "unit": "ratio",
+      "observed_at": "2026-08-12T00:00:00Z",
+      "crs": "EPSG:4326",
+      "source_records": [
+        {
+          "source_system": "cibo-labs-scene",
+          "record_id": "cibo-scene-001",
+          "observed_at": "2026-08-12T00:00:00Z",
+          "commitment": "sha256:cibo-scene-001"
+        }
+      ]
+    }
+  },
+  {
+    "company": "Agronomeye",
+    "primitive_type": "SpatialObservation",
+    "payload": {
+      "subject": "property:agronomeye-001",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [151.2, -33.8],
+            [151.21, -33.8],
+            [151.21, -33.79],
+            [151.2, -33.79],
+            [151.2, -33.8]
+          ]
+        ]
+      },
+      "observable": "pasture_biomass",
+      "value": 1840,
+      "unit": "kg_dm_ha",
+      "observed_at": "2026-08-12T00:00:00Z",
+      "crs": "EPSG:4326",
+      "source_records": [
+        {
+          "source_system": "agronomeye-boundary-model",
+          "record_id": "agronomeye-scene-001",
+          "observed_at": "2026-08-12T00:00:00Z",
+          "commitment": "sha256:agronomeye-scene-001"
+        }
+      ]
+    }
+  },
+  {
+    "company": "Regrow",
+    "primitive_type": "ModelRun",
+    "payload": {
+      "model_id": "regrow-soil-model",
+      "model_version": "v1",
+      "implementation_digest": "sha256:regrow-implementation-001",
+      "input_commitments": [
+        "sha256:regrow-input-001"
+      ],
+      "parameters": {
+        "scenario": "practice-change"
+      },
+      "execution_environment": {
+        "runtime": "container"
+      },
+      "started_at": "2026-08-12T00:00:00Z",
+      "completed_at": "2026-08-12T00:05:00Z",
+      "outputs": [
+        {
+          "observable": "soil_carbon_delta",
+          "value": 1.2,
+          "unit": "t_co2e_ha"
+        }
+      ],
+      "limitations": [
+        "synthetic adversary fixture"
+      ],
+      "verification": {
+        "normalized_output_digest": "sha256:regrow-output-001"
+      }
+    }
+  },
+  {
+    "company": "SwarmFarm",
+    "primitive_type": "OperationalEvent",
+    "payload": {
+      "machine": "machine:swarmfarm-001",
+      "operation": "spot_spray",
+      "started_at": "2026-08-12T00:00:00Z",
+      "completed_at": "2026-08-12T00:12:00Z",
+      "location": {
+        "type": "Point",
+        "coordinates": [151.2, -33.8]
+      },
+      "source_records": [
+        {
+          "source_system": "swarmfarm-telemetry",
+          "record_id": "swarmfarm-operation-001",
+          "observed_at": "2026-08-12T00:00:00Z",
+          "commitment": "sha256:swarmfarm-operation-001"
+        }
+      ]
+    }
+  }
+]

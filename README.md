@@ -132,7 +132,7 @@ The screening branch is a multi-language technical scaffold, not a single Rails 
 |---|---|---|
 | **Rails workflow/control plane** | Ruby `3.3.12`; Rails `~> 7.1`; domain models and services under `athian_ink_rails_bootstrap/` | Hosted workflow and commercial-control-plane scaffold exists; production hardening is not established |
 | **Rust trust boundary** | `baink-core`, `baink-schema`, `baink-canonical`, `baink-crypto`, `baink-bundle`, `baink-verify`, `baink-agevidence`, `baink-cli` | Canonicalization, bundling and portable verification can remain separable from Rails |
-| **Python SDK** | `sdks/python/`; package `agevidence` v0.1.0; Python 3.11+; CLI entry point | Developer-oriented integration surface exists |
+| **Python SDK** | `sdks/python/`; package `agevidence` v0.2.0a1; Python 3.11+; CLI entry point | Developer-oriented integration surface exists |
 | **Specifications** | `specs/agevidence/contracts/`, schemas, examples, country adapters and vocabulary | Public evidence grammar and conformance surface exists |
 | **Model boundary** | `services/agevidence-model/` plus Rails model-run ingestion/client surfaces | External calculations can remain separately attributable |
 | **Design workspaces** | `Wave 1/`, `Wave 2/`, charters and reference workspaces | Adoption hypotheses are inspectable in-repo; workspace presence is **not** adoption |

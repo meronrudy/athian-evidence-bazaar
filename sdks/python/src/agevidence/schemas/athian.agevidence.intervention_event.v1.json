@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "athian.agevidence.intervention_event.v1",
+  "title": "Athian AgEvidence Intervention Event Primitive",
+  "type": "object",
+  "required": [
+    "target",
+    "intervention",
+    "quantity",
+    "unit",
+    "occurred_at"
+  ],
+  "properties": {
+    "schema_id": { "const": "athian.agevidence.intervention_event.v1" },
+    "primitive_type": { "const": "InterventionEvent" },
+    "target": { "type": "string", "minLength": 1 },
+    "intervention": { "type": "string", "minLength": 1 },
+    "quantity": {},
+    "unit": { "type": "string", "minLength": 1 },
+    "occurred_at": { "type": "string", "minLength": 1 },
+    "batch": { "type": "string" },
+    "source_records": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "metadata": { "type": "object" },
+    "limitations": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": true
+}

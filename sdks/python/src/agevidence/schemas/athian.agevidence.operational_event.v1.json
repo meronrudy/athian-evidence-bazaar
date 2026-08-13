@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "athian.agevidence.operational_event.v1",
+  "title": "Athian AgEvidence Operational Event Primitive",
+  "type": "object",
+  "required": [
+    "machine",
+    "operation",
+    "started_at",
+    "completed_at"
+  ],
+  "properties": {
+    "schema_id": { "const": "athian.agevidence.operational_event.v1" },
+    "primitive_type": { "const": "OperationalEvent" },
+    "machine": { "type": "string", "minLength": 1 },
+    "operation": { "type": "string", "minLength": 1 },
+    "started_at": { "type": "string", "minLength": 1 },
+    "completed_at": { "type": "string", "minLength": 1 },
+    "location": { "type": "object" },
+    "source_records": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "metadata": { "type": "object" },
+    "limitations": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": true
+}

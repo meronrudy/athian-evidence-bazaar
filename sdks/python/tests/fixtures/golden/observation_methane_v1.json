@@ -1,0 +1,17 @@
+{
+  "schema": "observation",
+  "valid": true,
+  "payload": {
+    "schema_id": "athian.agevidence.observation.v1",
+    "primitive_type": "Observation",
+    "subject": "animal:982000009999",
+    "observable": "enteric_methane",
+    "value": 18.2,
+    "unit": "g_ch4_min",
+    "observed_at": "2026-08-12T15:10:00Z",
+    "instrument": {
+      "id": "breath-sensor:demo-2",
+      "calibration_reference": "evidence://calibration/breath-sensor-demo-2"
+    }
+  }
+}

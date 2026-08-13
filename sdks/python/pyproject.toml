@@ -4,9 +4,28 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agevidence"
-version = "0.1.0"
-description = "Canonical Python SDK and CLI for the Athian AgEvidence Developer OS"
+version = "0.2.0a1"
+description = "Open-source evidence primitives and verification tooling for agricultural software"
+readme = {file = "docs/pypi.md", content-type = "text/markdown"}
 requires-python = ">=3.11"
+keywords = [
+  "agtech",
+  "agriculture",
+  "evidence",
+  "provenance",
+  "verification",
+  "mrv",
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Typing :: Typed",
+]
 dependencies = [
   "httpx>=0.27",
   "pydantic>=2.7",
@@ -22,14 +41,22 @@ test = [
   "pytest>=8.2"
 ]
 
+[project.urls]
+Homepage = "https://agevidence.com"
+Repository = "https://github.com/meronrudy/athian-evidence-bazaar"
+Documentation = "https://github.com/meronrudy/athian-evidence-bazaar/tree/main/sdks/python"
+Issues = "https://github.com/meronrudy/athian-evidence-bazaar/issues"
+Changelog = "https://github.com/meronrudy/athian-evidence-bazaar/releases"
+
 [project.scripts]
 agevidence = "agevidence.cli:app"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+include = ["agevidence*"]
 
 [tool.setuptools.package-data]
-agevidence = ["py.typed", "resources/*.json"]
+agevidence = ["py.typed", "resources/*.json", "fixtures/data/*.json", "schemas/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

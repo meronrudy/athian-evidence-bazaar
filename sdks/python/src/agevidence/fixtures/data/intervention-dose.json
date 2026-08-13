@@ -1,0 +1,22 @@
+{
+  "name": "intervention-dose",
+  "primitive_type": "InterventionEvent",
+  "description": "Synthetic livestock feed additive dosing event.",
+  "payload": {
+    "target": "herd:H321",
+    "intervention": "product:seafeed",
+    "quantity": 2.4,
+    "unit": "kg",
+    "occurred_at": "2026-08-12T16:00:00Z",
+    "batch": "SF-90231",
+    "source_records": [
+      {
+        "source_system": "synthetic-feed-mixer",
+        "record_id": "dose-0001",
+        "observed_at": "2026-08-12T16:00:00Z",
+        "controlled_uri": "evidence://source/dose-0001",
+        "commitment": "sha256:fixture-dose"
+      }
+    ]
+  }
+}

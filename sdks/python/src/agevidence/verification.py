@@ -24,7 +24,7 @@ class Verifier:
                 code="VERIFIER_COMMAND_MISSING",
             )
 
-        command = shlex.split(configured) + ["verify-bundle", str(bundle)]
+        command = shlex.split(configured) + ["verify", str(bundle), "--json"]
         try:
             completed = subprocess.run(command, capture_output=True, text=True, check=False)
         except FileNotFoundError as exc:

@@ -1,0 +1,35 @@
+{
+  "bundle_version": "baink.bundle.v0.1",
+  "record": {
+    "schema_version": "v0.1",
+    "institution": "athian-demo",
+    "workflow": "agevidence-local-demo",
+    "decision_id": "decision-demo-1",
+    "timestamp": "2026-08-12T00:00:00Z",
+    "subject_ref": "subject:demo",
+    "inputs": [
+      "input:demo"
+    ],
+    "model_ref": null,
+    "policy_ref": "policy:demo",
+    "controls": [
+      "control:demo"
+    ],
+    "outcome": "Approved"
+  },
+  "receipt": {
+    "receipt_version": "v0.1",
+    "record_hash": {
+      "algorithm": "sha256",
+      "value": "9fc10a824ba8515b5120a503dc2438310b710252263229c208eddac2b546a384"
+    },
+    "bundle_hash": {
+      "algorithm": "sha256",
+      "value": "1111111111111111111111111111111111111111111111111111111111111111"
+    },
+    "issued_at": "",
+    "issuer": "local-demo",
+    "signature": null
+  },
+  "profile": "default"
+}

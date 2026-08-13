@@ -1,0 +1,39 @@
+{
+  "schema": "model_execution",
+  "valid": true,
+  "payload": {
+    "base_model_id": "pasturekey",
+    "model_version": "v1",
+    "inputs": [
+      "sha256:scene-demo"
+    ],
+    "outputs": [
+      {
+        "observable": "feed_on_offer",
+        "value": 1840,
+        "unit": "kg_dm_ha"
+      }
+    ],
+    "weights_digest": "sha256:weights-demo",
+    "adapter_id": "spatial-model-demo",
+    "adapter_digest": "sha256:adapter-demo",
+    "model_license": "synthetic fixture",
+    "runtime": "fixture",
+    "generation_config": {
+      "seed": 42
+    },
+    "system_prompt_digest": "sha256:prompt-demo",
+    "retrieval_corpus_digest": "sha256:retrieval-demo",
+    "source_document_commitments": [
+      "sha256:scene-demo"
+    ],
+    "normalized_output_digest": "sha256:output-demo",
+    "policy_version": "agevidence-local-demo",
+    "limitations": [
+      "synthetic fixture"
+    ],
+    "execution_timestamp": "2026-08-12T00:00:00Z",
+    "issuer": "Agevidence SDK",
+    "signer": "did:key:local-demo"
+  }
+}

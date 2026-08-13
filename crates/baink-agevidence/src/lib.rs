@@ -15,6 +15,18 @@ use thiserror::Error;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum AgEvidenceSchema {
+    /// Source record primitive payload.
+    SourceRecord,
+    /// Observation primitive payload.
+    Observation,
+    /// Intervention event primitive payload.
+    InterventionEvent,
+    /// Operational event primitive payload.
+    OperationalEvent,
+    /// Spatial observation primitive payload.
+    SpatialObservation,
+    /// Model run primitive payload.
+    ModelRun,
     /// Model execution receipt payload.
     ModelExecution,
     /// Evidence candidate receipt payload.
@@ -37,6 +49,22 @@ impl AgEvidenceSchema {
     /// Parse a schema name or schema id into a scaffold schema enum.
     pub fn parse(value: &str) -> Result<Self, AgEvidenceError> {
         match value {
+            "source_record"
+            | "agevidence.source_record.v1"
+            | "athian.agevidence.source_record.v1" => Ok(Self::SourceRecord),
+            "observation" | "agevidence.observation.v1" | "athian.agevidence.observation.v1" => {
+                Ok(Self::Observation)
+            }
+            "intervention_event"
+            | "agevidence.intervention_event.v1"
+            | "athian.agevidence.intervention_event.v1" => Ok(Self::InterventionEvent),
+            "operational_event"
+            | "agevidence.operational_event.v1"
+            | "athian.agevidence.operational_event.v1" => Ok(Self::OperationalEvent),
+            "spatial_observation"
+            | "agevidence.spatial_observation.v1"
+            | "athian.agevidence.spatial_observation.v1" => Ok(Self::SpatialObservation),
+            "model_run" | "athian.agevidence.model_run.v1" => Ok(Self::ModelRun),
             "model_execution" | "athian.agevidence.model_execution.v1" => Ok(Self::ModelExecution),
             "evidence_candidate" | "athian.agevidence.evidence_candidate.v1" => {
                 Ok(Self::EvidenceCandidate)
@@ -60,6 +88,12 @@ impl AgEvidenceSchema {
     /// Return the versioned schema id.
     pub fn schema_id(self) -> &'static str {
         match self {
+            Self::SourceRecord => "athian.agevidence.source_record.v1",
+            Self::Observation => "athian.agevidence.observation.v1",
+            Self::InterventionEvent => "athian.agevidence.intervention_event.v1",
+            Self::OperationalEvent => "athian.agevidence.operational_event.v1",
+            Self::SpatialObservation => "athian.agevidence.spatial_observation.v1",
+            Self::ModelRun => "athian.agevidence.model_run.v1",
             Self::ModelExecution => "athian.agevidence.model_execution.v1",
             Self::EvidenceCandidate => "athian.agevidence.evidence_candidate.v1",
             Self::EvidenceGap => "athian.agevidence.evidence_gap.v1",
@@ -74,6 +108,12 @@ impl AgEvidenceSchema {
     /// Return the receipt type used by the Rails projection.
     pub fn receipt_type(self) -> &'static str {
         match self {
+            Self::SourceRecord => "source_record_receipt",
+            Self::Observation => "observation_receipt",
+            Self::InterventionEvent => "intervention_receipt",
+            Self::OperationalEvent => "operational_event_receipt",
+            Self::SpatialObservation => "observation_receipt",
+            Self::ModelRun => "model_execution_receipt",
             Self::ModelExecution => "model_execution_receipt",
             Self::EvidenceCandidate => "evidence_candidate_receipt",
             Self::EvidenceGap => "evidence_gap_receipt",
@@ -132,6 +172,12 @@ pub fn validate_payload(
     payload: &Value,
 ) -> Result<ValidatedPayload, AgEvidenceError> {
     match schema {
+        AgEvidenceSchema::SourceRecord => validate_source_record(payload),
+        AgEvidenceSchema::Observation => validate_observation(payload),
+        AgEvidenceSchema::InterventionEvent => validate_intervention_event(payload),
+        AgEvidenceSchema::OperationalEvent => validate_operational_event(payload),
+        AgEvidenceSchema::SpatialObservation => validate_spatial_observation(payload),
+        AgEvidenceSchema::ModelRun => validate_model_run(payload),
         AgEvidenceSchema::ModelExecution => validate_model_execution(payload),
         AgEvidenceSchema::EvidenceCandidate => validate_evidence_candidate(payload),
         AgEvidenceSchema::EvidenceGap => validate_evidence_gap(payload),
@@ -141,6 +187,76 @@ pub fn validate_payload(
         AgEvidenceSchema::CountryAdapterCommitment => validate_country_adapter_commitment(payload),
         AgEvidenceSchema::CountryDetermination => validate_country_determination(payload),
     }
+}
+
+/// Validate a source record primitive payload.
+pub fn validate_source_record(payload: &Value) -> Result<ValidatedPayload, AgEvidenceError> {
+    let fields = require_fields(payload, &["source_system", "record_id", "observed_at"])?;
+    Ok(summary(AgEvidenceSchema::SourceRecord, fields))
+}
+
+/// Validate an observation primitive payload.
+pub fn validate_observation(payload: &Value) -> Result<ValidatedPayload, AgEvidenceError> {
+    let fields = require_fields(
+        payload,
+        &["subject", "observable", "value", "unit", "observed_at"],
+    )?;
+    Ok(summary(AgEvidenceSchema::Observation, fields))
+}
+
+/// Validate an intervention event primitive payload.
+pub fn validate_intervention_event(payload: &Value) -> Result<ValidatedPayload, AgEvidenceError> {
+    let fields = require_fields(
+        payload,
+        &["target", "intervention", "quantity", "unit", "occurred_at"],
+    )?;
+    Ok(summary(AgEvidenceSchema::InterventionEvent, fields))
+}
+
+/// Validate an operational event primitive payload.
+pub fn validate_operational_event(payload: &Value) -> Result<ValidatedPayload, AgEvidenceError> {
+    let fields = require_fields(
+        payload,
+        &["machine", "operation", "started_at", "completed_at"],
+    )?;
+    Ok(summary(AgEvidenceSchema::OperationalEvent, fields))
+}
+
+/// Validate a spatial observation primitive payload.
+pub fn validate_spatial_observation(payload: &Value) -> Result<ValidatedPayload, AgEvidenceError> {
+    let fields = require_fields(
+        payload,
+        &[
+            "geometry",
+            "observable",
+            "value",
+            "unit",
+            "observed_at",
+            "crs",
+        ],
+    )?;
+    Ok(summary(AgEvidenceSchema::SpatialObservation, fields))
+}
+
+/// Validate a model run primitive payload.
+pub fn validate_model_run(payload: &Value) -> Result<ValidatedPayload, AgEvidenceError> {
+    let fields = require_fields(
+        payload,
+        &[
+            "model_id",
+            "model_version",
+            "implementation_digest",
+            "parameters",
+            "execution_environment",
+            "started_at",
+            "completed_at",
+            "outputs",
+            "verification",
+        ],
+    )?;
+    require_array(payload, "input_commitments")?;
+    require_array(payload, "limitations")?;
+    Ok(summary(AgEvidenceSchema::ModelRun, fields))
 }
 
 /// Validate a model execution receipt payload.
@@ -341,6 +457,98 @@ mod tests {
     use serde_json::json;
 
     #[test]
+    fn validates_observation_primitive_payload() {
+        let payload = json!({
+            "schema_id": "athian.agevidence.observation.v1",
+            "primitive_type": "Observation",
+            "subject": "animal:982000001234",
+            "observable": "liveweight",
+            "value": 481.4,
+            "unit": "kg",
+            "observed_at": "2026-08-12T14:05:11Z"
+        });
+
+        let validated = match validate_observation(&payload) {
+            Ok(value) => value,
+            Err(error) => panic!("{}", error),
+        };
+
+        assert_eq!(validated.schema_id, "athian.agevidence.observation.v1");
+        assert_eq!(validated.receipt_type, "observation_receipt");
+    }
+
+    #[test]
+    fn validates_intervention_event_primitive_payload() {
+        let payload = json!({
+            "target": "herd:H321",
+            "intervention": "product:seafeed",
+            "quantity": 2.4,
+            "unit": "kg",
+            "occurred_at": "2026-08-12T14:05:11Z",
+            "batch": "SF-90231"
+        });
+
+        let validated = match validate_intervention_event(&payload) {
+            Ok(value) => value,
+            Err(error) => panic!("{}", error),
+        };
+
+        assert_eq!(validated.receipt_type, "intervention_receipt");
+    }
+
+    #[test]
+    fn validates_operational_event_primitive_payload() {
+        let payload = json!({
+            "machine": "swarmbot:demo",
+            "operation": "spot_spray",
+            "started_at": "2026-08-12T14:05:11Z",
+            "completed_at": "2026-08-12T14:18:11Z"
+        });
+
+        let validated = match validate_operational_event(&payload) {
+            Ok(value) => value,
+            Err(error) => panic!("{}", error),
+        };
+
+        assert_eq!(
+            validated.schema_id,
+            "athian.agevidence.operational_event.v1"
+        );
+    }
+
+    #[test]
+    fn validates_spatial_observation_primitive_payload() {
+        let payload = json!({
+            "geometry": { "type": "Point", "coordinates": [151.2, -33.8] },
+            "observable": "feed_on_offer",
+            "value": 1840,
+            "unit": "kg_dm_ha",
+            "observed_at": "2026-08-12T14:05:11Z",
+            "crs": "EPSG:4326"
+        });
+
+        let validated = match validate_spatial_observation(&payload) {
+            Ok(value) => value,
+            Err(error) => panic!("{}", error),
+        };
+
+        assert_eq!(validated.receipt_type, "observation_receipt");
+    }
+
+    #[test]
+    fn rejects_source_record_without_record_id() {
+        let payload = json!({
+            "source_system": "meq",
+            "observed_at": "2026-08-12T14:05:11Z"
+        });
+
+        assert_eq!(
+            validate_source_record(&payload),
+            Err(AgEvidenceError::MissingField("record_id"))
+        );
+    }
+
+    #[test]
     fn validates_model_execution_payload() {
         let payload = json!({
             "base_model_id": "Qwen/Qwen3.5-4B",
@@ -366,6 +574,42 @@ mod tests {
             Err(error) => panic!("{}", error),
         };
 
+        assert_eq!(validated.receipt_type, "model_execution_receipt");
+        assert!(!validated.parent_required);
+    }
+
+    #[test]
+    fn validates_model_run_payload() {
+        let payload = json!({
+            "schema_id": "athian.agevidence.model_run.v1",
+            "primitive_type": "ModelRun",
+            "model_id": "pasturekey",
+            "model_version": "v1",
+            "implementation_digest": "sha256:implementation",
+            "input_commitments": ["sha256:scene"],
+            "parameters": { "scenario": "baseline" },
+            "execution_environment": { "runtime": "fixture" },
+            "started_at": "2026-08-12T00:00:00Z",
+            "completed_at": "2026-08-12T00:01:00Z",
+            "outputs": [
+                {
+                    "observable": "feed_on_offer",
+                    "value": 1840,
+                    "unit": "kg_dm_ha"
+                }
+            ],
+            "limitations": ["synthetic fixture"],
+            "verification": {
+                "normalized_output_digest": "sha256:output"
+            }
+        });
+
+        let validated = match validate_model_run(&payload) {
+            Ok(value) => value,
+            Err(error) => panic!("{}", error),
+        };
+
+        assert_eq!(validated.schema_id, "athian.agevidence.model_run.v1");
         assert_eq!(validated.receipt_type, "model_execution_receipt");
         assert!(!validated.parent_required);
     }

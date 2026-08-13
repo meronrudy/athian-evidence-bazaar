@@ -1,0 +1,12 @@
+{
+  "schema": "operational_event",
+  "valid": true,
+  "payload": {
+    "schema_id": "athian.agevidence.operational_event.v1",
+    "primitive_type": "OperationalEvent",
+    "machine": "swarmbot:demo-1",
+    "operation": "spot_spray",
+    "started_at": "2026-08-12T17:00:00Z",
+    "completed_at": "2026-08-12T17:18:00Z"
+  }
+}

@@ -79,7 +79,7 @@ def test_client_method_inventory_matches_openapi_paths():
 def test_v1_public_exports_and_typed_marker():
     repo_root = Path(__file__).resolve().parents[3]
 
-    assert agevidence.__version__ == "0.1.0"
+    assert agevidence.__version__ == "0.2.0a1"
     assert AsyncClient is not None
     assert RetryPolicy(max_attempts=1).max_attempts == 1
     assert (repo_root / "sdks" / "python" / "src" / "agevidence" / "py.typed").exists()
