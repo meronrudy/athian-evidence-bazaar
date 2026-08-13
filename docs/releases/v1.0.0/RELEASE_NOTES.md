@@ -63,6 +63,15 @@ representation, or contract compatibility. It does not establish regulatory
 eligibility, scientific validity, carbon-credit issuance, third-party
 verification, claim ownership, or institutional reliance.
 
+## Known Limitations
+
+- Hosted `Client` and `AsyncClient` require a compatible `/v1` Rails service.
+- `agevidence verify` requires a configured Rust verifier command.
+- Source adapter loading executes local Python code and should be used only with
+  trusted adapter modules.
+- Local checks are evidence-readiness checks only; they do not replace program,
+  verifier, registry, buyer, insurer, or regulator decisions.
+
 ## Release Validation
 
 Required validation before publishing:
@@ -85,6 +94,15 @@ python -m twine check dist/*
 
 Smoke-test both wheel and sdist from clean virtual environments before pushing
 `sdk-python-v1.0.0`.
+
+## Artifact Checksums
+
+Clean local artifact rehearsal captured on 2026-08-13:
+
+```text
+SHA-256  agevidence-1.0.0-py3-none-any.whl  da55f643309f5262531b63c488ba8ebf5fbc2e813907b6e15e943c23786ee62b
+SHA-256  agevidence-1.0.0.tar.gz           84c9d86e5dfd9a0c804ef166b493ac6ac07c70b4514475a9321d0faaf604b36b
+```
 
 Local validation captured on 2026-08-13:
 

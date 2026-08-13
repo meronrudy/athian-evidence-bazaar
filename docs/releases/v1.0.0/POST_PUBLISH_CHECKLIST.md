@@ -54,6 +54,22 @@ Create `/tmp/agevidence-v1-fixtures/one.json`:
 
 - [ ] Run `agevidence adapter test /tmp/agevidence-v1-adapter.py /tmp/agevidence-v1-fixtures`.
 
+## Artifact Integrity
+
+- [ ] Download the GitHub release artifacts for `sdk-python-v1.0.0`.
+- [ ] Confirm SHA-256 checksums match the release notes:
+
+```bash
+shasum -a 256 agevidence-1.0.0-py3-none-any.whl agevidence-1.0.0.tar.gz
+```
+
+Expected values from the clean release rehearsal:
+
+```text
+SHA-256  agevidence-1.0.0-py3-none-any.whl  da55f643309f5262531b63c488ba8ebf5fbc2e813907b6e15e943c23786ee62b
+SHA-256  agevidence-1.0.0.tar.gz           84c9d86e5dfd9a0c804ef166b493ac6ac07c70b4514475a9321d0faaf604b36b
+```
+
 ## Public Pages
 
 - [ ] Confirm the PyPI page renders the local-first README.
@@ -67,4 +83,3 @@ Create `/tmp/agevidence-v1-fixtures/one.json`:
 - [ ] Open a post-release issue for non-blocking defects.
 - [ ] If PyPI publish fails after files are uploaded, do not replace files; patch forward with a new version.
 - [ ] If a bad release is published, yank `1.0.0`, leave the tag for auditability, and patch forward.
-

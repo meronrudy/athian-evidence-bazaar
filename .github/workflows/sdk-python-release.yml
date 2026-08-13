@@ -3,7 +3,7 @@ name: SDK Python Release
 on:
   push:
     tags:
-      - "sdk-python-v*"
+      - "sdk-python-v1.0.0"
   workflow_dispatch:
 
 jobs:
@@ -32,12 +32,17 @@ jobs:
       - name: Run Rust tests
         run: cargo test --workspace
 
+      - name: Run AgEvidence repository checks
+        run: bash scripts/agevidence_check_all.sh
+
       - name: Release readiness
         run: python scripts/check_sdk_release_readiness.py
 
       - name: Build wheel and sdist
         working-directory: sdks/python
-        run: python -m build
+        run: |
+          rm -rf dist build src/agevidence.egg-info
+          python -m build
 
       - name: Twine check
         working-directory: sdks/python
@@ -88,6 +93,26 @@ jobs:
           {"eid":"A-1","ppm":18.7,"timestamp":"2026-08-12T15:10:00Z"}
           JSON
           agevidence adapter test "$tmpdir/my_adapter.py" "$tmpdir/adapter-fixtures"
+
+      - name: Fresh venv sdist smoke test
+        run: |
+          tmpdir="$(mktemp -d)"
+          python -m venv "$tmpdir/venv"
+          . "$tmpdir/venv/bin/activate"
+          python -m pip install --upgrade pip
+          python -m pip install sdks/python/dist/*.tar.gz
+          python - <<'PY'
+          from importlib import resources
+          import agevidence
+
+          assert agevidence.__version__ == "1.0.0"
+          assert resources.files("agevidence").joinpath("py.typed").is_file()
+          assert resources.files("agevidence.fixtures").joinpath("data/livestock-weight.json").is_file()
+          assert resources.files("agevidence.schemas").joinpath("athian.agevidence.observation.v1.json").is_file()
+          print(agevidence.__version__)
+          PY
+          agevidence --help
+          agevidence demo
 
       - name: Upload distribution artifact
         uses: actions/upload-artifact@v4

@@ -13,8 +13,16 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 SDK_ROOT = REPO_ROOT / "sdks" / "python"
 PYPROJECT = SDK_ROOT / "pyproject.toml"
 PACKAGE_ROOT = SDK_ROOT / "src" / "agevidence"
+SDK_README = SDK_ROOT / "README.md"
+PYPI_README = SDK_ROOT / "docs" / "pypi.md"
 RELEASE_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "sdk-python-release.yml"
+CI_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "sdk-python-ci.yml"
 SDK_DOCS = SDK_ROOT / "docs"
+V1_RELEASE_NOTES = REPO_ROOT / "docs" / "releases" / "v1.0.0" / "RELEASE_NOTES.md"
+V1_POST_PUBLISH_CHECKLIST = REPO_ROOT / "docs" / "releases" / "v1.0.0" / "POST_PUBLISH_CHECKLIST.md"
+
+EXPECTED_VERSION = "1.0.0"
+EXPECTED_TAG = "sdk-python-v1.0.0"
 
 REQUIRED_GOLDEN_FIXTURES = {
     "demo_bundle.json",
@@ -39,11 +47,49 @@ REQUIRED_LOCAL_FIXTURES = {
     "machine-operation.json",
 }
 
+REQUIRED_SCHEMA_FILES = {
+    "athian.agevidence.source_record.v1.json",
+    "athian.agevidence.observation.v1.json",
+    "athian.agevidence.spatial_observation.v1.json",
+    "athian.agevidence.intervention_event.v1.json",
+    "athian.agevidence.operational_event.v1.json",
+    "athian.agevidence.model_run.v1.json",
+}
+
 FORBIDDEN_BRANDING = {
     "mech-lab",
     "mech_lab",
     "mech lab",
     "athian-agevidence-model",
+}
+
+FORBIDDEN_RELEASE_FACING_TERMS = {
+    "0.2.0a1",
+    "1.0.0rc",
+    "Development Status :: 3 - Alpha",
+}
+
+AUTHORITY_BOUNDARY_TERMS = {
+    "regulatory eligibility",
+    "scientific validity",
+    "carbon-credit issuance",
+    "third-party verification",
+    "claim ownership",
+    "institutional reliance",
+}
+
+TRUST_BOUNDARY_TERMS = {
+    "receipt",
+    "dCBOR",
+    "bundle verification",
+}
+
+RELEASE_FACING_FILES = {
+    "SDK README": SDK_README,
+    "PyPI README": PYPI_README,
+    "v1 release notes": V1_RELEASE_NOTES,
+    "release workflow": RELEASE_WORKFLOW,
+    "SDK CI workflow": CI_WORKFLOW,
 }
 
 
@@ -53,9 +99,11 @@ def main() -> int:
     errors.extend(_check_version(project))
     errors.extend(_check_metadata(project))
     errors.extend(_check_packaged_files())
+    errors.extend(_check_packaged_schemas())
     errors.extend(_check_release_workflow())
     errors.extend(_check_public_exports_and_cli())
     errors.extend(_check_docs_links())
+    errors.extend(_check_release_docs())
     errors.extend(_check_local_first_constraints())
     errors.extend(_check_verifier_contract())
     errors.extend(_check_fixtures())
@@ -76,9 +124,14 @@ def _check_version(project: dict) -> list[str]:
     sys.path.insert(0, str(SDK_ROOT / "src"))
     import agevidence
 
+    errors = []
+    if project["version"] != EXPECTED_VERSION:
+        errors.append(f"pyproject version must be {EXPECTED_VERSION} for v1 release readiness")
+    if agevidence.__version__ != EXPECTED_VERSION:
+        errors.append(f"agevidence.__version__ must be {EXPECTED_VERSION} for v1 release readiness")
     if project["version"] != agevidence.__version__:
-        return [f"pyproject version {project['version']} != agevidence.__version__ {agevidence.__version__}"]
-    return []
+        errors.append(f"pyproject version {project['version']} != agevidence.__version__ {agevidence.__version__}")
+    return errors
 
 
 def _check_metadata(project: dict) -> list[str]:
@@ -89,7 +142,6 @@ def _check_metadata(project: dict) -> list[str]:
         errors.append("PyPI readme must be docs/pypi.md")
     if project.get("requires-python") != ">=3.11":
         errors.append("requires-python must be >=3.11")
-    scripts = tomllib.loads(PYPROJECT.read_text(encoding="utf-8")).get("project", {})
     text = PYPROJECT.read_text(encoding="utf-8").lower()
     for forbidden in FORBIDDEN_BRANDING:
         if forbidden in text:
@@ -112,7 +164,7 @@ def _check_packaged_files() -> list[str]:
     errors = []
     if not (PACKAGE_ROOT / "py.typed").is_file():
         errors.append("py.typed missing")
-    if not (SDK_ROOT / "docs" / "pypi.md").is_file():
+    if not PYPI_README.is_file():
         errors.append("docs/pypi.md missing")
     package_data = tomllib.loads(PYPROJECT.read_text(encoding="utf-8")).get("tool", {}).get("setuptools", {}).get("package-data", {})
     agevidence_data = package_data.get("agevidence", [])
@@ -125,26 +177,53 @@ def _check_packaged_files() -> list[str]:
     return errors
 
 
+def _check_packaged_schemas() -> list[str]:
+    errors = []
+    spec_root = REPO_ROOT / "specs" / "agevidence" / "schemas"
+    package_schema_root = PACKAGE_ROOT / "schemas"
+    for name in sorted(REQUIRED_SCHEMA_FILES):
+        spec_path = spec_root / name
+        package_path = package_schema_root / name
+        if not spec_path.is_file():
+            errors.append(f"canonical schema missing: {spec_path.relative_to(REPO_ROOT)}")
+            continue
+        if not package_path.is_file():
+            errors.append(f"packaged schema missing: {package_path.relative_to(REPO_ROOT)}")
+            continue
+        if spec_path.read_text(encoding="utf-8") != package_path.read_text(encoding="utf-8"):
+            errors.append(f"packaged schema differs from canonical spec: {name}")
+    return errors
+
+
 def _check_release_workflow() -> list[str]:
     if not RELEASE_WORKFLOW.is_file():
         return ["release workflow missing"]
     text = RELEASE_WORKFLOW.read_text(encoding="utf-8")
     errors = []
     required = [
-        "sdk-python-v*",
+        EXPECTED_TAG,
         "id-token: write",
         "environment:",
         "name: pypi",
         "pypa/gh-action-pypi-publish@release/v1",
+        "actions/upload-artifact@v4",
+        "softprops/action-gh-release@v2",
+        "draft: true",
         "working-directory: sdks/python",
         "python -m build",
         "python -m twine check dist/*",
+        "bash scripts/agevidence_check_all.sh",
+        "Fresh venv wheel smoke test",
+        "Fresh venv sdist smoke test",
     ]
     for value in required:
         if value not in text:
             errors.append(f"release workflow missing {value}")
     if "password:" in text or "api-token" in text.lower():
         errors.append("release workflow must not use long-lived PyPI API tokens")
+    trigger_section = text.split("jobs:", 1)[0]
+    if "sdk-python-v*" in trigger_section:
+        errors.append(f"release workflow trigger must be pinned to {EXPECTED_TAG}, not sdk-python-v*")
     return errors
 
 
@@ -207,6 +286,73 @@ def _strip_fenced_code(text: str) -> str:
 
 def _is_external_link(target: str) -> bool:
     return target.startswith(("http://", "https://", "mailto:", "#"))
+
+
+def _check_release_docs() -> list[str]:
+    errors = []
+    for label, path in RELEASE_FACING_FILES.items():
+        if not path.is_file():
+            errors.append(f"{label} missing: {path.relative_to(REPO_ROOT)}")
+            continue
+        text = path.read_text(encoding="utf-8")
+        for term in FORBIDDEN_RELEASE_FACING_TERMS:
+            if term in text:
+                errors.append(f"{label} contains stale non-v1 release reference: {term}")
+
+    authority_docs = {
+        "SDK README": SDK_README,
+        "PyPI README": PYPI_README,
+        "v1 release notes": V1_RELEASE_NOTES,
+    }
+    for label, path in authority_docs.items():
+        if path.is_file():
+            _require_terms(errors, label, path, AUTHORITY_BOUNDARY_TERMS, "authority-boundary")
+
+    trust_docs = {
+        "SDK README": SDK_README,
+        "PyPI README": PYPI_README,
+        "v1 release notes": V1_RELEASE_NOTES,
+    }
+    for label, path in trust_docs.items():
+        if not path.is_file():
+            continue
+        _require_terms(errors, label, path, TRUST_BOUNDARY_TERMS, "trust-boundary")
+        text = path.read_text(encoding="utf-8")
+        if "Rust trust boundary" not in text and "Rust verifier" not in text:
+            errors.append(f"{label} missing Rust trust-boundary delegation language")
+
+    if V1_RELEASE_NOTES.is_file():
+        notes = V1_RELEASE_NOTES.read_text(encoding="utf-8")
+        for value in ("Known Limitations", "SHA-256", EXPECTED_TAG, "python3 -m pytest sdks/python"):
+            if value not in notes:
+                errors.append(f"v1 release notes missing {value}")
+
+    if V1_POST_PUBLISH_CHECKLIST.is_file():
+        checklist = V1_POST_PUBLISH_CHECKLIST.read_text(encoding="utf-8")
+        required = [
+            f"python -m pip install agevidence=={EXPECTED_VERSION}",
+            "agevidence adapter test",
+            "SHA-256",
+            "do not replace files",
+            f"yank `{EXPECTED_VERSION}`",
+        ]
+        for value in required:
+            if value not in checklist:
+                errors.append(f"v1 post-publish checklist missing {value}")
+    else:
+        errors.append("v1 post-publish checklist missing")
+    return errors
+
+
+def _require_terms(errors: list[str], label: str, path: Path, terms: set[str], context: str) -> None:
+    text = _normalized_text(path.read_text(encoding="utf-8"))
+    missing = sorted(term for term in terms if _normalized_text(term) not in text)
+    if missing:
+        errors.append(f"{label} missing {context} terms: {', '.join(missing)}")
+
+
+def _normalized_text(text: str) -> str:
+    return re.sub(r"\s+", " ", text).lower()
 
 
 def _check_local_first_constraints() -> list[str]:
