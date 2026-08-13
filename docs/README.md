@@ -1,214 +1,140 @@
-# AgEvidence Open Source Design Advisory Board
+# AgEvidence Documentation
 
-## Overview
+This directory is the review index for the current repository. It describes a
+local-first AgEvidence SDK, a Rails workflow/control-plane scaffold, a Rust
+trust boundary, public specifications, integration contracts, and release
+evidence.
 
-AgEvidence is an event-first, source-record-first platform for agricultural evidence collection, verification, and monetization. This document outlines the Open Source Design Advisory Board structure and governance framework for Wave 1 of the project.
+The repository should not be read as proof of customer adoption, production
+security, regulatory acceptance, verified climate impact, booked revenue, or a
+production marketplace. Historical planning documents are retained where useful,
+but current capability claims should point to code, specifications, tests, or
+release artifacts.
 
-## How it Works
+## Current Architecture
 
-### Event-First Architecture
-- **Event-Driven Processing**: All agricultural activities are captured as events
-- **Real-Time Verification**: Events are immediately verified through blockchain and cryptographic proofs
-- **Smart Contracts**: Automated enforcement of evidence standards and payment terms
+| Area | Start here | Current role |
+| --- | --- | --- |
+| Repository overview | [Root README](../README.md) | Screening-branch thesis, maturity map, local inspection commands, and diligence gaps |
+| Python SDK | [SDK docs](../sdks/python/docs/index.md) | Local package `agevidence==1.0.0`, CLI, primitives, local fixtures, source adapters, provenance checks, and optional hosted client |
+| Rails control plane | [Rails README](../athian_ink_rails_bootstrap/README.md) | Demonstration workflow surface for evidence intake, projections, review, artifacts, and integration inboxes |
+| Rust trust boundary | [Rust AgEvidence crate](../crates/baink-agevidence/README.md) | Local validation and verifier-adjacent behavior that remains outside Rails workflow authority |
+| Public specs | [AgEvidence specs](../specs/agevidence/examples/README.md) | Schemas, examples, country adapters, bundle profiles, trust policies, and conformance fixtures |
+| Integration contracts | [Integrations overview](integrations/overview.md) | Signed event envelope, idempotency, replay, webhook, authentication, and Project 4030 example contracts |
+| Release evidence | [v1 release notes](releases/v1.0.0/RELEASE_NOTES.md) | SDK v1.0.0 release scope, limitations, checks, and recorded artifact hashes |
 
-### Source-Record-First Integration
-- **Immutable Records**: All source documents stored on blockchain with cryptographic hashes
-- **Cross-Chain Compatibility**: Support for multiple blockchain networks and data sources
-- **Audit Trails**: Complete provenance tracking from field to market
+## Local SDK
 
-## Product
+The Python SDK is the current developer-facing local interface. It supports:
 
-### Core Components
-1. **Evidence Collection**: Mobile apps and web interfaces for capturing agricultural data
-2. **Verification Engine**: AI-powered analysis and cryptographic verification
-3. **Marketplace**: Platform for buying/selling verified agricultural evidence
-4. **Payment System**: Smart contracts for automated revenue distribution
+- typed evidence primitives and packaged schemas;
+- no-account local demos and fixtures;
+- source-adapter testing;
+- provenance explanation;
+- CI helper APIs; and
+- optional hosted `/v1` Rails client calls.
 
-### Australian Beef Pilot
-- **Location**: Queensland and Northern Territory cattle operations
-- **Scale**: 50,000+ head of cattle tracked
-- **Impact**: 40% reduction in verification costs, 25% increase in market access
+See:
 
-### Run the Workspace
-```bash
-# Clone the repository
-cd /path/to/agevidence
+- [SDK index](../sdks/python/docs/index.md)
+- [Quickstart](../sdks/python/docs/quickstart.md)
+- [Python API](../sdks/python/docs/reference/python-api.md)
+- [CLI reference](../sdks/python/docs/reference/cli.md)
+- [Release process](../sdks/python/RELEASING.md)
 
-# Install dependencies
-bundle install
-npm install
+The SDK does not issue receipts, perform scientific validation, decide
+regulatory eligibility, create carbon credits, replace third-party verification,
+or establish institutional reliance.
 
-# Set up environment
-cp .env.example .env
+## Rails Control Plane
 
-# Run migrations
-rails db:migrate
+The Rails app is a scaffold for workflow, review, projection, and commercial
+planning surfaces. It is intentionally not the cryptographic trust boundary and
+does not become the producer, protocol, asset, marketplace, ledger, claim-right,
+or payment system of record.
 
-# Start the server
-rails server
-```
+See:
 
-## Developer OS
+- [Rails README](../athian_ink_rails_bootstrap/README.md)
+- [Rails implementation map](../athian_ink_rails_bootstrap/docs/implementation-map.md)
+- [Commercial order lifecycle](../athian_ink_rails_bootstrap/docs/architecture/COMMERCIAL_ORDER_LIFECYCLE.md)
+- [Build validation note](../athian_ink_rails_bootstrap/docs/build-validation.md)
+- [Verifier adapter contract](../athian_ink_rails_bootstrap/docs/verifier-adapter-contract.md)
 
-### Operating System Requirements
-- **macOS**: 10.15 or later
-- **Linux**: Ubuntu 18.04 or later
-- **Windows**: WSL2 with Ubuntu 18.04
+## Rust Trust Boundary
 
-### Development Tools
-- **Ruby**: 2.7 or later
-- **Node.js**: 14 or later
-- **PostgreSQL**: 10 or later
-- **Redis**: 4 or later
+The Rust workspace owns canonicalization, bundle/verifier-adjacent behavior, and
+portable local verification paths. Rails may display verification status or call
+the `ink_receipts` facade, but cryptographic authority remains below that
+boundary.
 
-### Architecture
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Mobile App    │    │   Web Interface │    │   API Gateway   │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-         │                       │                       │
-         │                       │                       │
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│ Event Processor │───▶│ Verification    │───▶│ Smart Contracts │
-│                 │    │ Engine          │    │                 │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-```
+See:
 
-## Project Status
+- [Model authority boundary](implementation/MODEL_AUTHORITY_BOUNDARY.md)
+- [Rails/Rust trust boundary ADR](adr/0004-rails-rust-trust-boundary.md)
+- [SDK API boundary ADR](adr/0001-sdk-api-boundary.md)
+- [Rust AgEvidence crate](../crates/baink-agevidence/README.md)
 
-### Current Phase
-- **Wave 1**: Open Source Design Advisory Board
-- **Status**: Active development
-- **Companies**: 8 participating companies
+## Specifications
 
-### Key Milestones
-1. ✅ Directory structure created
-2. ✅ Company subdirectories established
-3. ✅ Documentation framework initiated
-4. ⏳ Technical specifications finalized
-5. ⏳ Integration patterns defined
+Specification files define the shared evidence grammar. Runtime implementations
+should conform to these contracts rather than redefining them in controllers,
+templates, prompts, or client libraries.
 
-## Roadmap
+See:
 
-### Phase 1: Foundation (Months 1-3)
-- Complete directory structure
-- Establish documentation standards
-- Form advisory board
-- Launch open source repository
+- [Integration specs](../specs/integrations/README.md)
+- [Country adapters](../specs/agevidence/country_adapters/README.md)
+- [Bundle profiles](../specs/agevidence/bundle_profiles/README.md)
+- [Trust policies](../specs/agevidence/trust_policies/README.md)
+- [OAEP standards draft](../standards/oaep/README.md)
 
-### Phase 2: Development (Months 4-6)
-- Implement core event processing
-- Build verification engine
-- Develop marketplace
-- Create SDK integrations
+## Integrations
 
-### Phase 3: Scale (Months 7-12)
-- Expand to additional countries
-- Integrate with existing agricultural systems
-- Establish commercial partnerships
-- Launch global marketplace
+Integration documentation covers signed inbound events, idempotent processing,
+replay, outbound webhooks, authentication, and error handling.
 
-## Contributing
+See:
 
-### How to Contribute
-1. **Fork the repository**
-2. **Create a feature branch**
-3. **Implement your changes**
-4. **Add tests**
-5. **Submit a pull request**
+- [Overview](integrations/overview.md)
+- [Event envelope](integrations/event-envelope.md)
+- [Event types](integrations/event-types.md)
+- [Authentication](integrations/authentication.md)
+- [Signatures](integrations/signatures.md)
+- [Idempotency](integrations/idempotency.md)
+- [Replay](integrations/replay.md)
+- [Webhooks](integrations/webhooks.md)
+- [Project 4030 example](integrations/project-4030-example.md)
 
-### Code Standards
-- **Ruby**: RuboCop with Airbnb style guide
-- **JavaScript**: ESLint with Airbnb style guide
-- **Tests**: RSpec for Ruby, Jest for JavaScript
-- **Documentation**: YARD for Ruby, JSDoc for JavaScript
+## Self-Service Docs
 
-### Security
-- **Vulnerability Scanning**: Use `bundle audit` and `npm audit`
-- **Code Review**: All pull requests require at least 2 approvals
-- **Testing**: Comprehensive unit and integration tests required
-- **Deployment**: Automated security testing in CI/CD pipeline
+The self-service docs describe the developer and customer-facing flow around
+source records, event inboxes, local verification, country adapters, model
+review, and artifact orders.
 
-## Technical Specifications
+See:
 
-### Event Schema
-```json
-{
-  "event_type": "agricultural_activity",
-  "timestamp": "2023-01-01T00:00:00Z",
-  "location": {
-    "latitude": -23.4167,
-    "longitude": 133.9833
-  },
-  "activity": {
-    "type": "cattle_movement",
-    "species": "cattle",
-    "count": 500,
-    "purpose": "feedlot_transfer"
-  },
-  "evidence": {
-    "photos": ["hash1", "hash2"],
-    "gps_track": "hash3",
-    "temperature": 25.5,
-    "humidity": 65.0
-  }
-}
-```
+- [Self-service index](self-service/README.md)
+- [Developer quickstart](self-service/DEVELOPER_QUICKSTART.md)
+- [API user guide](self-service/API_USER_GUIDE.md)
+- [Source records guide](self-service/SOURCE_RECORDS_GUIDE.md)
+- [Event inbox guide](self-service/EVENT_INBOX_GUIDE.md)
+- [Local verification guide](self-service/LOCAL_VERIFICATION_GUIDE.md)
+- [Pricing, orders, and artifacts guide](self-service/PRICING_ORDERS_ARTIFACTS_GUIDE.md)
+- [Troubleshooting](self-service/TROUBLESHOOTING.md)
 
-### Integration Patterns
-1. **Webhook Integration**: Real-time event forwarding
-2. **API Integration**: RESTful service calls
-3. **Batch Integration**: Scheduled data imports
-4. **Event Bridge**: Cross-platform event routing
+## Strategy And Historical Context
 
-### Country-Specific Implementations
-- **Australia**: Cattle tracking, feedlot management
-- **Canada**: Dairy operations, pasture management
-- **EU**: Organic certification, sustainability reporting
-- **New Zealand**: Sheep operations, export documentation
-- **UK**: Beef operations, supply chain transparency
+Strategy and roadmap files are useful for understanding intent, but they are
+not current capability inventories unless they explicitly say so. Historical
+release records preserve prior baseline facts and deferred work for audit
+context.
 
-## Architecture Decisions
+See:
 
-### Why Event-First?
-- **Real-Time Insights**: Immediate visibility into agricultural operations
-- **Scalability**: Event-driven systems scale horizontally
-- **Flexibility**: Easy to add new event types without system changes
-- **Auditability**: Complete event history for compliance
-
-### Why Source-Record-First?
-- **Trust**: Immutable source documents cannot be tampered with
-- **Legal**: Cryptographic proofs admissible in court
-- **Interoperability**: Standardized source formats enable system integration
-- **Compliance**: Automated regulatory compliance verification
-
-## Project Structure
-
-### Wave 1: Event-First Systems Working Group
-- **Agscent**: Evidence collection mobile apps
-- **MEQ Solutions**: Quality assurance and testing
-- **Cibo Labs**: Climate impact measurement
-- **DIT AgTech**: Digital twin technology
-- **Agronomeye**: Precision agriculture analytics
-
-### Wave 2: Source-Record-First Systems Working Group
-- **Rumin8**: Ruminant livestock tracking
-- **Sea Forest**: Marine aquaculture
-- **Bovotica**: Bovine health monitoring
-- **Number 8 Bio**: Bio-based feed additives
-
-### Reserve: Legacy Systems
-- **Ruminant BioTech**: Traditional livestock management
-
-### Deferred: Future Technologies
-- **Regrow Ag**: Carbon credit trading
-- **Loam Bio**: Soil health monitoring
-- **SwarmFarm Robotics**: Autonomous farming
-- **Cauldron Ferm**: Microbial solutions
-- **HydGene Renewables**: Bioenergy production
-
-## Conclusion
-
-AgEvidence represents a paradigm shift in agricultural evidence management, combining event-driven architecture with source-record verification to create a transparent, trustworthy, and profitable ecosystem for agricultural producers worldwide.
-
-The Open Source Design Advisory Board will guide this transformation, ensuring that the platform remains open, accessible, and beneficial to all stakeholders while driving innovation in agricultural technology.
+- [Internal docs index](internal/README.md)
+- [Australian GTM backlog](strategy/AUSTRALIAN_AGEVIDENCE_GTM_BACKLOG.md)
+- [Developer GTM implementation specification](implementation/AGEVIDENCE_DEVELOPER_GTM.md)
+- [SDK v1 implementation plan](../sdks/python/docs/roadmap/pypi-v1-implementation-plan.md)
+- [v0.1.0 historical release records](releases/v0.1.0-tenacious-screening/SCOPE.md)
+- [v1.0.0 release notes](releases/v1.0.0/RELEASE_NOTES.md)

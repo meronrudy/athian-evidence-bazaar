@@ -1,5 +1,8 @@
 # Deferred Features
 
+> Historical release planning record for `v0.1.0-tenacious-screening`; retained
+> for audit context, not as a current capability inventory.
+
 Features that are intentionally deferred until after the v0.1.0-tenacious-screening release:
 
 - Generalized production marketplace

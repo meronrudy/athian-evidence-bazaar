@@ -16,6 +16,6 @@ Wave 1 is a public design-partner program for agricultural technology companies 
 4. Graduate to formal partnership
 
 ## Expected Outcomes
-- Validated workflow maps for each participating company
-- Reviewable evidence contracts and reliance artifacts
-- Pathway to paid design partnerships and pilot implementations
+- Corrected workflow maps when a participating company provides substantive review
+- Reviewable evidence-contract and reliance-artifact hypotheses
+- Potential path to paid design partnership or implementation only after explicit commercial gates

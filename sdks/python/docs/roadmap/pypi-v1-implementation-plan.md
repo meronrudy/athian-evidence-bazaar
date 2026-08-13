@@ -1,5 +1,8 @@
 # Agevidence Python SDK PyPI v1 Implementation Plan
 
+> Historical planning record. The SDK v1.0.0 release artifacts and release notes
+> are the current v1 release evidence.
+
 This roadmap defines the work needed to move the `agevidence` Python package
 from its completed alpha baseline to a full-featured `1.0.0` PyPI release.
 
@@ -8,7 +11,7 @@ Current baseline:
 - PyPI distribution: `agevidence`
 - Python namespace: `agevidence`
 - CLI: `agevidence`
-- Completed alpha baseline: `0.2.0a1`
+- Historical alpha baseline: `0.2.0a1`
 - Current v1 target: `1.0.0`
 - Release mechanism: GitHub trusted publisher through `sdk-python-release.yml`
 - Source: `sdks/python`

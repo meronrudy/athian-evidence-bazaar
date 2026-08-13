@@ -7,4 +7,5 @@ python3 scripts/agevidence_isolation_check.py
 python3 scripts/agevidence_constitution_check.py
 python3 scripts/agevidence_conformance.py
 python3 scripts/agevidence_openapi_check.py
+python3 scripts/agevidence_doc_hygiene.py
 python3 scripts/agevidence_loc.py

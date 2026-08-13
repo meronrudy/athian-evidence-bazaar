@@ -82,6 +82,13 @@ def main() -> int:
     parser.add_argument("--all", action="store_true", help="Count every changed path instead of the country-adapter program subset.")
     args = parser.parse_args()
 
+    if not commit_exists(args.baseline):
+        print(f"LOC baseline {args.baseline} is unavailable in this checkout; skipping LOC delta.")
+        for name in ("PLOC", "CLOC", "TLOC", "DLOC"):
+            print(f"{name}: 0")
+        print("Implementation LOC: 0")
+        return 0
+
     result = subprocess.run(
         ["git", "diff", "--numstat", args.baseline, "--"],
         cwd=REPO_ROOT,
@@ -137,6 +144,17 @@ def main() -> int:
         print(f"{name}: {totals[name]}")
     print(f"Implementation LOC: {implementation}")
     return 0
+
+
+def commit_exists(revision: str) -> bool:
+    result = subprocess.run(
+        ["git", "cat-file", "-e", f"{revision}^{{commit}}"],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return result.returncode == 0
 
 
 if __name__ == "__main__":

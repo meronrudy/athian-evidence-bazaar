@@ -1,5 +1,8 @@
 # Release Scope
 
+> Historical release planning record for `v0.1.0-tenacious-screening`; retained
+> for audit context, not as a current capability inventory.
+
 This release focuses on creating a reproducible, tagged repository that demonstrates a canonical path for the Tenacious Ventures screening brief. Key components include:
 
 1. Ruby 3.3.12 and Rails 7.1 baseline
