@@ -87,6 +87,10 @@ def test_packaged_resources_contract():
     assert "resources/*.json" in package_data
     assert "fixtures/data/*.json" in package_data
     assert "schemas/*.json" in package_data
+    assert "proofkits/*.json" in package_data
+    assert "proofkits/fixtures/*.json" in package_data
+    assert "proofkits/expected/*.json" in package_data
+    assert "proofkits/readmes/*.md" in package_data
     assert (PACKAGE_ROOT / "py.typed").exists()
     assert (SDK_ROOT / "docs" / "pypi.md").exists()
 

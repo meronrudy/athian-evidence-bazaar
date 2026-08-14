@@ -1,0 +1,148 @@
+{
+  "proofkits": [
+    {
+      "id": "dit.water_dosing_intervention",
+      "company": "DIT AgTech",
+      "wave": "Wave 1",
+      "native_source_record": "Water flow meter pulses, dosing pump rate, and tank conductivity from uHUB telemetry.",
+      "generated_primitive": "InterventionEvent",
+      "domain_profile": "WaterDosingIntervention",
+      "profile_id": "au.livestock.water-dosing.v1",
+      "downstream_beneficiaries": ["Rumin8", "Sea Forest", "FutureFeed licensees"],
+      "fixture": "fixtures/dit.water_dosing_intervention.json",
+      "expected": "expected/dit.water_dosing_intervention.json",
+      "adapter": "agevidence.proofkits.adapters:DITHubWaterDosingAdapter",
+      "readme": "readmes/dit.water_dosing_intervention.md",
+      "known_limitations": [
+        "Synthetic public-information fixture only.",
+        "Does not establish supplement efficacy, carbon-credit eligibility, or device certification."
+      ]
+    },
+    {
+      "id": "meq.objective_carcass_measurement",
+      "company": "MEQ Solutions",
+      "wave": "Wave 1",
+      "native_source_record": "Hyperspectral carcass needle spectral reflectance curve and grading metadata.",
+      "generated_primitive": "Observation",
+      "domain_profile": "ObjectiveCarcassMeasurement",
+      "profile_id": "au.livestock.objective-carcass-measurement.v1",
+      "downstream_beneficiaries": ["JBS", "Teys", "breed societies"],
+      "fixture": "fixtures/meq.objective_carcass_measurement.json",
+      "expected": "expected/meq.objective_carcass_measurement.json",
+      "adapter": "agevidence.proofkits.adapters:MEQObjectiveCarcassAdapter",
+      "readme": "readmes/meq.objective_carcass_measurement.md",
+      "known_limitations": [
+        "Synthetic public-information fixture only.",
+        "Does not establish grading approval, plant acceptance, or scientific validity of a device model."
+      ]
+    },
+    {
+      "id": "agscent.enteric_methane_measurement",
+      "company": "Agscent",
+      "wave": "Wave 1",
+      "native_source_record": "Breath sensor VOC channel array and UART stream sample.",
+      "generated_primitive": "Observation",
+      "domain_profile": "EntericMethaneMeasurement",
+      "profile_id": "au.livestock.enteric-methane-measurement.v1",
+      "downstream_beneficiaries": ["research feedlots", "university trial centers"],
+      "fixture": "fixtures/agscent.enteric_methane_measurement.json",
+      "expected": "expected/agscent.enteric_methane_measurement.json",
+      "adapter": "agevidence.proofkits.adapters:AgscentEntericMethaneAdapter",
+      "readme": "readmes/agscent.enteric_methane_measurement.md",
+      "known_limitations": [
+        "Synthetic public-information fixture only.",
+        "Does not establish methane-reduction claim ownership or third-party verification."
+      ]
+    },
+    {
+      "id": "cibo.spatial_biomass_observation",
+      "company": "Cibo Labs",
+      "wave": "Wave 1",
+      "native_source_record": "Sentinel/Landsat surface reflectance request with pasture biomass and fractional-cover model outputs.",
+      "generated_primitive": "SpatialObservation",
+      "domain_profile": "SpatialBiomassObservation",
+      "profile_id": "au.spatial.biomass-observation.v1",
+      "downstream_beneficiaries": ["Agronomeye", "MaiaGrazing", "soil carbon MRVs"],
+      "fixture": "fixtures/cibo.spatial_biomass_observation.json",
+      "expected": "expected/cibo.spatial_biomass_observation.json",
+      "adapter": "agevidence.proofkits.adapters:CiboSpatialBiomassAdapter",
+      "readme": "readmes/cibo.spatial_biomass_observation.md",
+      "known_limitations": [
+        "Synthetic public-information fixture only.",
+        "Does not establish model accuracy, land-condition eligibility, or institutional reliance."
+      ]
+    },
+    {
+      "id": "agronomeye.spatial_digital_twin_manifest",
+      "company": "Agronomeye",
+      "wave": "Wave 1",
+      "native_source_record": "High-resolution LiDAR and multispectral digital twin manifest.",
+      "generated_primitive": "SourceRecord",
+      "domain_profile": "SpatialDigitalTwinManifest",
+      "profile_id": "au.spatial.digital-twin-manifest.v1",
+      "downstream_beneficiaries": ["carbon project developers", "land valuation banks"],
+      "fixture": "fixtures/agronomeye.spatial_digital_twin_manifest.json",
+      "expected": "expected/agronomeye.spatial_digital_twin_manifest.json",
+      "adapter": "agevidence.proofkits.adapters:AgronomeyeDigitalTwinAdapter",
+      "readme": "readmes/agronomeye.spatial_digital_twin_manifest.md",
+      "known_limitations": [
+        "Synthetic public-information fixture only.",
+        "Does not transfer or inspect the point cloud; it only commits to a root hash."
+      ]
+    },
+    {
+      "id": "rumin8.feed_additive_delivery_manifest",
+      "company": "Rumin8",
+      "wave": "Wave 1",
+      "native_source_record": "Chemical supplement delivery receipt and formulation reference.",
+      "generated_primitive": "InterventionEvent",
+      "domain_profile": "FeedAdditiveDelivery",
+      "profile_id": "au.livestock.feed-additive-delivery.v1",
+      "downstream_beneficiaries": ["feedlot management systems", "Stockyard"],
+      "fixture": "fixtures/rumin8.feed_additive_delivery_manifest.json",
+      "expected": "expected/rumin8.feed_additive_delivery_manifest.json",
+      "adapter": "agevidence.proofkits.adapters:Rumin8FeedAdditiveAdapter",
+      "readme": "readmes/rumin8.feed_additive_delivery_manifest.md",
+      "known_limitations": [
+        "Synthetic public-information fixture only.",
+        "Does not establish product efficacy, ration compliance, or carbon-credit issuance."
+      ]
+    },
+    {
+      "id": "sea_forest.bioactive_product_lot_manifest",
+      "company": "Sea Forest",
+      "wave": "Wave 1",
+      "native_source_record": "Asparagopsis oil concentration batch CSV and product lot reference.",
+      "generated_primitive": "InterventionEvent",
+      "domain_profile": "BioactiveProductLot",
+      "profile_id": "au.livestock.bioactive-product-lot.v1",
+      "downstream_beneficiaries": ["Fonterra", "Bega", "feed manufacturers"],
+      "fixture": "fixtures/sea_forest.bioactive_product_lot_manifest.json",
+      "expected": "expected/sea_forest.bioactive_product_lot_manifest.json",
+      "adapter": "agevidence.proofkits.adapters:SeaForestBioactiveLotAdapter",
+      "readme": "readmes/sea_forest.bioactive_product_lot_manifest.md",
+      "known_limitations": [
+        "Synthetic public-information fixture only.",
+        "Does not establish batch regulatory acceptance, verifier reliance, or Scope 3 treatment."
+      ]
+    },
+    {
+      "id": "swarmfarm.precision_chemical_application",
+      "company": "SwarmFarm Robotics",
+      "wave": "Wave 2",
+      "native_source_record": "Autonomous field robot spray telemetry, nozzle pressure, and travel speed.",
+      "generated_primitive": "OperationalEvent",
+      "domain_profile": "PrecisionChemicalApplication",
+      "profile_id": "au.cropping.precision-chemical-application.v1",
+      "downstream_beneficiaries": ["Regrow", "Agreena", "grain buyers"],
+      "fixture": "fixtures/swarmfarm.precision_chemical_application.json",
+      "expected": "expected/swarmfarm.precision_chemical_application.json",
+      "adapter": "agevidence.proofkits.adapters:SwarmFarmPrecisionChemicalAdapter",
+      "readme": "readmes/swarmfarm.precision_chemical_application.md",
+      "known_limitations": [
+        "Synthetic public-information fixture only.",
+        "Does not establish chemical compliance, yield outcome, or carbon/accounting treatment."
+      ]
+    }
+  ]
+}

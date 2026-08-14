@@ -85,9 +85,19 @@ def test_wave_adversary_fixtures_reuse_core_primitives():
         "InterventionEvent": {"schema_id", "primitive_type", "target", "intervention", "quantity", "unit", "occurred_at", "batch", "source_records", "metadata", "limitations"},
         "OperationalEvent": {"schema_id", "primitive_type", "machine", "operation", "started_at", "completed_at", "location", "source_records", "metadata", "limitations"},
         "ModelRun": {"schema_id", "primitive_type", "model_id", "model_version", "implementation_digest", "input_commitments", "parameters", "execution_environment", "started_at", "completed_at", "outputs", "limitations", "verification", "metadata"},
+        "SourceRecord": {"schema_id", "primitive_type", "source_system", "record_id", "observed_at", "controlled_uri", "commitment", "metadata", "limitations"},
     }
 
-    assert {case["company"] for case in cases} == {"MEQ", "Agscent", "DIT", "Sea Forest", "Rumin8", "Cibo Labs", "Agronomeye", "Regrow", "SwarmFarm"}
+    assert {case["company"] for case in cases} == {
+        "DIT AgTech",
+        "MEQ Solutions",
+        "Agscent",
+        "Cibo Labs",
+        "Agronomeye",
+        "Rumin8",
+        "Sea Forest",
+        "SwarmFarm Robotics",
+    }
     for case in cases:
         result = ingest(case["payload"], primitive=case["primitive_type"])
         primitive_keys = set(result.primitive)

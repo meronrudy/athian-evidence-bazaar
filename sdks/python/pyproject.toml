@@ -56,7 +56,16 @@ where = ["src"]
 include = ["agevidence*"]
 
 [tool.setuptools.package-data]
-agevidence = ["py.typed", "resources/*.json", "fixtures/data/*.json", "schemas/*.json"]
+agevidence = [
+  "py.typed",
+  "resources/*.json",
+  "fixtures/data/*.json",
+  "schemas/*.json",
+  "proofkits/*.json",
+  "proofkits/fixtures/*.json",
+  "proofkits/expected/*.json",
+  "proofkits/readmes/*.md",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

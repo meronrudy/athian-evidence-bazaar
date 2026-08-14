@@ -1,0 +1,13 @@
+{
+  "spectral_file_id": "meq-spectrum-001",
+  "carcass_id": "carcass:meq-001",
+  "timestamp": "2026-08-12T00:00:00Z",
+  "intramuscular_fat_percent": 4.8,
+  "carcass_yield_percent": 56.2,
+  "unit": "percent",
+  "grading_tag": "AUS-MEAT-MSA-001",
+  "plant_id": "processor:meq-plant-07",
+  "instrument_id": "instrument:meq-needle-17",
+  "calibration_reference": "sha256:meq-calibration-001",
+  "spectral_digest": "sha256:meq-spectrum-001"
+}

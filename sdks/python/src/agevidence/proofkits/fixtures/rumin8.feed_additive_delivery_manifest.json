@@ -1,0 +1,13 @@
+{
+  "delivery_receipt_id": "rumin8-delivery-001",
+  "feed_mill_id": "feed_mill:rumin8-partner-01",
+  "herd_id": "herd:rumin8-001",
+  "delivered_at": "2026-08-12T00:00:00Z",
+  "product_id": "rumin8-product:tbm-formulation-a",
+  "formulation_spec_id": "rumin8-formulation-spec-2026-01",
+  "lot_id": "rumin8-lot-001",
+  "quantity_kg": 1.8,
+  "unit": "kg",
+  "inclusion_rate_g_head_day": 3.2,
+  "source_commitment": "sha256:rumin8-delivery-001"
+}

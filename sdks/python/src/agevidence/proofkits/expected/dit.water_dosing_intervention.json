@@ -1,0 +1,41 @@
+{
+  "proof_id": "dit.water_dosing_intervention",
+  "primitives": [
+    {
+      "metadata": {
+        "domain_profile": "WaterDosingIntervention",
+        "profile_id": "au.livestock.water-dosing.v1",
+        "native_source": "uHUB AWS IoT webhook",
+        "water_volume": 12.5,
+        "dosing_rate": 1.25,
+        "device_id": "water_line:dit-001",
+        "installation_id": "water_point:wp-44",
+        "water_point_id": "water_point:wp-44",
+        "pulse_count": 1250,
+        "pump_rate_l_min": 1.25,
+        "tank_conductivity_us_cm": 1820
+      },
+      "limitations": [],
+      "schema_id": "athian.agevidence.intervention_event.v1",
+      "primitive_type": "InterventionEvent",
+      "target": "water_line:dit-001",
+      "intervention": "methane_supplement_delivery",
+      "quantity": 12.5,
+      "unit": "l",
+      "occurred_at": "2026-08-12T00:00:00Z",
+      "batch": "dit-batch-001",
+      "source_records": [
+        {
+          "metadata": {},
+          "limitations": [],
+          "schema_id": "athian.agevidence.source_record.v1",
+          "primitive_type": "SourceRecord",
+          "source_system": "dit-uhub-webhook",
+          "record_id": "uhub-dose-001",
+          "observed_at": "2026-08-12T00:00:00Z",
+          "commitment": "sha256:dit-dose-001"
+        }
+      ]
+    }
+  ]
+}

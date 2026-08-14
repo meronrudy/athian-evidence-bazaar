@@ -1,0 +1,74 @@
+"""Registry for reusable domain evidence profiles."""
+
+from __future__ import annotations
+
+from .domain import (
+    BioactiveProductLot,
+    DomainProfile,
+    EntericMethaneMeasurement,
+    FeedAdditiveDelivery,
+    ObjectiveCarcassMeasurement,
+    PrecisionChemicalApplication,
+    SpatialBiomassObservation,
+    SpatialDigitalTwinManifest,
+    WaterDosingIntervention,
+)
+
+
+def default_domain_registry() -> "DomainProfileRegistry":
+    """Return the built-in reusable domain profile registry."""
+
+    registry = DomainProfileRegistry()
+    for profile in [
+        WaterDosingIntervention(),
+        FeedAdditiveDelivery(),
+        BioactiveProductLot(),
+        PrecisionChemicalApplication(),
+        ObjectiveCarcassMeasurement(),
+        EntericMethaneMeasurement(),
+        SpatialBiomassObservation(),
+        SpatialDigitalTwinManifest(),
+    ]:
+        registry.register(profile)
+    return registry
+
+
+class DomainProfileRegistry:
+    """In-memory registry for reusable domain profiles."""
+
+    def __init__(self) -> None:
+        self._profiles: dict[str, DomainProfile] = {}
+        self._aliases: dict[str, list[str]] = {}
+
+    def register(self, profile: DomainProfile) -> None:
+        profile_id = profile.metadata.profile_id
+        if profile_id in self._profiles:
+            raise ValueError(f"Duplicate domain profile id: {profile_id}")
+        self._profiles[profile_id] = profile
+        for alias in profile.metadata.aliases:
+            self._aliases.setdefault(alias, []).append(profile_id)
+
+    def all(self) -> list[DomainProfile]:
+        return list(self._profiles.values())
+
+    def resolve(self, value: str) -> DomainProfile:
+        if value in self._profiles:
+            return self._profiles[value]
+        matches = self._aliases.get(value, [])
+        if len(matches) == 1:
+            return self._profiles[matches[0]]
+        if len(matches) > 1:
+            raise ValueError(f"Ambiguous domain profile alias: {value}")
+        raise KeyError(f"Unknown domain profile: {value}")
+
+
+def list_domain_profiles() -> list[DomainProfile]:
+    """Return all built-in domain profiles."""
+
+    return default_domain_registry().all()
+
+
+def get_domain_profile(value: str) -> DomainProfile:
+    """Resolve a domain profile by id or unambiguous alias."""
+
+    return default_domain_registry().resolve(value)

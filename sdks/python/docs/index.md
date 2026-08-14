@@ -22,6 +22,7 @@ No account required for local use.
 5. [Local-first and Portable](concepts/local-first-portable.md)
 6. [Trust Boundary](concepts/trust-boundary.md)
 7. [Design Principles](concepts/design-principles.md)
+8. [Wave 1/2 Proof Kits](wave-1-2-proofkits.md)
 
 ## Developer Path
 
@@ -32,6 +33,7 @@ Local evidence:
 - [Build an intervention event](guides/build-intervention-event.md)
 - [Record a model run](guides/record-model-run.md)
 - [Build a source adapter](guides/build-source-adapter.md)
+- [Run Wave 1/2 proof kits](wave-1-2-proofkits.md)
 
 Provenance and verification:
 

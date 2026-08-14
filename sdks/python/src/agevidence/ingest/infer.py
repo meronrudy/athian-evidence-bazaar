@@ -9,6 +9,7 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict
 
 from agevidence.primitives import EvidencePrimitive
+from agevidence.profiles import get_domain_profile
 from agevidence.provenance import ProvenanceReport, check
 
 from .mappings import CandidateMapping, build_primitive, candidate_mappings
@@ -26,9 +27,10 @@ class IngestResult(BaseModel):
     candidates: list[CandidateMapping]
     local_digest: str
     committed: bool = False
+    profile_application: dict[str, Any] | None = None
 
 
-def ingest(record: dict[str, Any] | str | Path, primitive: str = "auto") -> IngestResult:
+def ingest(record: dict[str, Any] | str | Path, primitive: str = "auto", profile: str | None = None) -> IngestResult:
     """Infer and normalize a native object into a local evidence primitive."""
 
     payload = _load(record)
@@ -44,6 +46,9 @@ def ingest(record: dict[str, Any] | str | Path, primitive: str = "auto") -> Inge
         confidence = "explicit"
     primitive_obj = build_primitive(payload, primitive_type)
     report = check(primitive_obj)
+    profile_application = None
+    if profile:
+        profile_application = get_domain_profile(profile).map(primitive_obj).model_dump(mode="json", exclude_none=True)
     return IngestResult(
         primitive_type=primitive_type,
         confidence=confidence,
@@ -52,6 +57,7 @@ def ingest(record: dict[str, Any] | str | Path, primitive: str = "auto") -> Inge
         candidates=candidates,
         local_digest=primitive_obj.local_digest() if isinstance(primitive_obj, EvidencePrimitive) else "",
         committed=False,
+        profile_application=profile_application,
     )
 
 

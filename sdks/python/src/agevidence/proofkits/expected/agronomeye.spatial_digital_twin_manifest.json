@@ -1,0 +1,42 @@
+{
+  "proof_id": "agronomeye.spatial_digital_twin_manifest",
+  "primitives": [
+    {
+      "metadata": {
+        "domain_profile": "SpatialDigitalTwinManifest",
+        "profile_id": "au.spatial.digital-twin-manifest.v1",
+        "root_commitment": "sha256:agronomeye-point-cloud-root-001",
+        "chunk_manifest": [
+          {
+            "sequence": 1,
+            "digest": "sha256:agronomeye-point-cloud-root-001"
+          }
+        ],
+        "property_id": "property:agronomeye-001",
+        "point_count": 42500000,
+        "crs": "EPSG:7856",
+        "sensors": ["lidar", "multispectral"],
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [151.2, -33.8],
+              [151.22, -33.8],
+              [151.22, -33.78],
+              [151.2, -33.78],
+              [151.2, -33.8]
+            ]
+          ]
+        }
+      },
+      "limitations": [],
+      "schema_id": "athian.agevidence.source_record.v1",
+      "primitive_type": "SourceRecord",
+      "source_system": "agronomeye-digital-twin-export",
+      "record_id": "agronomeye-scan-001",
+      "observed_at": "2026-08-12T00:00:00Z",
+      "controlled_uri": "s3://synthetic-agronomeye/point-clouds/agronomeye-scan-001.laz",
+      "commitment": "sha256:agronomeye-point-cloud-root-001"
+    }
+  ]
+}

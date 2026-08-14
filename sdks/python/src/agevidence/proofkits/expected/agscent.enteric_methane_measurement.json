@@ -1,0 +1,43 @@
+{
+  "proof_id": "agscent.enteric_methane_measurement",
+  "primitives": [
+    {
+      "metadata": {
+        "domain_profile": "EntericMethaneMeasurement",
+        "profile_id": "au.livestock.enteric-methane-measurement.v1",
+        "raw_frame_commitment": "sha256:agscent-breath-001",
+        "raw_uart_hex": "0x0A13FF7C001B",
+        "voc_channels": {
+          "ch4": 138.2,
+          "co2": 412.4,
+          "humidity": 61.3
+        }
+      },
+      "limitations": [],
+      "schema_id": "athian.agevidence.observation.v1",
+      "primitive_type": "Observation",
+      "subject": "animal:agscent-001",
+      "observable": "methane_concentration",
+      "value": 138.2,
+      "unit": "ppm",
+      "observed_at": "2026-08-12T00:00:00Z",
+      "instrument": {
+        "id": "instrument:agscent-air-09",
+        "calibration_reference": "sha256:agscent-calibration-001"
+      },
+      "method": "breath_voc_sensor_array",
+      "source_records": [
+        {
+          "metadata": {},
+          "limitations": [],
+          "schema_id": "athian.agevidence.source_record.v1",
+          "primitive_type": "SourceRecord",
+          "source_system": "agscent-uart-stream",
+          "record_id": "agscent-breath-001",
+          "observed_at": "2026-08-12T00:00:00Z",
+          "commitment": "sha256:agscent-breath-001"
+        }
+      ]
+    }
+  ]
+}

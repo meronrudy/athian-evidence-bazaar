@@ -1,0 +1,40 @@
+{
+  "proof_id": "meq.objective_carcass_measurement",
+  "primitives": [
+    {
+      "metadata": {
+        "domain_profile": "ObjectiveCarcassMeasurement",
+        "profile_id": "au.livestock.objective-carcass-measurement.v1",
+        "raw_artifact_digest": "sha256:meq-spectrum-001",
+        "carcass_yield_percent": 56.2,
+        "grading_tag": "AUS-MEAT-MSA-001",
+        "plant_id": "processor:meq-plant-07"
+      },
+      "limitations": [],
+      "schema_id": "athian.agevidence.observation.v1",
+      "primitive_type": "Observation",
+      "subject": "carcass:meq-001",
+      "observable": "intramuscular_fat_percent",
+      "value": 4.8,
+      "unit": "percent",
+      "observed_at": "2026-08-12T00:00:00Z",
+      "instrument": {
+        "id": "instrument:meq-needle-17",
+        "calibration_reference": "sha256:meq-calibration-001"
+      },
+      "method": "hyperspectral_needle_reflectance",
+      "source_records": [
+        {
+          "metadata": {},
+          "limitations": [],
+          "schema_id": "athian.agevidence.source_record.v1",
+          "primitive_type": "SourceRecord",
+          "source_system": "meq-spectral-export",
+          "record_id": "meq-spectrum-001",
+          "observed_at": "2026-08-12T00:00:00Z",
+          "commitment": "sha256:meq-spectrum-001"
+        }
+      ]
+    }
+  ]
+}

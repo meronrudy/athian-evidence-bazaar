@@ -1,0 +1,16 @@
+{
+  "breath_session_id": "agscent-breath-001",
+  "animal_id": "animal:agscent-001",
+  "timestamp": "2026-08-12T00:00:00Z",
+  "sensor_id": "instrument:agscent-air-09",
+  "raw_uart_hex": "0x0A13FF7C001B",
+  "methane_ppm": 138.2,
+  "unit": "ppm",
+  "calibration_reference": "sha256:agscent-calibration-001",
+  "source_commitment": "sha256:agscent-breath-001",
+  "voc_channels": {
+    "ch4": 138.2,
+    "co2": 412.4,
+    "humidity": 61.3
+  }
+}

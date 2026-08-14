@@ -1,0 +1,37 @@
+{
+  "proof_id": "sea_forest.bioactive_product_lot_manifest",
+  "primitives": [
+    {
+      "metadata": {
+        "domain_profile": "BioactiveProductLot",
+        "profile_id": "au.livestock.bioactive-product-lot.v1",
+        "product_lot_id": "sea-forest-lot-001",
+        "active_compound": "asparagopsis_oil_extract",
+        "concentration": 82.4,
+        "manufacturer_batch_id": "seaweed-harvest-batch-2026-08",
+        "asparagopsis_oil_concentration_mg_g": 82.4
+      },
+      "limitations": [],
+      "schema_id": "athian.agevidence.intervention_event.v1",
+      "primitive_type": "InterventionEvent",
+      "target": "herd:sea-forest-001",
+      "intervention": "asparagopsis_bioactive_supplementation",
+      "quantity": 2.4,
+      "unit": "kg",
+      "occurred_at": "2026-08-12T00:00:00Z",
+      "batch": "sea-forest-lot-001",
+      "source_records": [
+        {
+          "metadata": {},
+          "limitations": [],
+          "schema_id": "athian.agevidence.source_record.v1",
+          "primitive_type": "SourceRecord",
+          "source_system": "sea-forest-batch-csv",
+          "record_id": "sea-forest-row-001",
+          "observed_at": "2026-08-12T00:00:00Z",
+          "commitment": "sha256:sea-forest-row-001"
+        }
+      ]
+    }
+  ]
+}

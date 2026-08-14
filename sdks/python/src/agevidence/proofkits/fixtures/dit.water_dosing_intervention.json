@@ -1,0 +1,13 @@
+{
+  "webhook_id": "uhub-dose-001",
+  "water_line_id": "water_line:dit-001",
+  "water_point_id": "water_point:wp-44",
+  "timestamp": "2026-08-12T00:00:00Z",
+  "pulse_count": 1250,
+  "pump_rate_l_min": 1.25,
+  "delivered_litres": 12.5,
+  "unit": "l",
+  "tank_conductivity_us_cm": 1820,
+  "supplement_batch_id": "dit-batch-001",
+  "source_commitment": "sha256:dit-dose-001"
+}

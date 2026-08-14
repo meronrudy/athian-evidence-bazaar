@@ -20,11 +20,15 @@ from .explain import explain as _explain
 from .exports import export_evidence as _export_evidence
 from .fixtures import fixture_names, load_fixture, write_fixture
 from .ingest import ingest as _ingest
+from .profiles import get_domain_profile, list_domain_profiles
+from .proofkits import list_proofkits, run_proofkit, write_proofkit
 from .verification import Verifier
 
 app = typer.Typer(help="AgEvidence Developer OS CLI")
 source_adapter_app = typer.Typer(help="Source adapter commands")
 fixture_app = typer.Typer(help="Local synthetic fixture commands")
+proof_app = typer.Typer(help="Wave proof-kit commands")
+profile_app = typer.Typer(help="Domain profile commands")
 project_app = typer.Typer(help="Project commands")
 source_app = typer.Typer(help="Source-record commands")
 model_app = typer.Typer(help="Model-run commands")
@@ -38,6 +42,8 @@ replay_app = typer.Typer(help="Replay fixture scenarios")
 
 app.add_typer(source_adapter_app, name="adapter")
 app.add_typer(fixture_app, name="fixture")
+app.add_typer(proof_app, name="proof")
+app.add_typer(profile_app, name="profile")
 app.add_typer(project_app, name="project")
 app.add_typer(source_app, name="source")
 app.add_typer(model_app, name="model")
@@ -100,12 +106,13 @@ def doctor_command(output: str = typer.Option("table", "--format")) -> None:
 def ingest_command(
     record: Path = typer.Argument(..., exists=True),
     primitive: str = typer.Option("auto", "--primitive"),
+    profile: str | None = typer.Option(None, "--profile", help="Optional reusable domain profile id or alias."),
     output: str = typer.Option("json", "--format"),
 ) -> None:
     """Infer a local evidence primitive from native JSON."""
 
     try:
-        result = _ingest(record, primitive=primitive)
+        result = _ingest(record, primitive=primitive, profile=profile)
         if output == "table":
             _print_ingest_table(result)
             return
@@ -190,6 +197,87 @@ def fixture_write(name: str = typer.Argument(...), out: Path = typer.Option(...)
 
     try:
         _emit({"path": str(write_fixture(name, out))}, output)
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@proof_app.command("list")
+def proof_list(output: str = typer.Option("table", "--format")) -> None:
+    """List packaged Wave 1/2 local proof kits."""
+
+    try:
+        proofkits = list_proofkits()
+        if output == "table":
+            _print_proofkit_list(proofkits)
+            return
+        _emit({"proofkits": [proofkit.model_dump(mode="json") for proofkit in proofkits]}, output)
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@proof_app.command("run")
+def proof_run(
+    proof_id: str = typer.Argument(...),
+    output: str = typer.Option("table", "--format"),
+    rust_validate: bool = typer.Option(False, "--rust-validate"),
+    issue_receipt_projection: bool = typer.Option(False, "--issue-receipt-projection"),
+    verifier_command: str | None = typer.Option(None, "--verifier-command", help="Rust verifier command, for example target/debug/baink-cli."),
+) -> None:
+    """Run a 60-second local proof kit for a partner-shaped native record."""
+
+    try:
+        result = run_proofkit(
+            proof_id,
+            rust_validate=rust_validate,
+            issue_receipt_projection=issue_receipt_projection,
+            verifier_command=verifier_command,
+        )
+        if output == "table":
+            _print_proofkit_run(result)
+        else:
+            _emit(result, output)
+        if any(item.status == "fail" for item in [*result.rust_validation, *result.receipt_projections]):
+            raise typer.Exit(code=1)
+    except typer.Exit:
+        raise
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@proof_app.command("write")
+def proof_write(proof_id: str = typer.Argument(...), out: Path = typer.Option(...), output: str = typer.Option("json", "--format")) -> None:
+    """Write a proof-kit fixture, expected output, README, and adapter shim."""
+
+    try:
+        _emit({"paths": write_proofkit(proof_id, out)}, output)
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@profile_app.command("list")
+def profile_list(output: str = typer.Option("table", "--format")) -> None:
+    """List reusable domain profiles."""
+
+    try:
+        profiles = list_domain_profiles()
+        if output == "table":
+            _print_profile_list(profiles)
+            return
+        _emit({"profiles": [profile.metadata.model_dump(mode="json") for profile in profiles]}, output)
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@profile_app.command("inspect")
+def profile_inspect(profile_id: str = typer.Argument(...), output: str = typer.Option("json", "--format")) -> None:
+    """Inspect one reusable domain profile by id or alias."""
+
+    try:
+        profile = get_domain_profile(profile_id)
+        if output == "table":
+            _print_profile(profile)
+            return
+        _emit(profile.metadata, output)
     except Exception as exc:
         _handle_error(exc)
 
@@ -463,6 +551,9 @@ def _print_ingest_table(result) -> None:
     console.print(f"Structural validity: {_status(result.provenance.structural_validity)}")
     console.print(f"Provenance completeness: {_status(result.provenance.provenance_completeness)} ({result.provenance.score}%)")
     console.print(f"Local digest: {result.local_digest}")
+    if result.profile_application:
+        console.print(f"Profile: {result.profile_application['profile_id']}")
+        console.print(f"Profile status: {_status(result.profile_application['status'])}")
     console.print(result.provenance.authority_boundary)
 
 
@@ -505,6 +596,65 @@ def _print_source_adapter_report(report) -> None:
         for failure in report.failures:
             console.print(f"  {failure}")
     console.print(report.authority_boundary)
+
+
+def _print_proofkit_list(proofkits) -> None:
+    console.print("AgEvidence Wave Proof Kits")
+    for proofkit in proofkits:
+        console.print(f"{proofkit.id:<48} {proofkit.generated_primitive:<20} {proofkit.domain_profile}")
+    console.print("Local proofs use canonical primitives plus reusable domain profiles.")
+
+
+def _print_proofkit_run(result) -> None:
+    console.print("AgEvidence Wave Proof")
+    console.print(f"Proof kit: {result.proof_id}")
+    console.print(f"Company: {result.company}")
+    console.print(f"Domain profile: {result.domain_profile}")
+    console.print(f"Profile ID: {result.profile_id}")
+    console.print(f"Generated primitive: {result.generated_primitive}")
+    console.print(f"Native source record: {result.native_source_record}")
+    console.print(f"Mapped primitives: {len(result.primitives)}")
+    profile_status = ", ".join(item.get("status", "unknown").upper() for item in result.profile_applications)
+    console.print(f"Profile application: {profile_status}")
+    console.print(f"Source adapter passed: {str(result.adapter_report.get('passed')).upper()}")
+    for index, digest in enumerate(result.local_digests, start=1):
+        console.print(f"Local digest {index}: {digest}")
+    if result.rust_validation:
+        for item in result.rust_validation:
+            console.print(f"Rust validate {item.schema_name}: {item.status.upper()}")
+    if result.receipt_projections:
+        for item in result.receipt_projections:
+            console.print(f"Receipt projection {item.schema_name}: {item.status.upper()}")
+        console.print("Receipt projections are delegated Rust outputs and are not production signatures.")
+    console.print(result.authority_boundary)
+
+
+def _print_profile_list(profiles) -> None:
+    console.print("AgEvidence Domain Profiles")
+    for profile in profiles:
+        metadata = profile.metadata
+        console.print(f"{metadata.profile_id:<52} {metadata.expected_primitive_type:<20} {metadata.name}")
+    console.print("Profiles describe domain semantics above invariant core primitives.")
+
+
+def _print_profile(profile) -> None:
+    metadata = profile.metadata
+    console.print("AgEvidence Domain Profile")
+    console.print(f"Profile ID: {metadata.profile_id}")
+    console.print(f"Name: {metadata.name}")
+    console.print(f"Version: {metadata.version}")
+    console.print(f"Family: {metadata.family}")
+    console.print(f"Expected primitive: {metadata.expected_primitive_type}")
+    if metadata.aliases:
+        console.print(f"Aliases: {', '.join(metadata.aliases)}")
+    if metadata.input_requirements:
+        console.print("Input requirements:")
+        for requirement in metadata.input_requirements:
+            console.print(f"  {requirement}")
+    if metadata.limitations:
+        console.print("Limitations:")
+        for limitation in metadata.limitations:
+            console.print(f"  {limitation}")
 
 
 if __name__ == "__main__":

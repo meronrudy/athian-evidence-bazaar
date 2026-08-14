@@ -36,10 +36,13 @@
       "agevidence.ingest",
       "agevidence.adapters.Adapter",
       "agevidence.adapters.test_source_adapter",
-      "agevidence.adapters.load_source_adapter"
+      "agevidence.adapters.load_source_adapter",
+      "agevidence.proofkits.list_proofkits",
+      "agevidence.proofkits.run_proofkit"
     ],
     "cli": [
-      "agevidence adapter test"
+      "agevidence adapter test",
+      "agevidence proof"
     ]
   },
   "profile_specific": {
@@ -77,4 +80,3 @@
   },
   "authority_boundary": "Local SDK PASS means structure, provenance, lineage, deterministic representation, or contract compatibility. It does not establish regulatory eligibility, scientific validity, carbon-credit issuance, third-party verification, claim ownership, or institutional reliance."
 }
-

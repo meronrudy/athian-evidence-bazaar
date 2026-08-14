@@ -1,0 +1,38 @@
+{
+  "proof_id": "rumin8.feed_additive_delivery_manifest",
+  "primitives": [
+    {
+      "metadata": {
+        "domain_profile": "FeedAdditiveDelivery",
+        "profile_id": "au.livestock.feed-additive-delivery.v1",
+        "product_lot_id": "rumin8-lot-001",
+        "custody_state": "delivered",
+        "feed_mill_id": "feed_mill:rumin8-partner-01",
+        "formulation_spec_id": "rumin8-formulation-spec-2026-01",
+        "product_id": "rumin8-product:tbm-formulation-a",
+        "inclusion_rate_g_head_day": 3.2
+      },
+      "limitations": [],
+      "schema_id": "athian.agevidence.intervention_event.v1",
+      "primitive_type": "InterventionEvent",
+      "target": "herd:rumin8-001",
+      "intervention": "synthesized_tribromomethane_delivery",
+      "quantity": 1.8,
+      "unit": "kg",
+      "occurred_at": "2026-08-12T00:00:00Z",
+      "batch": "rumin8-lot-001",
+      "source_records": [
+        {
+          "metadata": {},
+          "limitations": [],
+          "schema_id": "athian.agevidence.source_record.v1",
+          "primitive_type": "SourceRecord",
+          "source_system": "rumin8-delivery-receipt",
+          "record_id": "rumin8-delivery-001",
+          "observed_at": "2026-08-12T00:00:00Z",
+          "commitment": "sha256:rumin8-delivery-001"
+        }
+      ]
+    }
+  ]
+}

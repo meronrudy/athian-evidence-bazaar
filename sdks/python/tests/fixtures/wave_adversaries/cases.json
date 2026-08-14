@@ -1,21 +1,59 @@
 [
   {
-    "company": "MEQ",
-    "primitive_type": "Observation",
+    "company": "DIT AgTech",
+    "primitive_type": "InterventionEvent",
     "payload": {
-      "subject": "animal:meq-001",
-      "observable": "liveweight",
-      "value": 481.4,
-      "unit": "kg",
-      "observed_at": "2026-08-12T00:00:00Z",
+      "target": "water_line:dit-001",
+      "intervention": "methane_supplement_delivery",
+      "quantity": 12.5,
+      "unit": "l",
+      "occurred_at": "2026-08-12T00:00:00Z",
+      "batch": "dit-batch-001",
       "source_records": [
         {
-          "source_system": "meq-native-export",
-          "record_id": "meq-weight-001",
+          "source_system": "dit-uhub-webhook",
+          "record_id": "uhub-dose-001",
           "observed_at": "2026-08-12T00:00:00Z",
-          "commitment": "sha256:meq-weight-001"
+          "commitment": "sha256:dit-dose-001"
         }
-      ]
+      ],
+      "metadata": {
+        "domain_profile": "WaterDosingIntervention",
+        "profile_id": "au.livestock.water-dosing.v1",
+        "pulse_count": 1250,
+        "pump_rate_l_min": 1.25,
+        "tank_conductivity_us_cm": 1820
+      }
+    }
+  },
+  {
+    "company": "MEQ Solutions",
+    "primitive_type": "Observation",
+    "payload": {
+      "subject": "carcass:meq-001",
+      "observable": "intramuscular_fat_percent",
+      "value": 4.8,
+      "unit": "percent",
+      "observed_at": "2026-08-12T00:00:00Z",
+      "instrument": {
+        "id": "instrument:meq-needle-17",
+        "calibration_reference": "sha256:meq-calibration-001"
+      },
+      "method": "hyperspectral_needle_reflectance",
+      "source_records": [
+        {
+          "source_system": "meq-spectral-export",
+          "record_id": "meq-spectrum-001",
+          "observed_at": "2026-08-12T00:00:00Z",
+          "commitment": "sha256:meq-spectrum-001"
+        }
+      ],
+      "metadata": {
+        "domain_profile": "ObjectiveCarcassMeasurement",
+        "profile_id": "au.livestock.objective-carcass-measurement.v1",
+        "carcass_yield_percent": 56.2,
+        "grading_tag": "AUS-MEAT-MSA-001"
+      }
     }
   },
   {
@@ -23,82 +61,28 @@
     "primitive_type": "Observation",
     "payload": {
       "subject": "animal:agscent-001",
-      "observable": "enteric_methane",
+      "observable": "methane_concentration",
       "value": 138.2,
-      "unit": "g_day",
+      "unit": "ppm",
       "observed_at": "2026-08-12T00:00:00Z",
       "instrument": {
-        "id": "instrument:portable-sniffer-001",
+        "id": "instrument:agscent-air-09",
         "calibration_reference": "sha256:agscent-calibration-001"
       },
+      "method": "breath_voc_sensor_array",
       "source_records": [
         {
-          "source_system": "agscent-native-export",
-          "record_id": "agscent-measurement-001",
+          "source_system": "agscent-uart-stream",
+          "record_id": "agscent-breath-001",
           "observed_at": "2026-08-12T00:00:00Z",
-          "commitment": "sha256:agscent-measurement-001"
+          "commitment": "sha256:agscent-breath-001"
         }
-      ]
-    }
-  },
-  {
-    "company": "DIT",
-    "primitive_type": "InterventionEvent",
-    "payload": {
-      "target": "water_line:dit-001",
-      "intervention": "water_treatment",
-      "quantity": 12.5,
-      "unit": "l",
-      "occurred_at": "2026-08-12T00:00:00Z",
-      "batch": "dit-batch-001",
-      "source_records": [
-        {
-          "source_system": "dit-telemetry",
-          "record_id": "dit-dose-001",
-          "observed_at": "2026-08-12T00:00:00Z",
-          "commitment": "sha256:dit-dose-001"
-        }
-      ]
-    }
-  },
-  {
-    "company": "Sea Forest",
-    "primitive_type": "InterventionEvent",
-    "payload": {
-      "target": "herd:sea-forest-001",
-      "intervention": "feed_additive",
-      "quantity": 2.4,
-      "unit": "kg",
-      "occurred_at": "2026-08-12T00:00:00Z",
-      "batch": "sea-forest-lot-001",
-      "source_records": [
-        {
-          "source_system": "sea-forest-batch-ledger",
-          "record_id": "sea-forest-dose-001",
-          "observed_at": "2026-08-12T00:00:00Z",
-          "commitment": "sha256:sea-forest-dose-001"
-        }
-      ]
-    }
-  },
-  {
-    "company": "Rumin8",
-    "primitive_type": "InterventionEvent",
-    "payload": {
-      "target": "herd:rumin8-001",
-      "intervention": "feed_additive",
-      "quantity": 1.8,
-      "unit": "kg",
-      "occurred_at": "2026-08-12T00:00:00Z",
-      "batch": "rumin8-lot-001",
-      "source_records": [
-        {
-          "source_system": "rumin8-delivery-log",
-          "record_id": "rumin8-dose-001",
-          "observed_at": "2026-08-12T00:00:00Z",
-          "commitment": "sha256:rumin8-dose-001"
-        }
-      ]
+      ],
+      "metadata": {
+        "domain_profile": "EntericMethaneMeasurement",
+        "profile_id": "au.livestock.enteric-methane-measurement.v1",
+        "raw_uart_hex": "0x0A13FF7C001B"
+      }
     }
   },
   {
@@ -106,30 +90,6 @@
     "primitive_type": "SpatialObservation",
     "payload": {
       "subject": "paddock:cibo-001",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [151.2, -33.8]
-      },
-      "observable": "ground_cover",
-      "value": 0.82,
-      "unit": "ratio",
-      "observed_at": "2026-08-12T00:00:00Z",
-      "crs": "EPSG:4326",
-      "source_records": [
-        {
-          "source_system": "cibo-labs-scene",
-          "record_id": "cibo-scene-001",
-          "observed_at": "2026-08-12T00:00:00Z",
-          "commitment": "sha256:cibo-scene-001"
-        }
-      ]
-    }
-  },
-  {
-    "company": "Agronomeye",
-    "primitive_type": "SpatialObservation",
-    "payload": {
-      "subject": "property:agronomeye-001",
       "geometry": {
         "type": "Polygon",
         "coordinates": [
@@ -142,74 +102,124 @@
           ]
         ]
       },
-      "observable": "pasture_biomass",
+      "observable": "pasture_biomass_foo",
       "value": 1840,
       "unit": "kg_dm_ha",
       "observed_at": "2026-08-12T00:00:00Z",
       "crs": "EPSG:4326",
       "source_records": [
         {
-          "source_system": "agronomeye-boundary-model",
-          "record_id": "agronomeye-scene-001",
+          "source_system": "cibo-spatial-api",
+          "record_id": "cibo-request-001",
           "observed_at": "2026-08-12T00:00:00Z",
-          "commitment": "sha256:agronomeye-scene-001"
-        }
-      ]
-    }
-  },
-  {
-    "company": "Regrow",
-    "primitive_type": "ModelRun",
-    "payload": {
-      "model_id": "regrow-soil-model",
-      "model_version": "v1",
-      "implementation_digest": "sha256:regrow-implementation-001",
-      "input_commitments": [
-        "sha256:regrow-input-001"
-      ],
-      "parameters": {
-        "scenario": "practice-change"
-      },
-      "execution_environment": {
-        "runtime": "container"
-      },
-      "started_at": "2026-08-12T00:00:00Z",
-      "completed_at": "2026-08-12T00:05:00Z",
-      "outputs": [
-        {
-          "observable": "soil_carbon_delta",
-          "value": 1.2,
-          "unit": "t_co2e_ha"
+          "commitment": "sha256:cibo-request-001"
         }
       ],
-      "limitations": [
-        "synthetic adversary fixture"
-      ],
-      "verification": {
-        "normalized_output_digest": "sha256:regrow-output-001"
+      "metadata": {
+        "domain_profile": "SpatialBiomassObservation",
+        "profile_id": "au.spatial.biomass-observation.v1",
+        "fractional_cover": 0.82
       }
     }
   },
   {
-    "company": "SwarmFarm",
+    "company": "Agronomeye",
+    "primitive_type": "SourceRecord",
+    "payload": {
+      "source_system": "agronomeye-digital-twin-export",
+      "record_id": "agronomeye-scan-001",
+      "observed_at": "2026-08-12T00:00:00Z",
+      "controlled_uri": "s3://synthetic-agronomeye/point-clouds/agronomeye-scan-001.laz",
+      "commitment": "sha256:agronomeye-point-cloud-root-001",
+      "metadata": {
+        "domain_profile": "SpatialDigitalTwinManifest",
+        "profile_id": "au.spatial.digital-twin-manifest.v1",
+        "property_id": "property:agronomeye-001",
+        "point_count": 42500000,
+        "crs": "EPSG:7856"
+      }
+    }
+  },
+  {
+    "company": "Rumin8",
+    "primitive_type": "InterventionEvent",
+    "payload": {
+      "target": "herd:rumin8-001",
+      "intervention": "synthesized_tribromomethane_delivery",
+      "quantity": 1.8,
+      "unit": "kg",
+      "occurred_at": "2026-08-12T00:00:00Z",
+      "batch": "rumin8-lot-001",
+      "source_records": [
+        {
+          "source_system": "rumin8-delivery-receipt",
+          "record_id": "rumin8-delivery-001",
+          "observed_at": "2026-08-12T00:00:00Z",
+          "commitment": "sha256:rumin8-delivery-001"
+        }
+      ],
+      "metadata": {
+        "domain_profile": "FeedAdditiveDelivery",
+        "profile_id": "au.livestock.feed-additive-delivery.v1",
+        "formulation_spec_id": "rumin8-formulation-spec-2026-01"
+      }
+    }
+  },
+  {
+    "company": "Sea Forest",
+    "primitive_type": "InterventionEvent",
+    "payload": {
+      "target": "herd:sea-forest-001",
+      "intervention": "asparagopsis_bioactive_supplementation",
+      "quantity": 2.4,
+      "unit": "kg",
+      "occurred_at": "2026-08-12T00:00:00Z",
+      "batch": "sea-forest-lot-001",
+      "source_records": [
+        {
+          "source_system": "sea-forest-batch-csv",
+          "record_id": "sea-forest-row-001",
+          "observed_at": "2026-08-12T00:00:00Z",
+          "commitment": "sha256:sea-forest-row-001"
+        }
+      ],
+      "metadata": {
+        "domain_profile": "BioactiveProductLot",
+        "profile_id": "au.livestock.bioactive-product-lot.v1",
+        "asparagopsis_oil_concentration_mg_g": 82.4
+      }
+    }
+  },
+  {
+    "company": "SwarmFarm Robotics",
     "primitive_type": "OperationalEvent",
     "payload": {
       "machine": "machine:swarmfarm-001",
-      "operation": "spot_spray",
+      "operation": "precision_chemical_application",
       "started_at": "2026-08-12T00:00:00Z",
       "completed_at": "2026-08-12T00:12:00Z",
       "location": {
-        "type": "Point",
-        "coordinates": [151.2, -33.8]
+        "type": "LineString",
+        "coordinates": [
+          [151.2, -33.8],
+          [151.205, -33.797],
+          [151.21, -33.795]
+        ]
       },
       "source_records": [
         {
-          "source_system": "swarmfarm-telemetry",
-          "record_id": "swarmfarm-operation-001",
+          "source_system": "swarmconnect-spray-webhook",
+          "record_id": "swarmfarm-spray-001",
           "observed_at": "2026-08-12T00:00:00Z",
-          "commitment": "sha256:swarmfarm-operation-001"
+          "commitment": "sha256:swarmfarm-spray-001"
         }
-      ]
+      ],
+      "metadata": {
+        "domain_profile": "PrecisionChemicalApplication",
+        "profile_id": "au.cropping.precision-chemical-application.v1",
+        "nozzle_pressure_kpa": 280,
+        "speed_m_s": 1.7
+      }
     }
   }
 ]

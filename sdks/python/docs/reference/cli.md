@@ -24,6 +24,20 @@ agevidence adapter test my_package.adapters:MyAdapter fixtures/
 
 `adapter` is singular and means source-system mapping adapter.
 
+## Wave Proof-Kit Commands
+
+```bash
+agevidence proof list
+agevidence proof run dit.water_dosing_intervention --format table
+agevidence proof run cibo.spatial_biomass_observation --rust-validate
+agevidence proof write sea_forest.bioactive_product_lot_manifest --out ./sea-forest-proof
+```
+
+Proof kits are local source-adapter demonstrations for Wave 1/2 partner-shaped
+records. `--rust-validate` and `--issue-receipt-projection` delegate to
+`baink-cli agevidence validate/issue`; Python still does not perform receipt
+signing or bundle verification internally.
+
 ## Country/Profile Adapter Commands
 
 ```bash
@@ -64,4 +78,3 @@ Any local `PASS` reports structure, provenance, lineage, deterministic
 representation, or contract compatibility. It does not establish regulatory
 eligibility, scientific validity, carbon-credit issuance, third-party
 verification, claim ownership, or institutional reliance.
-

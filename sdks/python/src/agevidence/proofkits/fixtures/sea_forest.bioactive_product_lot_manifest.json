@@ -1,0 +1,11 @@
+{
+  "batch_csv_row_id": "sea-forest-row-001",
+  "herd_id": "herd:sea-forest-001",
+  "mixed_at": "2026-08-12T00:00:00Z",
+  "product_lot_id": "sea-forest-lot-001",
+  "manufacturer_batch_id": "seaweed-harvest-batch-2026-08",
+  "asparagopsis_oil_concentration_mg_g": 82.4,
+  "quantity_kg": 2.4,
+  "unit": "kg",
+  "source_commitment": "sha256:sea-forest-row-001"
+}

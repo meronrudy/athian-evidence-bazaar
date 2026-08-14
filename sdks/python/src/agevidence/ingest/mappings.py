@@ -165,7 +165,9 @@ def _source_records(payload: dict[str, Any]) -> list[SourceRecord]:
 
 
 def _metadata(payload: dict[str, Any]) -> dict[str, Any]:
-    return {"native": payload}
+    metadata = dict(payload.get("metadata") or {})
+    metadata.setdefault("native", payload)
+    return metadata
 
 
 def _first(payload: dict[str, Any], *keys: str, default: Any = ...):
