@@ -27,6 +27,13 @@ SCHEMA_BY_PRIMITIVE = {
     "InterventionEvent": "intervention_event",
     "OperationalEvent": "operational_event",
     "ModelRun": "model_run",
+    "CalibrationRecord": "calibration_record",
+    "ProductLot": "product_lot",
+    "AssetState": "asset_state",
+    "DerivedObservation": "derived_observation",
+    "Transformation": "transformation",
+    "Attachment": "attachment",
+    "ExternalObject": "external_object",
 }
 
 

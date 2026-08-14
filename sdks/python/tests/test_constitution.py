@@ -15,12 +15,19 @@ from agevidence.ingest import ingest
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SDK_ROOT = REPO_ROOT / "sdks" / "python"
 CORE_SCHEMA_STEMS = [
+    "asset_state",
+    "attachment",
+    "calibration_record",
+    "derived_observation",
+    "external_object",
     "source_record",
     "observation",
     "intervention_event",
     "operational_event",
     "spatial_observation",
     "model_run",
+    "product_lot",
+    "transformation",
 ]
 
 

@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+import inspect
+from importlib import metadata
+from typing import Any
+
 from .domain import (
     BioactiveProductLot,
     DomainProfile,
@@ -15,7 +19,7 @@ from .domain import (
 )
 
 
-def default_domain_registry() -> "DomainProfileRegistry":
+def default_domain_registry(*, load_entry_points: bool = True) -> "DomainProfileRegistry":
     """Return the built-in reusable domain profile registry."""
 
     registry = DomainProfileRegistry()
@@ -30,6 +34,8 @@ def default_domain_registry() -> "DomainProfileRegistry":
         SpatialDigitalTwinManifest(),
     ]:
         registry.register(profile)
+    if load_entry_points:
+        registry.load_entry_points()
     return registry
 
 
@@ -49,7 +55,17 @@ class DomainProfileRegistry:
             self._aliases.setdefault(alias, []).append(profile_id)
 
     def all(self) -> list[DomainProfile]:
-        return list(self._profiles.values())
+        return sorted(self._profiles.values(), key=lambda profile: profile.metadata.profile_id)
+
+    def load_entry_points(self, group: str = "agevidence.profiles") -> list[DomainProfile]:
+        """Load installed domain profiles from Python entry points."""
+
+        loaded: list[DomainProfile] = []
+        for entry_point in metadata.entry_points().select(group=group):
+            profile = _instantiate_domain_profile(entry_point.load())
+            self.register(profile)
+            loaded.append(profile)
+        return loaded
 
     def resolve(self, value: str) -> DomainProfile:
         if value in self._profiles:
@@ -62,13 +78,20 @@ class DomainProfileRegistry:
         raise KeyError(f"Unknown domain profile: {value}")
 
 
-def list_domain_profiles() -> list[DomainProfile]:
+def list_domain_profiles(*, load_entry_points: bool = True) -> list[DomainProfile]:
     """Return all built-in domain profiles."""
 
-    return default_domain_registry().all()
+    return default_domain_registry(load_entry_points=load_entry_points).all()
 
 
 def get_domain_profile(value: str) -> DomainProfile:
     """Resolve a domain profile by id or unambiguous alias."""
 
     return default_domain_registry().resolve(value)
+
+
+def _instantiate_domain_profile(target: Any) -> DomainProfile:
+    profile = target() if inspect.isclass(target) else target() if callable(target) and not isinstance(target, DomainProfile) else target
+    if not isinstance(profile, DomainProfile):
+        raise TypeError("Profile entry point must return an agevidence.profiles.DomainProfile.")
+    return profile

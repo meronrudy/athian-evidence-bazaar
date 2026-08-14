@@ -3,15 +3,18 @@
 from __future__ import annotations
 
 import os
+from importlib import import_module
 from importlib import resources
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
 
 from ._version import __version__
+from .compatibility import compatibility_manifest
 from .demo import run_demo
 from .fixtures import fixture_names, load_fixture
 from .provenance import check
+from .verify import rust_available
 
 
 Status = Literal["pass", "fail", "not_configured"]
@@ -50,12 +53,19 @@ REQUIRED_FIXTURES = {
 }
 
 REQUIRED_SCHEMAS = {
+    "athian.agevidence.asset_state.v1.json",
+    "athian.agevidence.attachment.v1.json",
+    "athian.agevidence.calibration_record.v1.json",
+    "athian.agevidence.derived_observation.v1.json",
+    "athian.agevidence.external_object.v1.json",
     "athian.agevidence.source_record.v1.json",
     "athian.agevidence.observation.v1.json",
     "athian.agevidence.intervention_event.v1.json",
     "athian.agevidence.operational_event.v1.json",
     "athian.agevidence.spatial_observation.v1.json",
     "athian.agevidence.model_run.v1.json",
+    "athian.agevidence.product_lot.v1.json",
+    "athian.agevidence.transformation.v1.json",
 }
 
 
@@ -65,10 +75,15 @@ def doctor() -> DoctorReport:
     checks = [
         _package_check(),
         _version_check(),
+        _primitive_contract_check(),
         _schema_check(),
         _fixture_check(),
+        _compatibility_manifest_check(),
+        _optional_module_check(),
+        _top_level_namespace_check(),
         _provenance_check(),
         _rust_validation_check(),
+        _rust_version_check(),
         _verifier_contract_check(),
         _golden_replay_check(),
         _optional_env_check("Rails API", "AGEVIDENCE_BASE_URL"),
@@ -100,6 +115,76 @@ def _schema_check() -> DoctorCheck:
     return DoctorCheck(name="Primitive schemas", status="pass")
 
 
+def _primitive_contract_check() -> DoctorCheck:
+    try:
+        from agevidence.primitives import (
+            AssetState,
+            Attachment,
+            CalibrationRecord,
+            DerivedObservation,
+            ExternalObject,
+            InterventionEvent,
+            ModelRun,
+            Observation,
+            OperationalEvent,
+            ProductLot,
+            SourceRecord,
+            SpatialObservation,
+            Transformation,
+        )
+
+        _ = [
+            SourceRecord,
+            Observation,
+            SpatialObservation,
+            InterventionEvent,
+            OperationalEvent,
+            ModelRun,
+            CalibrationRecord,
+            ProductLot,
+            AssetState,
+            DerivedObservation,
+            Transformation,
+            Attachment,
+            ExternalObject,
+        ]
+    except Exception as exc:
+        return DoctorCheck(name="Primitive contracts", status="fail", detail=str(exc))
+    return DoctorCheck(name="Primitive contracts", status="pass")
+
+
+def _compatibility_manifest_check() -> DoctorCheck:
+    try:
+        manifest = compatibility_manifest()
+    except Exception as exc:
+        return DoctorCheck(name="Compatibility manifest", status="fail", detail=str(exc))
+    if manifest.get("package") != "agevidence":
+        return DoctorCheck(name="Compatibility manifest", status="fail", detail="package mismatch")
+    if "rust_trust_boundary" not in manifest:
+        return DoctorCheck(name="Compatibility manifest", status="fail", detail="missing Rust trust boundary")
+    return DoctorCheck(name="Compatibility manifest", status="pass", detail=manifest.get("stable_boundary", ""))
+
+
+def _optional_module_check() -> DoctorCheck:
+    try:
+        for module in ["agevidence.geo", "agevidence.otel", "agevidence.pytest_plugin", "agevidence.viz"]:
+            import_module(module)
+    except Exception as exc:
+        return DoctorCheck(name="Optional module hooks", status="fail", detail=str(exc))
+    return DoctorCheck(name="Optional module hooks", status="pass")
+
+
+def _top_level_namespace_check() -> DoctorCheck:
+    try:
+        import agevidence
+
+        if agevidence.SourceRecord.__module__ != "agevidence.primitives.source_record":
+            return DoctorCheck(name="Top-level namespace", status="fail", detail="SourceRecord is not the local primitive")
+    except Exception as exc:
+        return DoctorCheck(name="Top-level namespace", status="fail", detail=str(exc))
+    return DoctorCheck(name="Top-level namespace", status="pass")
+
+
 def _fixture_check() -> DoctorCheck:
     missing = sorted(REQUIRED_FIXTURES - set(fixture_names()))
     if missing:
@@ -122,6 +207,12 @@ def _rust_validation_check() -> DoctorCheck:
     if result.rust_validation == "not_configured":
         return DoctorCheck(name="Rust verifier", status="not_configured", detail="optional for pure-Python local checks", required=False)
     return DoctorCheck(name="Rust verifier", status="fail", detail=result.rust_stdout)
+
+
+def _rust_version_check() -> DoctorCheck:
+    if rust_available():
+        return DoctorCheck(name="Rust verifier version", status="pass", detail="available")
+    return DoctorCheck(name="Rust verifier version", status="not_configured", detail="optional for pure-Python local checks", required=False)
 
 
 def _verifier_contract_check() -> DoctorCheck:

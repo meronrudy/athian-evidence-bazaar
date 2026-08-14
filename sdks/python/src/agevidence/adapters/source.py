@@ -9,6 +9,7 @@ import json
 import sys
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
+from importlib import metadata
 from pathlib import Path
 from typing import Any, Literal
 
@@ -122,6 +123,15 @@ def load_source_adapter(spec: str) -> Adapter:
     module = _load_module(module_ref)
     target = getattr(module, object_name) if object_name else _select_default_adapter(module)
     return _instantiate_source_adapter(target)
+
+
+def load_entry_point_source_adapters(group: str = "agevidence.adapters") -> list[Adapter]:
+    """Load installed third-party source adapters from Python entry points."""
+
+    adapters: list[Adapter] = []
+    for entry_point in metadata.entry_points().select(group=group):
+        adapters.append(_instantiate_source_adapter(entry_point.load()))
+    return adapters
 
 
 def _split_spec(spec: str) -> tuple[str, str | None]:

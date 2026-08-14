@@ -94,4 +94,11 @@ def _schema_name(primitive_type: str) -> str:
         "OperationalEvent": "operational_event",
         "ModelRun": "model_run",
         "ModelExecution": "model_execution",
+        "CalibrationRecord": "calibration_record",
+        "ProductLot": "product_lot",
+        "AssetState": "asset_state",
+        "DerivedObservation": "derived_observation",
+        "Transformation": "transformation",
+        "Attachment": "attachment",
+        "ExternalObject": "external_object",
     }.get(primitive_type, primitive_type)

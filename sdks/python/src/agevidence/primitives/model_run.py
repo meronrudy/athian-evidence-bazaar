@@ -4,9 +4,22 @@ from __future__ import annotations
 
 from typing import Any, Literal
 
-from pydantic import Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from .base import EvidencePrimitive
+
+
+class ReproducibilityReport(BaseModel):
+    """Deterministic model-run reproducibility summary."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    model_identity: bool
+    input_manifest: bool
+    parameters: bool
+    runtime_identifier: bool
+    output_commitments: bool
+    status: Literal["complete", "partial", "incomplete"]
 
 
 class ModelRun(EvidencePrimitive):
@@ -94,6 +107,25 @@ class ModelRun(EvidencePrimitive):
             "metadata": self.metadata,
         }
         return {key: value for key, value in payload.items() if value is not None}
+
+    def reproducibility(self) -> ReproducibilityReport:
+        """Return deterministic reproducibility completeness dimensions."""
+
+        model_identity = bool(self.model_id and self.model_version and (self.implementation_digest or self.weights_digest))
+        input_manifest = bool(self.input_commitments or self.source_document_commitments or self.inputs)
+        parameters = bool(self.parameters or self.generation_config)
+        runtime_identifier = bool(self.execution_environment or self.runtime)
+        output_commitments = bool(self.outputs or self.normalized_output_digest or self.verification.get("normalized_output_digest"))
+        dimensions = [model_identity, input_manifest, parameters, runtime_identifier, output_commitments]
+        status = "complete" if all(dimensions) else "partial" if any(dimensions) else "incomplete"
+        return ReproducibilityReport(
+            model_identity=model_identity,
+            input_manifest=input_manifest,
+            parameters=parameters,
+            runtime_identifier=runtime_identifier,
+            output_commitments=output_commitments,
+            status=status,
+        )
 
 
 def _string_inputs(inputs: list[Any]) -> list[str]:

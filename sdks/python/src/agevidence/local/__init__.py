@@ -10,15 +10,18 @@ from agevidence.doctor import DoctorCheck, DoctorReport, doctor
 from agevidence.explain import ExplainReport, explain
 from agevidence.exports import PortableEvidenceExport, export_evidence
 from agevidence.fixtures import Fixture, fixture_names, load_fixture, write_fixture
-from agevidence.ingest import CandidateMapping, IngestResult, candidate_mappings, ingest
+from agevidence.frame import EvidenceFrame, frame
+from agevidence.ingest import CandidateMapping, IngestDataset, IngestResult, candidate_mappings, ingest, ingest_async, ingest_dataframe, ingest_file, ingest_many, ingest_stream
 
 __all__ = [
     "CandidateMapping",
     "DemoResult",
     "DoctorCheck",
     "DoctorReport",
+    "EvidenceFrame",
     "ExplainReport",
     "Fixture",
+    "IngestDataset",
     "IngestResult",
     "PortableEvidenceExport",
     "candidate_mappings",
@@ -26,7 +29,13 @@ __all__ = [
     "explain",
     "export_evidence",
     "fixture_names",
+    "frame",
     "ingest",
+    "ingest_async",
+    "ingest_dataframe",
+    "ingest_file",
+    "ingest_many",
+    "ingest_stream",
     "load_fixture",
     "run_demo",
     "write_fixture",

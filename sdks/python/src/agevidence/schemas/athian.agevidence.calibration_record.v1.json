@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "athian.agevidence.calibration_record.v1",
+  "title": "Athian AgEvidence CalibrationRecord Primitive",
+  "type": "object",
+  "required": ["instrument", "calibrated_at"],
+  "properties": {
+    "schema_id": { "const": "athian.agevidence.calibration_record.v1" },
+    "primitive_type": { "const": "CalibrationRecord" },
+    "instrument": { "type": "string", "minLength": 1 },
+    "calibrated_at": { "type": "string", "minLength": 1 },
+    "valid_until": { "type": "string" },
+    "procedure": { "type": "string" },
+    "standard": { "type": "string" },
+    "certificate_hash": { "type": "string" },
+    "source_records": { "type": "array", "items": { "type": "object" } },
+    "metadata": { "type": "object" },
+    "limitations": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": true
+}

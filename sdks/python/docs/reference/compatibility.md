@@ -11,6 +11,13 @@ PyPI users. Treat API surfaces by their boundary.
 - `agevidence.primitives.InterventionEvent`
 - `agevidence.primitives.OperationalEvent`
 - `agevidence.primitives.ModelRun`
+- `agevidence.primitives.CalibrationRecord`
+- `agevidence.primitives.ProductLot`
+- `agevidence.primitives.AssetState`
+- `agevidence.primitives.DerivedObservation`
+- `agevidence.primitives.Transformation`
+- `agevidence.primitives.Attachment`
+- `agevidence.primitives.ExternalObject`
 - `agevidence.provenance.check`
 - local primitive JSON schemas
 
@@ -21,6 +28,10 @@ These are the center of the SDK.
 - `agevidence.adapters.Adapter`
 - `agevidence adapter test`
 - deterministic ingest inference rules in `agevidence.ingest`
+- local operations APIs such as `agevidence.Bundle`, `agevidence.EvidenceFrame`,
+  `agevidence.Queue`, `agevidence.diff`, and `agevidence.replay`
+- optional modules `agevidence.geo`, `agevidence.otel`, `agevidence.viz`, and
+  `agevidence.pytest_plugin`
 
 These APIs are intended for source-system mapping and developer self-service.
 They may evolve as more adapters are built.

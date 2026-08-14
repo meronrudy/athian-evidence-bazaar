@@ -27,6 +27,20 @@ pub enum AgEvidenceSchema {
     SpatialObservation,
     /// Model run primitive payload.
     ModelRun,
+    /// Instrument calibration primitive payload.
+    CalibrationRecord,
+    /// Product or material lot primitive payload.
+    ProductLot,
+    /// Time-bound asset state primitive payload.
+    AssetState,
+    /// Derived observation primitive payload.
+    DerivedObservation,
+    /// Deterministic transformation primitive payload.
+    Transformation,
+    /// Local attachment primitive payload.
+    Attachment,
+    /// External object primitive payload.
+    ExternalObject,
     /// Model execution receipt payload.
     ModelExecution,
     /// Evidence candidate receipt payload.
@@ -65,6 +79,27 @@ impl AgEvidenceSchema {
             | "agevidence.spatial_observation.v1"
             | "athian.agevidence.spatial_observation.v1" => Ok(Self::SpatialObservation),
             "model_run" | "athian.agevidence.model_run.v1" => Ok(Self::ModelRun),
+            "calibration_record"
+            | "agevidence.calibration_record.v1"
+            | "athian.agevidence.calibration_record.v1" => Ok(Self::CalibrationRecord),
+            "product_lot" | "agevidence.product_lot.v1" | "athian.agevidence.product_lot.v1" => {
+                Ok(Self::ProductLot)
+            }
+            "asset_state" | "agevidence.asset_state.v1" | "athian.agevidence.asset_state.v1" => {
+                Ok(Self::AssetState)
+            }
+            "derived_observation"
+            | "agevidence.derived_observation.v1"
+            | "athian.agevidence.derived_observation.v1" => Ok(Self::DerivedObservation),
+            "transformation"
+            | "agevidence.transformation.v1"
+            | "athian.agevidence.transformation.v1" => Ok(Self::Transformation),
+            "attachment" | "agevidence.attachment.v1" | "athian.agevidence.attachment.v1" => {
+                Ok(Self::Attachment)
+            }
+            "external_object"
+            | "agevidence.external_object.v1"
+            | "athian.agevidence.external_object.v1" => Ok(Self::ExternalObject),
             "model_execution" | "athian.agevidence.model_execution.v1" => Ok(Self::ModelExecution),
             "evidence_candidate" | "athian.agevidence.evidence_candidate.v1" => {
                 Ok(Self::EvidenceCandidate)
@@ -94,6 +129,13 @@ impl AgEvidenceSchema {
             Self::OperationalEvent => "athian.agevidence.operational_event.v1",
             Self::SpatialObservation => "athian.agevidence.spatial_observation.v1",
             Self::ModelRun => "athian.agevidence.model_run.v1",
+            Self::CalibrationRecord => "athian.agevidence.calibration_record.v1",
+            Self::ProductLot => "athian.agevidence.product_lot.v1",
+            Self::AssetState => "athian.agevidence.asset_state.v1",
+            Self::DerivedObservation => "athian.agevidence.derived_observation.v1",
+            Self::Transformation => "athian.agevidence.transformation.v1",
+            Self::Attachment => "athian.agevidence.attachment.v1",
+            Self::ExternalObject => "athian.agevidence.external_object.v1",
             Self::ModelExecution => "athian.agevidence.model_execution.v1",
             Self::EvidenceCandidate => "athian.agevidence.evidence_candidate.v1",
             Self::EvidenceGap => "athian.agevidence.evidence_gap.v1",
@@ -114,6 +156,13 @@ impl AgEvidenceSchema {
             Self::OperationalEvent => "operational_event_receipt",
             Self::SpatialObservation => "observation_receipt",
             Self::ModelRun => "model_execution_receipt",
+            Self::CalibrationRecord => "calibration_record_receipt",
+            Self::ProductLot => "product_lot_receipt",
+            Self::AssetState => "asset_state_receipt",
+            Self::DerivedObservation => "derived_observation_receipt",
+            Self::Transformation => "transformation_receipt",
+            Self::Attachment => "attachment_receipt",
+            Self::ExternalObject => "external_object_receipt",
             Self::ModelExecution => "model_execution_receipt",
             Self::EvidenceCandidate => "evidence_candidate_receipt",
             Self::EvidenceGap => "evidence_gap_receipt",
@@ -178,6 +227,13 @@ pub fn validate_payload(
         AgEvidenceSchema::OperationalEvent => validate_operational_event(payload),
         AgEvidenceSchema::SpatialObservation => validate_spatial_observation(payload),
         AgEvidenceSchema::ModelRun => validate_model_run(payload),
+        AgEvidenceSchema::CalibrationRecord => validate_calibration_record(payload),
+        AgEvidenceSchema::ProductLot => validate_product_lot(payload),
+        AgEvidenceSchema::AssetState => validate_asset_state(payload),
+        AgEvidenceSchema::DerivedObservation => validate_derived_observation(payload),
+        AgEvidenceSchema::Transformation => validate_transformation(payload),
+        AgEvidenceSchema::Attachment => validate_attachment(payload),
+        AgEvidenceSchema::ExternalObject => validate_external_object(payload),
         AgEvidenceSchema::ModelExecution => validate_model_execution(payload),
         AgEvidenceSchema::EvidenceCandidate => validate_evidence_candidate(payload),
         AgEvidenceSchema::EvidenceGap => validate_evidence_gap(payload),
@@ -257,6 +313,62 @@ pub fn validate_model_run(payload: &Value) -> Result<ValidatedPayload, AgEvidenc
     require_array(payload, "input_commitments")?;
     require_array(payload, "limitations")?;
     Ok(summary(AgEvidenceSchema::ModelRun, fields))
+}
+
+/// Validate a calibration record primitive payload.
+pub fn validate_calibration_record(payload: &Value) -> Result<ValidatedPayload, AgEvidenceError> {
+    let fields = require_fields(payload, &["instrument", "calibrated_at"])?;
+    Ok(summary(AgEvidenceSchema::CalibrationRecord, fields))
+}
+
+/// Validate a product lot primitive payload.
+pub fn validate_product_lot(payload: &Value) -> Result<ValidatedPayload, AgEvidenceError> {
+    let fields = require_fields(payload, &["product", "lot"])?;
+    Ok(summary(AgEvidenceSchema::ProductLot, fields))
+}
+
+/// Validate an asset state primitive payload.
+pub fn validate_asset_state(payload: &Value) -> Result<ValidatedPayload, AgEvidenceError> {
+    let fields = require_fields(payload, &["asset", "state", "effective_at"])?;
+    require_object(payload, "state")?;
+    Ok(summary(AgEvidenceSchema::AssetState, fields))
+}
+
+/// Validate a derived observation primitive payload.
+pub fn validate_derived_observation(payload: &Value) -> Result<ValidatedPayload, AgEvidenceError> {
+    let mut fields = require_fields(
+        payload,
+        &[
+            "subject",
+            "observable",
+            "value",
+            "unit",
+            "observed_at",
+            "transformation",
+        ],
+    )?;
+    require_array(payload, "inputs")?;
+    fields.push("inputs".to_owned());
+    require_transformation_identity(payload)?;
+    Ok(summary(AgEvidenceSchema::DerivedObservation, fields))
+}
+
+/// Validate a transformation primitive payload.
+pub fn validate_transformation(payload: &Value) -> Result<ValidatedPayload, AgEvidenceError> {
+    let fields = require_fields(payload, &["name", "version"])?;
+    Ok(summary(AgEvidenceSchema::Transformation, fields))
+}
+
+/// Validate an attachment primitive payload.
+pub fn validate_attachment(payload: &Value) -> Result<ValidatedPayload, AgEvidenceError> {
+    let fields = require_fields(payload, &["path", "media_type"])?;
+    Ok(summary(AgEvidenceSchema::Attachment, fields))
+}
+
+/// Validate an external object primitive payload.
+pub fn validate_external_object(payload: &Value) -> Result<ValidatedPayload, AgEvidenceError> {
+    let fields = require_fields(payload, &["uri", "sha256"])?;
+    Ok(summary(AgEvidenceSchema::ExternalObject, fields))
 }
 
 /// Validate a model execution receipt payload.
@@ -441,6 +553,34 @@ fn require_array(payload: &Value, name: &'static str) -> Result<(), AgEvidenceEr
     }
 }
 
+fn require_object(payload: &Value, name: &'static str) -> Result<(), AgEvidenceError> {
+    let object = payload.as_object().ok_or(AgEvidenceError::NotObject)?;
+    match object.get(name).and_then(Value::as_object) {
+        Some(values) if !values.is_empty() => Ok(()),
+        _ => Err(AgEvidenceError::MissingField(name)),
+    }
+}
+
+fn require_transformation_identity(payload: &Value) -> Result<(), AgEvidenceError> {
+    let object = payload.as_object().ok_or(AgEvidenceError::NotObject)?;
+    let Some(transformation) = object.get("transformation").and_then(Value::as_object) else {
+        return Err(AgEvidenceError::MissingField("transformation"));
+    };
+    let Some(name) = transformation.get("name") else {
+        return Err(AgEvidenceError::MissingField("transformation.name"));
+    };
+    if name.is_null() || name.as_str().is_some_and(str::is_empty) {
+        return Err(AgEvidenceError::MissingField("transformation.name"));
+    }
+    let Some(version) = transformation.get("version") else {
+        return Err(AgEvidenceError::MissingField("transformation.version"));
+    };
+    if version.is_null() || version.as_str().is_some_and(str::is_empty) {
+        return Err(AgEvidenceError::MissingField("transformation.version"));
+    }
+    Ok(())
+}
+
 fn summary(schema: AgEvidenceSchema, required_fields: Vec<String>) -> ValidatedPayload {
     ValidatedPayload {
         schema,
@@ -612,6 +752,124 @@ mod tests {
         assert_eq!(validated.schema_id, "athian.agevidence.model_run.v1");
         assert_eq!(validated.receipt_type, "model_execution_receipt");
         assert!(!validated.parent_required);
+    }
+
+    #[test]
+    fn validates_supporting_primitive_payloads() {
+        let cases = [
+            (
+                AgEvidenceSchema::CalibrationRecord,
+                json!({
+                    "instrument": "device:scale-1",
+                    "calibrated_at": "2026-08-01T00:00:00Z"
+                }),
+                "calibration_record_receipt",
+            ),
+            (
+                AgEvidenceSchema::ProductLot,
+                json!({
+                    "product": "additive:x",
+                    "lot": "lot-1"
+                }),
+                "product_lot_receipt",
+            ),
+            (
+                AgEvidenceSchema::AssetState,
+                json!({
+                    "asset": "device:scale-1",
+                    "state": { "status": "active" },
+                    "effective_at": "2026-08-12T00:00:00Z"
+                }),
+                "asset_state_receipt",
+            ),
+            (
+                AgEvidenceSchema::DerivedObservation,
+                json!({
+                    "subject": "herd:A27",
+                    "observable": "additive_delivered",
+                    "value": 800,
+                    "unit": "g",
+                    "observed_at": "2026-08-12T00:00:00Z",
+                    "inputs": ["sha256:input"],
+                    "transformation": {
+                        "name": "water_flow_to_additive_mass",
+                        "version": "2.1"
+                    }
+                }),
+                "derived_observation_receipt",
+            ),
+            (
+                AgEvidenceSchema::Transformation,
+                json!({
+                    "name": "water_flow_to_additive_mass",
+                    "version": "2.1"
+                }),
+                "transformation_receipt",
+            ),
+            (
+                AgEvidenceSchema::Attachment,
+                json!({
+                    "path": "certificate.pdf",
+                    "media_type": "application/pdf"
+                }),
+                "attachment_receipt",
+            ),
+            (
+                AgEvidenceSchema::ExternalObject,
+                json!({
+                    "uri": "s3://example-bucket/object.tif",
+                    "sha256": "sha256:object"
+                }),
+                "external_object_receipt",
+            ),
+        ];
+
+        for (schema, payload, receipt_type) in cases {
+            let validated = match validate_payload(schema, &payload) {
+                Ok(value) => value,
+                Err(error) => panic!("{}", error),
+            };
+
+            assert_eq!(validated.schema_id, schema.schema_id());
+            assert_eq!(validated.receipt_type, receipt_type);
+            assert!(!validated.parent_required);
+        }
+    }
+
+    #[test]
+    fn rejects_derived_observation_without_inputs_or_transformation_identity() {
+        let missing_inputs = json!({
+            "subject": "herd:A27",
+            "observable": "additive_delivered",
+            "value": 800,
+            "unit": "g",
+            "observed_at": "2026-08-12T00:00:00Z",
+            "inputs": [],
+            "transformation": {
+                "name": "water_flow_to_additive_mass",
+                "version": "2.1"
+            }
+        });
+        let missing_version = json!({
+            "subject": "herd:A27",
+            "observable": "additive_delivered",
+            "value": 800,
+            "unit": "g",
+            "observed_at": "2026-08-12T00:00:00Z",
+            "inputs": ["sha256:input"],
+            "transformation": {
+                "name": "water_flow_to_additive_mass"
+            }
+        });
+
+        assert_eq!(
+            validate_derived_observation(&missing_inputs),
+            Err(AgEvidenceError::MissingArray("inputs"))
+        );
+        assert_eq!(
+            validate_derived_observation(&missing_version),
+            Err(AgEvidenceError::MissingField("transformation.version"))
+        );
     }
 
     #[test]

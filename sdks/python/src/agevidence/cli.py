@@ -8,9 +8,18 @@ from pathlib import Path
 import typer
 
 from .campaign_cli import register_campaign_cli
-from .adapters import test_source_adapter
+from .adapters import (
+    adapter_coverage,
+    compare_fixture_sets,
+    infer_source_adapter,
+    init_source_adapter,
+    load_entry_point_source_adapters,
+    suggested_mapping_yaml,
+    test_source_adapter,
+)
 from .cli_support import client_factory as _client
 from .cli_support import console, emit as _emit, handle_error as _handle_error
+from .compatibility import compatibility_manifest
 from .config import SDKConfig
 from .country_cli import register_country_cli
 from .demo import run_demo
@@ -20,8 +29,10 @@ from .explain import explain as _explain
 from .exports import export_evidence as _export_evidence
 from .fixtures import fixture_names, load_fixture, write_fixture
 from .ingest import ingest as _ingest
+from .ingest import ingest_file as _ingest_file
 from .profiles import get_domain_profile, list_domain_profiles
 from .proofkits import list_proofkits, run_proofkit, write_proofkit
+from .snapshots import check_snapshot, create_snapshot
 from .verification import Verifier
 
 app = typer.Typer(help="AgEvidence Developer OS CLI")
@@ -39,6 +50,7 @@ artifact_app = typer.Typer(help="Artifact commands")
 operation_app = typer.Typer(help="Operation commands")
 event_app = typer.Typer(help="Evidence Event Inbox commands")
 replay_app = typer.Typer(help="Replay fixture scenarios")
+snapshot_app = typer.Typer(help="Canonical snapshot commands")
 
 app.add_typer(source_adapter_app, name="adapter")
 app.add_typer(fixture_app, name="fixture")
@@ -54,6 +66,7 @@ app.add_typer(artifact_app, name="artifact")
 app.add_typer(operation_app, name="operation")
 app.add_typer(event_app, name="event")
 app.add_typer(replay_app, name="replay")
+app.add_typer(snapshot_app, name="snapshot")
 register_country_cli(app)
 register_campaign_cli(app)
 
@@ -107,16 +120,41 @@ def ingest_command(
     record: Path = typer.Argument(..., exists=True),
     primitive: str = typer.Option("auto", "--primitive"),
     profile: str | None = typer.Option(None, "--profile", help="Optional reusable domain profile id or alias."),
+    extension_namespace: str | None = typer.Option(None, "--extension-namespace", help="Reverse-DNS namespace for preserved unmapped fields."),
     output: str = typer.Option("json", "--format"),
 ) -> None:
     """Infer a local evidence primitive from native JSON."""
 
     try:
-        result = _ingest(record, primitive=primitive, profile=profile)
+        result = _ingest(record, primitive=primitive, profile=profile, extension_namespace=extension_namespace)
         if output == "table":
             _print_ingest_table(result)
             return
         _emit(result, output)
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@app.command("infer")
+def infer_command(
+    record: Path = typer.Argument(..., exists=True),
+    write: Path | None = typer.Option(None, "--write", help="Write a reviewable mapping YAML suggestion."),
+    extension_namespace: str | None = typer.Option(None, "--extension-namespace"),
+    coerce: bool = typer.Option(False, "--coerce", help="Coerce CSV scalar strings into JSON-like booleans, numbers, and nulls."),
+    output: str = typer.Option("table", "--format"),
+) -> None:
+    """Infer primitive and field mappings from native records."""
+
+    try:
+        dataset = _ingest_file(record, extension_namespace=extension_namespace, coerce=coerce)
+        if write:
+            write.write_text(suggested_mapping_yaml([result.native for result in dataset.results]), encoding="utf-8")
+        if output == "table":
+            _print_infer_table(dataset)
+            if write:
+                console.print(f"Mapping written: {write}")
+            return
+        _emit(dataset, output)
     except Exception as exc:
         _handle_error(exc)
 
@@ -164,6 +202,102 @@ def source_adapter_test(
         else:
             _emit(report, output)
         if not report.passed:
+            raise typer.Exit(code=1)
+    except typer.Exit:
+        raise
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@source_adapter_app.command("list")
+def source_adapter_list(output: str = typer.Option("json", "--format")) -> None:
+    """List installed source adapter entry points."""
+
+    try:
+        adapters = load_entry_point_source_adapters()
+        payload = {
+            "entry_point_group": "agevidence.adapters",
+            "adapters": [f"{adapter.__class__.__module__}.{adapter.__class__.__name__}" for adapter in adapters],
+        }
+        _emit(payload, output)
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@source_adapter_app.command("init")
+def source_adapter_init(
+    name: str = typer.Argument(...),
+    out: Path | None = typer.Option(None, "--out"),
+    output: str = typer.Option("json", "--format"),
+) -> None:
+    """Generate a source adapter scaffold."""
+
+    try:
+        result = init_source_adapter(name, out=out)
+        _emit(result, output)
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@source_adapter_app.command("infer")
+def source_adapter_infer(
+    samples: Path = typer.Argument(..., exists=True),
+    out: Path | None = typer.Option(None, "--out"),
+    extension_namespace: str | None = typer.Option(None, "--extension-namespace"),
+    coerce: bool = typer.Option(False, "--coerce", help="Coerce CSV scalar strings into JSON-like booleans, numbers, and nulls."),
+    output: str = typer.Option("json", "--format"),
+) -> None:
+    """Generate a reviewable adapter scaffold from sample payloads."""
+
+    try:
+        result = infer_source_adapter(samples, out=out, extension_namespace=extension_namespace, coerce=coerce)
+        _emit(result, output)
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@source_adapter_app.command("coverage")
+def source_adapter_coverage(
+    adapter: str = typer.Argument(...),
+    fixtures: Path = typer.Argument(..., exists=True),
+    ignore: list[str] | None = typer.Option(None, "--ignore"),
+    output: str = typer.Option("table", "--format"),
+) -> None:
+    """Report source field mapping, preservation, ignored fields, and loss."""
+
+    try:
+        report = adapter_coverage(adapter, fixtures, ignored_fields=ignore or [])
+        if output == "table":
+            _print_adapter_coverage(report)
+            if not report.passed:
+                raise typer.Exit(code=1)
+            return
+        _emit(report, output)
+        if not report.passed:
+            raise typer.Exit(code=1)
+    except typer.Exit:
+        raise
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@source_adapter_app.command("compare")
+def source_adapter_compare(
+    old: Path = typer.Argument(..., exists=True),
+    new: Path = typer.Argument(..., exists=True),
+    output: str = typer.Option("table", "--format"),
+) -> None:
+    """Compare two native fixture sets for source-shape changes."""
+
+    try:
+        report = compare_fixture_sets(old, new)
+        if output == "table":
+            _print_adapter_compare(report)
+            if report.breaking:
+                raise typer.Exit(code=1)
+            return
+        _emit(report, output)
+        if report.breaking:
             raise typer.Exit(code=1)
     except typer.Exit:
         raise
@@ -508,6 +642,49 @@ def replay_project_4030(
         _handle_error(exc)
 
 
+@snapshot_app.command("create")
+def snapshot_create(
+    fixtures: Path = typer.Argument(..., exists=True),
+    out: Path = typer.Option(..., "--out"),
+    output: str = typer.Option("json", "--format"),
+) -> None:
+    """Create canonical ingest output snapshots."""
+
+    try:
+        _emit(create_snapshot(fixtures, out), output)
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@snapshot_app.command("check")
+def snapshot_check(
+    fixtures: Path = typer.Argument(..., exists=True),
+    snapshot: Path = typer.Argument(..., exists=True),
+    output: str = typer.Option("json", "--format"),
+) -> None:
+    """Check canonical ingest output against a snapshot."""
+
+    try:
+        report = check_snapshot(fixtures, snapshot)
+        _emit(report, output)
+        if not report.passed:
+            raise typer.Exit(code=1)
+    except typer.Exit:
+        raise
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@app.command("compatibility")
+def compatibility_command(output: str = typer.Option("json", "--format")) -> None:
+    """Emit the local SDK compatibility manifest."""
+
+    try:
+        _emit(compatibility_manifest(), output)
+    except Exception as exc:
+        _handle_error(exc)
+
+
 @app.command()
 def verify(
     bundle: Path | None = typer.Argument(None, exists=False),
@@ -548,6 +725,8 @@ def _print_ingest_table(result) -> None:
     console.print(f"Confidence: {result.confidence}")
     if result.candidates:
         console.print(f"Mapped fields: {', '.join(result.candidates[0].matched_fields)}")
+    if result.unmapped:
+        console.print(f"Unmapped native fields: {', '.join(sorted(result.unmapped))}")
     console.print(f"Structural validity: {_status(result.provenance.structural_validity)}")
     console.print(f"Provenance completeness: {_status(result.provenance.provenance_completeness)} ({result.provenance.score}%)")
     console.print(f"Local digest: {result.local_digest}")
@@ -555,6 +734,22 @@ def _print_ingest_table(result) -> None:
         console.print(f"Profile: {result.profile_application['profile_id']}")
         console.print(f"Profile status: {_status(result.profile_application['status'])}")
     console.print(result.provenance.authority_boundary)
+
+
+def _print_infer_table(dataset) -> None:
+    console.print("Agevidence Mapping Inference")
+    console.print(f"Records: {dataset.count}")
+    console.print(f"Valid: {dataset.valid}")
+    console.print(f"Invalid: {dataset.invalid}")
+    for primitive_type, count in dataset.primitive_types.items():
+        console.print(f"{primitive_type:<24} {count}")
+    if dataset.results:
+        mapping = dataset.results[0].mapping
+        console.print(f"Likely primitive: {mapping.primitive_type} {mapping.score / 100:.2f}")
+        for item in mapping.field_mappings:
+            console.print(f"{item.canonical_field:<24} {item.source_field:<24} {item.confidence}")
+        if mapping.unmapped_fields:
+            console.print(f"Unmapped native fields: {', '.join(mapping.unmapped_fields)}")
 
 
 def _print_explain_table(report) -> None:
@@ -596,6 +791,39 @@ def _print_source_adapter_report(report) -> None:
         for failure in report.failures:
             console.print(f"  {failure}")
     console.print(report.authority_boundary)
+
+
+def _print_adapter_coverage(report) -> None:
+    console.print("Agevidence Source Adapter Coverage")
+    console.print(f"Adapter: {report.adapter}")
+    console.print(f"Fixtures: {report.fixture_count}")
+    console.print(f"Source fields: {report.source_field_count}")
+    console.print(f"Mapped to canonical semantics: {report.mapped_to_canonical_count}")
+    console.print(f"Preserved as vendor extensions: {report.preserved_as_vendor_extensions_count}")
+    console.print(f"Explicitly ignored: {report.explicitly_ignored_count}")
+    console.print(f"Silently lost: {report.silently_lost_count}")
+    if report.silently_lost_fields:
+        console.print(f"Lost fields: {', '.join(report.silently_lost_fields)}")
+
+
+def _print_adapter_compare(report) -> None:
+    console.print("Agevidence Source Adapter Compare")
+    if report.breaking:
+        console.print("BREAKING SOURCE CHANGES")
+    else:
+        console.print("No breaking source shape changes.")
+    if report.changed_fields:
+        console.print("Changed:")
+        for field, change in report.changed_fields.items():
+            console.print(f"  {field}: {change['old']} -> {change['new']}")
+    if report.new_fields:
+        console.print(f"New: {', '.join(report.new_fields)}")
+    if report.removed_fields:
+        console.print(f"Removed: {', '.join(report.removed_fields)}")
+    if report.evidence_impact:
+        console.print("Evidence impact:")
+        for item in report.evidence_impact:
+            console.print(f"  {item}")
 
 
 def _print_proofkit_list(proofkits) -> None:

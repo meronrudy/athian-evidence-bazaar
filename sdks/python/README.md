@@ -103,6 +103,13 @@ The local primitive surface is:
 - `InterventionEvent`
 - `OperationalEvent`
 - `ModelRun`
+- `CalibrationRecord`
+- `ProductLot`
+- `AssetState`
+- `DerivedObservation`
+- `Transformation`
+- `Attachment`
+- `ExternalObject`
 
 ## Bring Your Own Record
 

@@ -13,13 +13,22 @@ PYPROJECT = SDK_ROOT / "pyproject.toml"
 PACKAGE_ROOT = SDK_ROOT / "src" / "agevidence"
 
 REQUIRED_SCHEMA_FILES = {
+    "athian.agevidence.asset_state.v1.json",
+    "athian.agevidence.attachment.v1.json",
+    "athian.agevidence.calibration_record.v1.json",
+    "athian.agevidence.derived_observation.v1.json",
+    "athian.agevidence.external_object.v1.json",
     "athian.agevidence.source_record.v1.json",
     "athian.agevidence.observation.v1.json",
     "athian.agevidence.spatial_observation.v1.json",
     "athian.agevidence.intervention_event.v1.json",
     "athian.agevidence.operational_event.v1.json",
     "athian.agevidence.model_run.v1.json",
+    "athian.agevidence.product_lot.v1.json",
+    "athian.agevidence.transformation.v1.json",
 }
+
+COMPATIBILITY_MANIFEST = REPO_ROOT / "specs" / "agevidence" / "compatibility-manifest.json"
 
 AUTHORITY_BOUNDARY_TERMS = {
     "regulatory eligibility",
@@ -95,6 +104,18 @@ def test_packaged_resources_contract():
     assert (SDK_ROOT / "docs" / "pypi.md").exists()
 
 
+def test_optional_extras_have_importable_modules_and_pytest_hook():
+    data = project_metadata()
+    optional = data["project"]["optional-dependencies"]
+
+    assert {"geo", "otel", "pytest", "viz"} <= set(optional)
+    assert (PACKAGE_ROOT / "geo.py").exists()
+    assert (PACKAGE_ROOT / "otel.py").exists()
+    assert (PACKAGE_ROOT / "pytest_plugin.py").exists()
+    assert (PACKAGE_ROOT / "viz.py").exists()
+    assert data["project"]["entry-points"]["pytest11"]["agevidence"] == "agevidence.pytest_plugin"
+
+
 def test_packaged_primitive_schemas_match_canonical_specs():
     spec_root = REPO_ROOT / "specs" / "agevidence" / "schemas"
     packaged_root = PACKAGE_ROOT / "schemas"
@@ -102,6 +123,13 @@ def test_packaged_primitive_schemas_match_canonical_specs():
     for name in REQUIRED_SCHEMA_FILES:
         assert (packaged_root / name).exists()
         assert (packaged_root / name).read_text(encoding="utf-8") == (spec_root / name).read_text(encoding="utf-8")
+
+
+def test_compatibility_manifest_copies_match_spec_authority():
+    canonical = COMPATIBILITY_MANIFEST.read_text(encoding="utf-8")
+
+    assert (PACKAGE_ROOT / "resources" / "compatibility-manifest.json").read_text(encoding="utf-8") == canonical
+    assert (SDK_ROOT / "docs" / "reference" / "compatibility-manifest.json").read_text(encoding="utf-8") == canonical
 
 
 def test_local_functionality_does_not_import_rails_client_layer():

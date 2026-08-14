@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "athian.agevidence.attachment.v1",
+  "title": "Athian AgEvidence Attachment Primitive",
+  "type": "object",
+  "required": ["path", "media_type"],
+  "properties": {
+    "schema_id": { "const": "athian.agevidence.attachment.v1" },
+    "primitive_type": { "const": "Attachment" },
+    "path": { "type": "string", "minLength": 1 },
+    "media_type": { "type": "string", "minLength": 1 },
+    "sha256": { "type": "string" },
+    "size": { "type": "integer" },
+    "name": { "type": "string" },
+    "metadata": { "type": "object" },
+    "limitations": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": true
+}

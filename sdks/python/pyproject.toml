@@ -36,9 +36,29 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+data = [
+  "pandas>=2.2",
+  "polars>=1.0",
+  "pyarrow>=15.0"
+]
+geo = [
+  "geopandas>=1.0",
+  "shapely>=2.0",
+  "pyproj>=3.6"
+]
+otel = [
+  "opentelemetry-api>=1.25",
+  "opentelemetry-sdk>=1.25"
+]
+pytest = [
+  "pytest>=8.2"
+]
 test = [
   "build>=1.2",
   "pytest>=8.2"
+]
+viz = [
+  "matplotlib>=3.8"
 ]
 
 [project.urls]
@@ -50,6 +70,9 @@ Changelog = "https://github.com/meronrudy/athian-evidence-bazaar/releases"
 
 [project.scripts]
 agevidence = "agevidence.cli:app"
+
+[project.entry-points.pytest11]
+agevidence = "agevidence.pytest_plugin"
 
 [tool.setuptools.packages.find]
 where = ["src"]

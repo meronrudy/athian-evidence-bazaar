@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "athian.agevidence.transformation.v1",
+  "title": "Athian AgEvidence Transformation Primitive",
+  "type": "object",
+  "required": ["name", "version"],
+  "properties": {
+    "schema_id": { "const": "athian.agevidence.transformation.v1" },
+    "primitive_type": { "const": "Transformation" },
+    "name": { "type": "string", "minLength": 1 },
+    "version": { "type": "string", "minLength": 1 },
+    "implementation": { "type": "string" },
+    "parameters": { "type": "object" },
+    "metadata": { "type": "object" },
+    "limitations": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": true
+}

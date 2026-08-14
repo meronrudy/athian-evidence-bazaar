@@ -1,6 +1,6 @@
 """Identifier normalization contracts."""
 
-from agevidence.identifiers.models import IdentifierBinding, IdentifierNormalizationResult
+from agevidence.identifiers.binding import link
+from agevidence.identifiers.models import Identifier, IdentifierBinding, IdentifierNormalizationResult
 
-__all__ = ["IdentifierBinding", "IdentifierNormalizationResult"]
-
+__all__ = ["Identifier", "IdentifierBinding", "IdentifierNormalizationResult", "link"]

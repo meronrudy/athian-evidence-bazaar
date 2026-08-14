@@ -48,13 +48,24 @@ REQUIRED_LOCAL_FIXTURES = {
 }
 
 REQUIRED_SCHEMA_FILES = {
+    "athian.agevidence.asset_state.v1.json",
+    "athian.agevidence.attachment.v1.json",
+    "athian.agevidence.calibration_record.v1.json",
+    "athian.agevidence.derived_observation.v1.json",
+    "athian.agevidence.external_object.v1.json",
     "athian.agevidence.source_record.v1.json",
     "athian.agevidence.observation.v1.json",
     "athian.agevidence.spatial_observation.v1.json",
     "athian.agevidence.intervention_event.v1.json",
     "athian.agevidence.operational_event.v1.json",
     "athian.agevidence.model_run.v1.json",
+    "athian.agevidence.product_lot.v1.json",
+    "athian.agevidence.transformation.v1.json",
 }
+
+COMPATIBILITY_MANIFEST = REPO_ROOT / "specs" / "agevidence" / "compatibility-manifest.json"
+PACKAGED_COMPATIBILITY_MANIFEST = PACKAGE_ROOT / "resources" / "compatibility-manifest.json"
+DOCS_COMPATIBILITY_MANIFEST = SDK_DOCS / "reference" / "compatibility-manifest.json"
 
 FORBIDDEN_BRANDING = {
     "mech-lab",
@@ -100,6 +111,8 @@ def main() -> int:
     errors.extend(_check_metadata(project))
     errors.extend(_check_packaged_files())
     errors.extend(_check_packaged_schemas())
+    errors.extend(_check_compatibility_manifest_sync())
+    errors.extend(_check_optional_extras())
     errors.extend(_check_release_workflow())
     errors.extend(_check_public_exports_and_cli())
     errors.extend(_check_docs_links())
@@ -192,6 +205,49 @@ def _check_packaged_schemas() -> list[str]:
             continue
         if spec_path.read_text(encoding="utf-8") != package_path.read_text(encoding="utf-8"):
             errors.append(f"packaged schema differs from canonical spec: {name}")
+    return errors
+
+
+def _check_compatibility_manifest_sync() -> list[str]:
+    errors = []
+    copies = {
+        "canonical compatibility manifest": COMPATIBILITY_MANIFEST,
+        "packaged compatibility manifest": PACKAGED_COMPATIBILITY_MANIFEST,
+        "docs compatibility manifest": DOCS_COMPATIBILITY_MANIFEST,
+    }
+    for label, path in copies.items():
+        if not path.is_file():
+            errors.append(f"{label} missing: {path.relative_to(REPO_ROOT)}")
+    if errors:
+        return errors
+    canonical = COMPATIBILITY_MANIFEST.read_text(encoding="utf-8")
+    for label, path in copies.items():
+        if path == COMPATIBILITY_MANIFEST:
+            continue
+        if path.read_text(encoding="utf-8") != canonical:
+            errors.append(f"{label} differs from canonical compatibility manifest")
+    return errors
+
+
+def _check_optional_extras() -> list[str]:
+    project = _project_metadata()
+    optional = project.get("optional-dependencies", {})
+    errors = []
+    required_modules = {
+        "geo": PACKAGE_ROOT / "geo.py",
+        "otel": PACKAGE_ROOT / "otel.py",
+        "pytest": PACKAGE_ROOT / "pytest_plugin.py",
+        "viz": PACKAGE_ROOT / "viz.py",
+    }
+    for extra, module_path in required_modules.items():
+        if extra not in optional:
+            errors.append(f"optional extra missing from package metadata: {extra}")
+        if not module_path.is_file():
+            errors.append(f"optional extra module missing: {module_path.relative_to(REPO_ROOT)}")
+    entry_points = tomllib.loads(PYPROJECT.read_text(encoding="utf-8")).get("project", {}).get("entry-points", {})
+    pytest_plugins = entry_points.get("pytest11", {})
+    if pytest_plugins.get("agevidence") != "agevidence.pytest_plugin":
+        errors.append("pytest optional extra must expose agevidence.pytest_plugin through pytest11 entry points")
     return errors
 
 

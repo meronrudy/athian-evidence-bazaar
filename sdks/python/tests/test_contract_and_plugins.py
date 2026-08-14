@@ -83,6 +83,7 @@ def test_v1_public_exports_and_typed_marker():
     repo_root = Path(__file__).resolve().parents[3]
 
     assert agevidence.__version__ == "1.0.0"
+    assert agevidence.SourceRecord.__module__ == "agevidence.primitives.source_record"
     assert AsyncClient is not None
     assert RetryPolicy(max_attempts=1).max_attempts == 1
     assert (repo_root / "sdks" / "python" / "src" / "agevidence" / "py.typed").exists()
@@ -125,3 +126,43 @@ def test_plugin_and_adapter_import_order_is_stable():
         )
 
         assert completed.returncode == 0, completed.stderr
+
+
+def test_domain_profile_entry_points_are_discovered(monkeypatch):
+    from agevidence.profiles import DomainProfile, DomainProfileMetadata, list_domain_profiles
+
+    class SyntheticProfile(DomainProfile):
+        metadata = DomainProfileMetadata(
+            profile_id="com.example.synthetic-profile.v1",
+            name="SyntheticProfile",
+            version="v1",
+            family="synthetic",
+            expected_primitive_type="Observation",
+            aliases=["synthetic-profile"],
+        )
+
+    class FakeEntryPoint:
+        def load(self):
+            return SyntheticProfile
+
+    class FakeEntryPoints:
+        def select(self, group):
+            return [FakeEntryPoint()] if group == "agevidence.profiles" else []
+
+    monkeypatch.setattr("agevidence.profiles.domain_registry.metadata.entry_points", lambda: FakeEntryPoints())
+
+    profiles = {profile.metadata.profile_id: profile for profile in list_domain_profiles()}
+
+    assert "com.example.synthetic-profile.v1" in profiles
+
+
+def test_optional_modules_import_without_optional_dependencies():
+    import agevidence.geo
+    import agevidence.otel
+    import agevidence.pytest_plugin
+    import agevidence.viz
+
+    assert agevidence.otel.span_attributes(z=None, a=1) == {"a": 1}
+    assert agevidence.viz.timeline_points([{"primitive_type": "Observation", "observed_at": "2026-08-12T00:00:00Z"}]) == [
+        ("2026-08-12T00:00:00Z", "Observation")
+    ]

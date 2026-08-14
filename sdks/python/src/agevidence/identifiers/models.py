@@ -7,6 +7,18 @@ from pydantic import BaseModel, ConfigDict, Field
 from agevidence.adapters.findings import Finding
 
 
+class Identifier(BaseModel):
+    """Local identifier that can coexist with other namespaces."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    namespace: str
+    value: str
+
+    def __str__(self) -> str:
+        return f"{self.namespace}:{self.value}"
+
+
 class IdentifierBinding(BaseModel):
     """Binding from a local identifier to a global AgEvidence subject."""
 
@@ -37,4 +49,3 @@ class IdentifierNormalizationResult(BaseModel):
     binding: IdentifierBinding | None = None
     findings: list[Finding] = Field(default_factory=list)
     authority_boundary: str = "Identifier normalization is not authority approval or certification."
-

@@ -8,7 +8,10 @@ agevidence doctor
 agevidence fixture list
 agevidence fixture write livestock-weight --out ./livestock-weight.json
 agevidence ingest ./livestock-weight.json --format table
+agevidence infer ./livestock-weight.json --write mapping.yaml
+agevidence infer ./records.csv --coerce --write mapping.yaml
 agevidence explain ./livestock-weight.json --format table
+agevidence compatibility
 ```
 
 These commands do not require an Agevidence account, API key, Rails app, hosted
@@ -17,12 +20,18 @@ service, or network request.
 ## Source Adapter Commands
 
 ```bash
+agevidence adapter init dit-udose --out ./dit_udose
+agevidence adapter infer ./sample_payloads --out ./dit_udose
 agevidence adapter test my_adapter.py fixtures/
 agevidence adapter test my_adapter.py:MyAdapter fixtures/
 agevidence adapter test my_package.adapters:MyAdapter fixtures/
+agevidence adapter coverage my_adapter.py fixtures/
+agevidence adapter compare fixtures/v1 fixtures/v2
 ```
 
-`adapter` is singular and means source-system mapping adapter.
+`adapter` is singular and means source-system mapping adapter. Coverage reports
+source field paths and fails when a path is not mapped, preserved as an
+extension, or explicitly ignored.
 
 ## Wave Proof-Kit Commands
 
@@ -57,6 +66,16 @@ agevidence verify bundle.json
 ```
 
 Verification is delegated to the configured Rust verifier.
+
+## Snapshots
+
+```bash
+agevidence snapshot create fixtures/ --out agevidence-snapshot.json
+agevidence snapshot check fixtures/ agevidence-snapshot.json
+```
+
+Snapshots are local canonicalization regression artifacts. They are not receipt
+commitments.
 
 ## Hosted Commands
 

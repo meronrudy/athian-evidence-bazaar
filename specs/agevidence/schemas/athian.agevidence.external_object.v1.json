@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "athian.agevidence.external_object.v1",
+  "title": "Athian AgEvidence ExternalObject Primitive",
+  "type": "object",
+  "required": ["uri", "sha256"],
+  "properties": {
+    "schema_id": { "const": "athian.agevidence.external_object.v1" },
+    "primitive_type": { "const": "ExternalObject" },
+    "uri": { "type": "string", "minLength": 1 },
+    "sha256": { "type": "string", "minLength": 1 },
+    "size": { "type": "integer" },
+    "media_type": { "type": "string" },
+    "name": { "type": "string" },
+    "metadata": { "type": "object" },
+    "limitations": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": true
+}

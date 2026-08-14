@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "athian.agevidence.product_lot.v1",
+  "title": "Athian AgEvidence ProductLot Primitive",
+  "type": "object",
+  "required": ["product", "lot"],
+  "properties": {
+    "schema_id": { "const": "athian.agevidence.product_lot.v1" },
+    "primitive_type": { "const": "ProductLot" },
+    "product": { "type": "string", "minLength": 1 },
+    "lot": { "type": "string", "minLength": 1 },
+    "manufacturer": { "type": "string" },
+    "manufactured_at": { "type": "string" },
+    "expiry": { "type": "string" },
+    "quantity": {},
+    "unit": { "type": "string" },
+    "source_records": { "type": "array", "items": { "type": "object" } },
+    "metadata": { "type": "object" },
+    "limitations": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": true
+}

@@ -481,6 +481,98 @@ mod tests {
     }
 
     #[test]
+    fn agevidence_supporting_schemas_validate_for_cli_path() {
+        let cases = [
+            (
+                "calibration_record",
+                json!({
+                    "instrument": "device:scale-1",
+                    "calibrated_at": "2026-08-01T00:00:00Z"
+                }),
+            ),
+            (
+                "product_lot",
+                json!({
+                    "product": "additive:x",
+                    "lot": "lot-1"
+                }),
+            ),
+            (
+                "asset_state",
+                json!({
+                    "asset": "device:scale-1",
+                    "state": { "status": "active" },
+                    "effective_at": "2026-08-12T00:00:00Z"
+                }),
+            ),
+            (
+                "derived_observation",
+                json!({
+                    "subject": "herd:A27",
+                    "observable": "additive_delivered",
+                    "value": 800,
+                    "unit": "g",
+                    "observed_at": "2026-08-12T00:00:00Z",
+                    "inputs": ["sha256:input"],
+                    "transformation": {
+                        "name": "water_flow_to_additive_mass",
+                        "version": "2.1"
+                    }
+                }),
+            ),
+            (
+                "transformation",
+                json!({
+                    "name": "water_flow_to_additive_mass",
+                    "version": "2.1"
+                }),
+            ),
+            (
+                "attachment",
+                json!({
+                    "path": "certificate.pdf",
+                    "media_type": "application/pdf"
+                }),
+            ),
+            (
+                "external_object",
+                json!({
+                    "uri": "s3://example-bucket/object.tif",
+                    "sha256": "sha256:object"
+                }),
+            ),
+        ];
+
+        for (schema_name, payload) in cases {
+            let schema = match AgEvidenceSchema::parse(schema_name) {
+                Ok(value) => value,
+                Err(error) => panic!("{}", error),
+            };
+            let validated = match validate_payload(schema, &payload) {
+                Ok(value) => value,
+                Err(error) => panic!("{}", error),
+            };
+            let receipt = match issue_projection(
+                payload,
+                "Athian Test".into(),
+                schema.receipt_type().to_owned(),
+                Some(schema.schema_id().to_owned()),
+                "sealed".into(),
+                None,
+                Some("did:key:test".into()),
+                vec![],
+            ) {
+                Ok(value) => value,
+                Err(error) => panic!("{}", error),
+            };
+
+            assert_eq!(validated.schema_id, schema.schema_id());
+            assert_eq!(receipt["receipt_type"], schema.receipt_type());
+            assert_eq!(receipt["schema_id"], schema.schema_id());
+        }
+    }
+
+    #[test]
     fn graph_projection_emits_parent_edges() {
         let graph = graph_projection(&json!({
             "receipts": [

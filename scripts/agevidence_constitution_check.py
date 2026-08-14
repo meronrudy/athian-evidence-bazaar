@@ -16,12 +16,19 @@ SPEC_SCHEMA_ROOT = REPO_ROOT / "specs" / "agevidence" / "schemas"
 PACKAGED_SCHEMA_ROOT = SDK_ROOT / "schemas"
 
 CORE_SCHEMA_STEMS = [
+    "asset_state",
+    "attachment",
+    "calibration_record",
+    "derived_observation",
+    "external_object",
     "source_record",
     "observation",
     "intervention_event",
     "operational_event",
     "spatial_observation",
     "model_run",
+    "product_lot",
+    "transformation",
 ]
 
 LOCAL_BELOW_WAIST = [

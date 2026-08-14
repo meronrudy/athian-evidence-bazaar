@@ -17,6 +17,13 @@ REQUIRED_FIELDS: dict[str, list[str]] = {
     "InterventionEvent": ["target", "intervention", "quantity", "unit", "occurred_at"],
     "OperationalEvent": ["machine", "operation", "started_at", "completed_at"],
     "ModelRun": ["model_id", "model_version", "implementation_digest", "input_commitments", "parameters", "execution_environment", "started_at", "completed_at", "outputs", "verification"],
+    "CalibrationRecord": ["instrument", "calibrated_at"],
+    "ProductLot": ["product", "lot"],
+    "AssetState": ["asset", "state", "effective_at"],
+    "DerivedObservation": ["subject", "observable", "value", "unit", "observed_at", "inputs", "transformation"],
+    "Transformation": ["name", "version"],
+    "Attachment": ["path", "media_type"],
+    "ExternalObject": ["uri", "sha256"],
     "ModelExecution": ["base_model_id", "model_version", "inputs", "outputs"],
 }
 
@@ -45,6 +52,24 @@ def _primitive_type(value: EvidencePrimitive | dict[str, Any], payload: dict[str
         return getattr(value, "primitive_type", value.__class__.__name__)
     if isinstance(payload.get("primitive_type"), str):
         return str(payload["primitive_type"])
+    schema_id = payload.get("schema_id")
+    if isinstance(schema_id, str) and schema_id.startswith("athian.agevidence.") and schema_id.endswith(".v1"):
+        stem = schema_id.removeprefix("athian.agevidence.").removesuffix(".v1")
+        return {
+            "source_record": "SourceRecord",
+            "observation": "Observation",
+            "spatial_observation": "SpatialObservation",
+            "intervention_event": "InterventionEvent",
+            "operational_event": "OperationalEvent",
+            "model_run": "ModelRun",
+            "calibration_record": "CalibrationRecord",
+            "product_lot": "ProductLot",
+            "asset_state": "AssetState",
+            "derived_observation": "DerivedObservation",
+            "transformation": "Transformation",
+            "attachment": "Attachment",
+            "external_object": "ExternalObject",
+        }.get(stem, "Unknown")
     if payload.get("schema_id") == "athian.agevidence.model_run.v1" or payload.get("primitive_type") == "ModelRun" or "model_id" in payload:
         return "ModelRun"
     if "base_model_id" in payload:
@@ -140,6 +165,40 @@ def _provenance_findings(payload: dict[str, Any], primitive_type: str) -> list[F
                 remediation={"batch": "<batch or lot identifier>"},
             )
         )
+    if primitive_type == "CalibrationRecord" and not payload.get("certificate_hash"):
+        findings.append(
+            Finding(
+                code="CERTIFICATE_HASH_MISSING",
+                severity="warn",
+                field="certificate_hash",
+                message="No calibration certificate hash is attached.",
+                remediation={"action": "attach_certificate_hash", "accepted_types": ["sha256"]},
+            )
+        )
+    if primitive_type == "ProductLot" and not payload.get("manufacturer"):
+        findings.append(
+            Finding(
+                code="MANUFACTURER_MISSING",
+                severity="warn",
+                field="manufacturer",
+                message="No product manufacturer is attached.",
+                remediation={"action": "attach_manufacturer", "field": "manufacturer"},
+            )
+        )
+    if primitive_type == "DerivedObservation":
+        transformation = payload.get("transformation")
+        if isinstance(transformation, dict) and transformation.get("name") and transformation.get("version"):
+            findings.append(Finding(code="TRANSFORMATION_PRESENT", severity="pass", field="transformation", message="Transformation identity is present."))
+        else:
+            findings.append(
+                Finding(
+                    code="TRANSFORMATION_INCOMPLETE",
+                    severity="fail",
+                    field="transformation",
+                    message="Derived observations require transformation name and version.",
+                    remediation={"action": "attach_transformation", "required": ["name", "version"]},
+                )
+            )
     if primitive_type == "ModelRun":
         for field in ["implementation_digest", "input_commitments", "execution_environment", "verification"]:
             if _present(payload.get(field)):

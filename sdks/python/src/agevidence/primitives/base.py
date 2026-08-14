@@ -31,6 +31,9 @@ class EvidencePrimitive(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
+    effective_at: str | None = None
+    recorded_at: str | None = None
+    received_at: str | None = None
     metadata: dict[str, Any] = Field(default_factory=dict)
     limitations: list[str] = Field(default_factory=list)
 

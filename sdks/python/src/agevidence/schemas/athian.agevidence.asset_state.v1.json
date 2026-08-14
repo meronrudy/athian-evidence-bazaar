@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "athian.agevidence.asset_state.v1",
+  "title": "Athian AgEvidence AssetState Primitive",
+  "type": "object",
+  "required": ["asset", "state", "effective_at"],
+  "properties": {
+    "schema_id": { "const": "athian.agevidence.asset_state.v1" },
+    "primitive_type": { "const": "AssetState" },
+    "asset": { "type": "string", "minLength": 1 },
+    "state": { "type": "object", "minProperties": 1 },
+    "effective_at": { "type": "string", "minLength": 1 },
+    "valid_until": { "type": "string" },
+    "source_records": { "type": "array", "items": { "type": "object" } },
+    "metadata": { "type": "object" },
+    "limitations": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": true
+}
