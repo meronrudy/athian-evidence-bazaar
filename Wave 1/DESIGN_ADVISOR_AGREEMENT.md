@@ -21,7 +21,7 @@ As a Design Advisor, you will:
 - Early influence over AgEvidence schemas and integration patterns
 - A reusable artifact specification for buyer, verifier, program, or Scope 3 workflows
 - Attribution as a design advisor (only with permission)
-- Priority access to pilot implementation
+- Priority consideration for future implementation scope
 
 ## What We Do Not Require
 - Transfer of proprietary models, customer lists, or raw datasets

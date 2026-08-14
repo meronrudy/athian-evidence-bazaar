@@ -1,5 +1,8 @@
 # Acceptance Criteria
 
+> Historical release checklist for `v0.1.0-tenacious-screening`; retained for
+> audit context, not as a current capability inventory.
+
 ## Phase 0: Baseline Freeze
 - [x] Baseline commit 0d319350e642001a032c83bfac196a0dc3e0a90d recorded in BASELINE.md
 - [x] Release branch `release/v0.1.0-tenacious-screening` created

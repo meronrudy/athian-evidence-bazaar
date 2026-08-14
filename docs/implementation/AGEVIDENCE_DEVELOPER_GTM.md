@@ -1,5 +1,9 @@
 # AgEvidence Developer GTM Implementation Specification
 
+> Historical implementation-planning record. Retained for context; use the root
+> README, docs index, SDK release notes, Rails README, and integration specs for
+> current capability claims.
+
 ## 1. Objective
 
 Extend `meronrudy/athian-evidence-bazaar` to demonstrate **Athian AgEvidence**:

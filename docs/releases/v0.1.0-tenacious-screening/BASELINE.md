@@ -1,5 +1,8 @@
 # Baseline Commit
 
+> Historical release record. This file captures the repository state at the
+> 2026-08-07 baseline and is not a current capability inventory.
+
 This release is based on commit 0d319350e642001a032c83bfac196a0dc3e0a90d of the main branch.
 
 ## Current State

@@ -132,7 +132,7 @@ The screening branch is a multi-language technical scaffold, not a single Rails 
 |---|---|---|
 | **Rails workflow/control plane** | Ruby `3.3.12`; Rails `~> 7.1`; domain models and services under `athian_ink_rails_bootstrap/` | Hosted workflow and commercial-control-plane scaffold exists; production hardening is not established |
 | **Rust trust boundary** | `baink-core`, `baink-schema`, `baink-canonical`, `baink-crypto`, `baink-bundle`, `baink-verify`, `baink-agevidence`, `baink-cli` | Canonicalization, bundling and portable verification can remain separable from Rails |
-| **Python SDK** | `sdks/python/`; package `agevidence` v0.2.0a1; Python 3.11+; CLI entry point | Developer-oriented integration surface exists |
+| **Python SDK** | `sdks/python/`; package `agevidence` v1.0.0; Python 3.11+; CLI entry point | Developer-oriented local SDK and integration surface exists |
 | **Specifications** | `specs/agevidence/contracts/`, schemas, examples, country adapters and vocabulary | Public evidence grammar and conformance surface exists |
 | **Model boundary** | `services/agevidence-model/` plus Rails model-run ingestion/client surfaces | External calculations can remain separately attributable |
 | **Design workspaces** | `Wave 1/`, `Wave 2/`, charters and reference workspaces | Adoption hypotheses are inspectable in-repo; workspace presence is **not** adoption |
@@ -188,7 +188,7 @@ A useful IC view separates four maturity classes.
 | Regulatory / methodology acceptance | Not established | Appropriate external recognition |
 
 > [!WARNING]
-> **Known diligence gap:** the reviewed branch does not expose a `.github/workflows` CI surface. Local verification instructions exist, but deterministic clean-checkout CI, release signing, conformance artifacts and reproducible release evidence remain work to be completed rather than capabilities to imply.
+> **Known diligence gap:** this branch now includes SDK-focused GitHub Actions for Python CI and the `sdk-python-v1.0.0` release path. Those workflows do not yet replace a single deterministic clean-checkout diligence path for the full Rails, Rust, Python, specification and release-evidence surface.
 
 ---
 
@@ -495,7 +495,7 @@ bounded artifact
 portable Rust verification
 ```
 
-with reproducible CI and release artifacts.
+with a full-repo clean-checkout CI path and release evidence beyond the current SDK-focused workflows.
 
 ---
 
