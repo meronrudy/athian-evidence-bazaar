@@ -8,6 +8,11 @@ __pycache__/
 .pytest_cache/
 *.egg-info/
 
+# Research tutorial downloads and generated bundles
+fixtures/researchers/**/*.xlsx
+examples/researchers/**/output/
+notebooks/researchers/.ipynb_checkpoints/
+
 # Rails local state
 athian_ink_rails_bootstrap/.env
 athian_ink_rails_bootstrap/.bundle/
@@ -20,5 +25,6 @@ athian_ink_rails_bootstrap/tmp/*
 athian_ink_rails_bootstrap/storage/*
 !athian_ink_rails_bootstrap/storage/.keep
 athian_ink_rails_bootstrap/node_modules/
+athian_ink_rails_bootstrap/vendor/bundle/
 athian_ink_rails_bootstrap/app/assets/builds/*
 !athian_ink_rails_bootstrap/app/assets/builds/.keep

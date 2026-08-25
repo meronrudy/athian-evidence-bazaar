@@ -4,6 +4,14 @@
 
 AgEvidence is an event-first, source-record-first platform for agricultural evidence collection, verification, and monetization. This document outlines the Open Source Design Advisory Board structure and governance framework for Wave 1 of the project.
 
+## Researchers
+
+The researcher guide lives at [docs/researchers](researchers/index.md). It
+starts from public UC Davis livestock research data and shows how experimental
+measurements, interventions, statistical analyses, and scientific statements can
+be represented as reconstructable evidence objects without changing the core SDK
+API.
+
 ## How it Works
 
 ### Event-First Architecture
